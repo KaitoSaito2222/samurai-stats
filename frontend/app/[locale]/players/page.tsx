@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { getJapanesePlayers } from "@/lib/api";
+import { getJapanesePlayersServer } from "@/lib/api-server";
 import PlayerCard from "@/components/PlayerCard";
 import type { Player } from "@/lib/api";
 
@@ -10,7 +10,7 @@ interface PlayersPageProps {
 
 async function fetchPlayers(page: number): Promise<{ items: Player[]; total: number }> {
   try {
-    const res = await getJapanesePlayers(page, 20);
+    const res = await getJapanesePlayersServer(page, 20);
     return res.data;
   } catch {
     return { items: [], total: 0 };

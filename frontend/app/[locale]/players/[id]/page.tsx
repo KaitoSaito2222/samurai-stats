@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
-import { getPlayer, getPlayerStats, getUserPlan } from "@/lib/api";
+import { getPlayerServer, getPlayerStatsServer } from "@/lib/api-server";
+import { getUserPlan } from "@/lib/api";
 import StatsTable from "@/components/StatsTable";
 import AISummaryButton from "@/components/AISummaryButton";
 import type { Player, PlayerStats, UserPlan } from "@/lib/api";
@@ -13,8 +14,8 @@ async function fetchPlayerData(
   id: string
 ): Promise<{ player: Player | null; stats: PlayerStats | null; userPlan: UserPlan | null }> {
   const [playerRes, statsRes, planRes] = await Promise.allSettled([
-    getPlayer(id),
-    getPlayerStats(id),
+    getPlayerServer(id),
+    getPlayerStatsServer(id),
     getUserPlan(),
   ]);
 

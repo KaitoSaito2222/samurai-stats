@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { getJapanesePlayers, getTodayGames } from "@/lib/api";
+import { getJapanesePlayersServer, getTodayGamesServer } from "@/lib/api-server";
 import PlayerCard from "@/components/PlayerCard";
 import GameCard from "@/components/GameCard";
 import type { Player, Game } from "@/lib/api";
@@ -11,8 +11,8 @@ interface HomePageProps {
 async function fetchHomeData(): Promise<{ players: Player[]; games: Game[] }> {
   try {
     const [playersRes, gamesRes] = await Promise.allSettled([
-      getJapanesePlayers(1, 6),
-      getTodayGames(),
+      getJapanesePlayersServer(1, 6),
+      getTodayGamesServer(),
     ]);
 
     const players =
