@@ -78,7 +78,8 @@ home_score        INTEGER              -- NULL until game starts
 away_score        INTEGER              -- NULL until game starts
 inning            INTEGER              -- current/final inning (NULL if not started)
 game_date         DATE
-status            VARCHAR  -- scheduled/live/final (maps to abstractGameState in API)
+status            VARCHAR NOT NULL DEFAULT 'scheduled'
+                            CHECK (status IN ('scheduled', 'live', 'final', 'postponed', 'cancelled'))
 venue             VARCHAR
 updated_at        TIMESTAMP DEFAULT NOW()
 ```
@@ -157,7 +158,7 @@ UNIQUE(user_id, usage_date)
 id                SERIAL PRIMARY KEY
 user_id           UUID REFERENCES users(id)
 feature           VARCHAR NOT NULL CHECK (feature IN ('summary', 'analysis', 'chat'))
-model             VARCHAR NOT NULL CHECK (model IN ('gemini-pro', 'claude-sonnet-4-6'))
+model             VARCHAR NOT NULL CHECK (model IN ('gemini-2.0-flash', 'claude-sonnet-4-6'))
 input_tokens      INTEGER
 output_tokens     INTEGER
 latency_ms        INTEGER

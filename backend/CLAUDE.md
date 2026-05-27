@@ -174,6 +174,41 @@ raise HTTPException(status_code=403, detail={"code": "PRO_REQUIRED", "message": 
 
 ---
 
+## Auth — JWT Validation Pattern
+
+Validate Supabase JWTs using the `supabase-py` client's `auth.get_user()`. Use as a FastAPI dependency:
+
+```python
+# dependencies/auth.py
+from supabase import Client
+from fastapi import Depends, Header, HTTPException
+from gotrue.types import User
+
+def get_current_user(authorization: str = Header(...), supabase: Client = Depends(get_supabase)) -> User:
+    token = authorization.removeprefix("Bearer ")
+    try:
+        response = supabase.auth.get_user(token)
+        return response.user
+    except Exception:
+        raise HTTPException(status_code=401, detail={"code": "UNAUTHORIZED", "message": "Invalid or expired token."})
+
+def get_optional_user(authorization: str | None = Header(default=None), supabase: Client = Depends(get_supabase)) -> User | None:
+    """Use on public endpoints that behave differently when authenticated."""
+    if not authorization:
+        return None
+    return get_current_user(authorization, supabase)
+```
+
+Use `Depends(get_current_user)` on protected endpoints:
+```python
+@router.get("/api/user/plan")
+async def get_plan(user: User = Depends(get_current_user)): ...
+```
+
+Initialize the Supabase client once in `database.py` using `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (service role bypasses RLS for server-side operations).
+
+---
+
 ## Backend Guidelines
 
 - HTTP status codes on all endpoints: 200/400/401/403/404/500
