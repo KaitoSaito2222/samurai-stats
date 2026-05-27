@@ -85,6 +85,24 @@ AI APIs will go down. Never let an outage block core features.
 > Limits per plan: see root `CLAUDE.md` Plan Features table.
 > `ai_logs` table schema: see `docs/db-schema.md`.
 
-- Free hard limit enforced via `ai_usage.summary_count` — returns 403 `LIMIT_EXCEEDED` when exceeded
-- Pro soft limit: return warning header `X-AI-Remaining: 5` when fewer than 10 daily calls remain
-- Count Pro usage from `ai_logs` table (`WHERE user_id = ? AND created_at >= today JST`)
+- Free hard limit enforced via `ai_usage.ai_call_count` (counts both summary and analysis) — returns 403 `LIMIT_EXCEEDED` when exceeded
+- Pro soft limit (100 calls/day): return warning header `X-AI-Remaining: <n>` when fewer than 10 daily calls remain
+- Count Pro usage from `ai_logs` table using a JST-aware boundary:
+
+```python
+from datetime import datetime, time
+import pytz
+
+JST = pytz.timezone("Asia/Tokyo")
+
+def today_jst_utc_start() -> datetime:
+    """Return UTC datetime of JST midnight (start of today in JST)."""
+    today = datetime.now(JST).date()
+    jst_midnight = JST.localize(datetime.combine(today, time.min))
+    return jst_midnight.astimezone(pytz.utc)
+
+# Usage in query (SQLAlchemy example):
+# .filter(AiLog.user_id == user_id, AiLog.created_at >= today_jst_utc_start())
+```
+
+Never use `DATE(created_at) = CURRENT_DATE` — this compares in UTC and misses calls made 00:00–08:59 JST.

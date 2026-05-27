@@ -65,12 +65,14 @@ samurai-stats/
 |---|---|---|
 | Home, player list, rankings, game detail | ✓ | ✓ |
 | MLB full player search | ✓ | ✓ |
-| AI quick summary (Gemini) | ✓ (3/day) | ✓ Unlimited |
-| AI basic analysis (Gemini) | ✓ (3/day, shared with summary) | ✓ Unlimited |
-| AI detailed analysis (Claude) | ✗ | ✓ |
-| AI chat (Claude) | ✗ | ✓ |
+| AI quick summary (Gemini) | ✓ (3/day, shared with analysis) | ✓ (100/day soft cap†) |
+| AI basic analysis (Gemini) | ✓ (3/day, shared with summary) | ✓ (100/day soft cap†) |
+| AI detailed analysis (Claude) | ✗ | ✓ (100/day soft cap†) |
+| AI chat (Claude) | ✗ | ✓ (100/day soft cap†) |
 | Stats trend graphs | ✗ | ✓ |
 | Favorite notifications (post-app) | ✗ | ✓ |
+
+> † Pro soft cap: backend returns `X-AI-Remaining: <n>` header when fewer than 10 calls remain in the day (JST). Frontend shows a warning banner. Hard block does not apply to Pro users.
 
 ---
 

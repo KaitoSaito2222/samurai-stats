@@ -49,7 +49,7 @@ def usage_date_jst() -> date:
 
 | Feature | Model | Notes |
 |---|---|---|
-| AI quick summary | Gemini API | Free quota shared with basic analysis via `ai_usage.summary_count` |
+| AI quick summary | Gemini API | Free quota shared with basic analysis via `ai_usage.ai_call_count` |
 | AI basic analysis | Gemini API | Current-season stats only |
 | AI detailed analysis | Claude API | Multi-year trends, period comparison, weakness breakdowns |
 | AI chat | Claude API | Streaming required — see `docs/ai-guidelines.md` |
