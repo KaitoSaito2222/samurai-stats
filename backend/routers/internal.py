@@ -20,7 +20,6 @@ from backend.services.mlb_api import (
     detect_japanese_player_games,
     fetch_japanese_players,
     fetch_live_game,
-    fetch_player_stats,
     fetch_schedule,
 )
 
