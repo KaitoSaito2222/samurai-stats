@@ -15,8 +15,8 @@ import pytz
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from supabase import Client
 
-from backend.database import get_supabase
-from backend.services.mlb_api import (
+from database import get_supabase
+from services.mlb_api import (
     detect_japanese_player_games,
     fetch_japanese_players,
     fetch_live_game,

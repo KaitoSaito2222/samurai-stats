@@ -9,7 +9,7 @@ import os
 import google.generativeai as genai
 from fastapi import HTTPException
 
-from backend.services.prompts import player_summary_prompt
+from services.prompts import player_summary_prompt
 
 # Initialize Gemini client at module level using the GEMINI_API_KEY environment variable.
 _api_key = os.environ.get("GEMINI_API_KEY", "")

@@ -21,11 +21,11 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from supabase import Client
 
-from backend.database import get_supabase
-from backend.dependencies.auth import get_optional_user
-from backend.dependencies.plan import get_user_plan
-from backend.schemas.ai import SummaryRequest, SummaryResponse
-from backend.services.gemini import generate_player_summary
+from database import get_supabase
+from dependencies.auth import get_optional_user
+from dependencies.plan import get_user_plan
+from schemas.ai import SummaryRequest, SummaryResponse
+from services.gemini import generate_player_summary
 
 limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/ai", tags=["ai"])

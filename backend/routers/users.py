@@ -10,10 +10,10 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from supabase import Client
 
-from backend.database import get_supabase
-from backend.dependencies.auth import get_current_user
-from backend.schemas.players import PlayerListItem
-from backend.schemas.users import UserPlan
+from database import get_supabase
+from dependencies.auth import get_current_user
+from schemas.players import PlayerListItem
+from schemas.users import UserPlan
 
 limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/user", tags=["users"])

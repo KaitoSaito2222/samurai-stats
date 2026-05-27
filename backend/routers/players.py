@@ -12,8 +12,8 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from supabase import Client
 
-from backend.database import get_supabase
-from backend.schemas.players import (
+from database import get_supabase
+from schemas.players import (
     BattingStats,
     PaginatedPlayers,
     PitchingStats,

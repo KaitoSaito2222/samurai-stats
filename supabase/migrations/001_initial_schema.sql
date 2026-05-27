@@ -65,8 +65,9 @@ CREATE TABLE IF NOT EXISTS game_players (
 );
 
 -- ── users (profiles — extends auth.users 1:1) ────────────────────────────
+-- auth.users is managed by GoTrue; FK enforced at application layer, not DB.
 CREATE TABLE IF NOT EXISTS users (
-    id                 UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    id                 UUID PRIMARY KEY,  -- auth.users.id from GoTrue
     email              VARCHAR UNIQUE NOT NULL,
     plan               VARCHAR NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro')),
     stripe_customer_id VARCHAR,

@@ -14,8 +14,8 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 from supabase import Client
 
-from backend.database import get_supabase
-from backend.schemas.games import GameDetail, GameListItem
+from database import get_supabase
+from schemas.games import GameDetail, GameListItem
 
 limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/games", tags=["games"])

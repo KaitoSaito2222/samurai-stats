@@ -10,7 +10,7 @@ from typing import AsyncGenerator
 
 from anthropic import AsyncAnthropic
 
-from backend.services.prompts import player_chat_system_prompt
+from services.prompts import player_chat_system_prompt
 
 # Initialize the Anthropic async client at module level.
 # Reads ANTHROPIC_API_KEY from the environment automatically.

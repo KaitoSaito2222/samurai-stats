@@ -6,7 +6,7 @@ from fastapi import Depends, Header, HTTPException
 from gotrue.types import User
 from supabase import Client
 
-from backend.database import get_supabase
+from database import get_supabase
 
 
 def get_current_user(
