@@ -8,8 +8,6 @@ Pro users:  no hard limit; soft warning header X-AI-Remaining when < 10 remain.
 Unauthenticated users: treated as free with 1 call/day per IP.
 """
 
-from __future__ import annotations
-
 import datetime
 import time
 from typing import Any

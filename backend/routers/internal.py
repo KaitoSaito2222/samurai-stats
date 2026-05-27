@@ -20,6 +20,7 @@ from services.mlb_api import (
     detect_japanese_player_games,
     fetch_japanese_players,
     fetch_live_game,
+    fetch_player_stats,
     fetch_schedule,
 )
 
@@ -144,6 +145,86 @@ async def sync_schedule(
         ).execute()
 
     return {"games_synced": len(game_rows), "game_players_synced": len(gp_rows)}
+
+
+# ---------------------------------------------------------------------------
+# POST /internal/sync/stats
+# ---------------------------------------------------------------------------
+
+
+@router.post("/sync/stats")
+async def sync_stats(
+    request: Request,
+    _: None = Depends(_verify_internal_key),
+    supabase: Client = Depends(get_supabase),
+) -> dict[str, Any]:
+    """Sync current-season batting and pitching stats for all Japanese players.
+
+    Fetches hitting and pitching stats from the MLB Stats API concurrently
+    for each player, then upserts into player_stats. Run every hour.
+    """
+    import asyncio
+
+    season: int = datetime.datetime.now(JST).year
+
+    jp_response = (
+        supabase.table("players")
+        .select("id")
+        .eq("is_japanese", True)
+        .execute()
+    )
+    player_ids: list[str] = [row["id"] for row in (jp_response.data or [])]
+
+    if not player_ids:
+        return {"synced": 0, "message": "No Japanese players in DB."}
+
+    stats_results: list[dict[str, Any]] = await asyncio.gather(
+        *[fetch_player_stats(pid, season) for pid in player_ids]
+    )
+
+    rows: list[dict[str, Any]] = []
+    for player_id, stats in zip(player_ids, stats_results):
+        batting = stats.get("batting")
+        pitching = stats.get("pitching")
+
+        if batting:
+            rows.append({
+                "player_id": player_id,
+                "season": season,
+                "stat_type": "batting",
+                "games": batting.get("gamesPlayed"),
+                "avg": batting.get("avg"),
+                "home_runs": batting.get("homeRuns"),
+                "rbi": batting.get("rbi"),
+                "ops": batting.get("ops"),
+                "hits": batting.get("hits"),
+            })
+
+        if pitching:
+            rows.append({
+                "player_id": player_id,
+                "season": season,
+                "stat_type": "pitching",
+                "games": pitching.get("gamesPlayed"),
+                "era": pitching.get("era"),
+                "wins": pitching.get("wins"),
+                "strikeouts": pitching.get("strikeOuts"),
+                "whip": pitching.get("whip"),
+            })
+
+    if not rows:
+        return {"synced": 0, "message": "No stats returned from MLB API."}
+
+    batch_size = 100
+    total_upserted = 0
+    for i in range(0, len(rows), batch_size):
+        batch = rows[i : i + batch_size]
+        supabase.table("player_stats").upsert(
+            batch, on_conflict="player_id,season,stat_type"
+        ).execute()
+        total_upserted += len(batch)
+
+    return {"synced": total_upserted}
 
 
 # ---------------------------------------------------------------------------
