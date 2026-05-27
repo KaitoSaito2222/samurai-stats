@@ -34,5 +34,9 @@ GRANT anon TO authenticator;
 GRANT authenticated TO authenticator;
 GRANT service_role TO authenticator;
 
+-- GoTrue's first migration creates auth.users — the schema must exist first.
+CREATE SCHEMA IF NOT EXISTS auth;
+GRANT ALL ON SCHEMA auth TO supabase_auth_admin;
+
 -- Allow supabase_auth_admin to create tables in public schema (GoTrue needs this).
 GRANT ALL ON SCHEMA public TO supabase_auth_admin;
