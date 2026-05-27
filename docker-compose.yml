@@ -18,6 +18,7 @@ x-local-keys: &local-keys
 services:
   # ── PostgreSQL ────────────────────────────────────────────────────────────
   db:
+    container_name: samurai-stats-db
     image: supabase/postgres:15.1.0.117
     restart: unless-stopped
     ports:
@@ -37,6 +38,7 @@ services:
 
   # ── GoTrue (Supabase Auth) ────────────────────────────────────────────────
   auth:
+    container_name: samurai-stats-auth
     image: supabase/gotrue:v2.149.0
     restart: unless-stopped
     depends_on:
@@ -57,6 +59,7 @@ services:
 
   # ── PostgREST (Supabase table API) ────────────────────────────────────────
   rest:
+    container_name: samurai-stats-rest
     image: postgrest/postgrest:v12.0.2
     restart: unless-stopped
     depends_on:
@@ -72,6 +75,7 @@ services:
   # ── Nginx proxy — aggregates auth + rest under one URL ────────────────────
   # supabase-py expects SUPABASE_URL/auth/v1/* and SUPABASE_URL/rest/v1/*
   supabase-local:
+    container_name: samurai-stats-supabase
     image: nginx:1.27-alpine
     restart: unless-stopped
     depends_on:
@@ -84,6 +88,7 @@ services:
 
   # ── FastAPI backend ───────────────────────────────────────────────────────
   backend:
+    container_name: samurai-stats-backend
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
@@ -108,6 +113,7 @@ services:
 
   # ── Next.js frontend ──────────────────────────────────────────────────────
   frontend:
+    container_name: samurai-stats-frontend
     image: node:20-alpine
     restart: unless-stopped
     working_dir: /app
