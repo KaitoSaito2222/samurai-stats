@@ -80,7 +80,7 @@ export default function AISummaryButton({
           onClick={() => { setSummary(null); setError(false); }}
           className="text-sm text-brand hover:underline"
         >
-          {locale === "ja" ? "再生成する" : "Regenerate"}
+          {t("regenerate")}
         </button>
       </div>
     );
@@ -126,7 +126,7 @@ export default function AISummaryButton({
 
       {error && (
         <p className="text-red-400 text-sm">
-          {locale === "ja" ? "エラーが発生しました。再度お試しください。" : "An error occurred. Please try again."}
+          {t("error")}
         </p>
       )}
 

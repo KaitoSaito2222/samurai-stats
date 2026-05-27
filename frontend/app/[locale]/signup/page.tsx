@@ -11,8 +11,28 @@ interface SignupPageProps {
   params: { locale: string };
 }
 
+const authAppearance = {
+  theme: ThemeSupa,
+  variables: {
+    default: {
+      colors: {
+        brand: "#C8102E",
+        brandAccent: "#9E0B24",
+        inputBackground: "#1E293B",
+        inputText: "white",
+        inputBorder: "#334155",
+        inputBorderFocus: "#C8102E",
+        inputBorderHover: "#334155",
+        messageText: "#94a3b8",
+        anchorTextColor: "#C8102E",
+        dividerBackground: "#334155",
+      },
+    },
+  },
+};
+
 export default function SignupPage({ params: { locale } }: SignupPageProps) {
-  const t = useTranslations("nav");
+  const tAuth = useTranslations("auth");
   const router = useRouter();
 
   useEffect(() => {
@@ -21,60 +41,34 @@ export default function SignupPage({ params: { locale } }: SignupPageProps) {
         router.replace(`/${locale}`);
       }
     });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
+    return () => { listener.subscription.unsubscribe(); };
   }, [router, locale]);
 
   return (
     <div className="flex items-center justify-center min-h-[70vh] px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white">
-            {locale === "ja" ? "新規登録" : "Sign Up"}
-          </h1>
+          <h1 className="text-2xl font-bold text-white">{tAuth("signupTitle")}</h1>
         </div>
         <div className="bg-surface-card rounded-xl border border-surface-border p-6">
           <Auth
             supabaseClient={supabase}
-            appearance={{
-              theme: ThemeSupa,
+            appearance={authAppearance}
+            localization={{
               variables: {
-                default: {
-                  colors: {
-                    brand: "#C8102E",
-                    brandAccent: "#9E0B24",
-                    inputBackground: "#1E293B",
-                    inputText: "white",
-                    inputBorder: "#334155",
-                    inputBorderFocus: "#C8102E",
-                    inputBorderHover: "#334155",
-                    messageText: "#94a3b8",
-                    anchorTextColor: "#C8102E",
-                    dividerBackground: "#334155",
-                  },
+                sign_in: {
+                  email_label: tAuth("email"),
+                  password_label: tAuth("password"),
+                  button_label: tAuth("loginButton"),
+                  link_text: tAuth("haveAccount"),
+                },
+                sign_up: {
+                  email_label: tAuth("email"),
+                  password_label: tAuth("password"),
+                  button_label: tAuth("signupButton"),
+                  link_text: tAuth("noAccount"),
                 },
               },
-            }}
-            localization={{
-              variables:
-                locale === "ja"
-                  ? {
-                      sign_in: {
-                        email_label: "メールアドレス",
-                        password_label: "パスワード",
-                        button_label: "ログイン",
-                        link_text: "アカウントをお持ちの方",
-                      },
-                      sign_up: {
-                        email_label: "メールアドレス",
-                        password_label: "パスワード",
-                        button_label: "新規登録",
-                        link_text: "アカウントをお持ちでない方",
-                      },
-                    }
-                  : undefined,
             }}
             view="sign_up"
             showLinks={true}
@@ -83,7 +77,7 @@ export default function SignupPage({ params: { locale } }: SignupPageProps) {
         </div>
         <p className="text-center text-slate-400 text-sm mt-4">
           <a href={`/${locale}/login`} className="text-brand hover:underline">
-            {locale === "ja" ? "ログインはこちら" : "Already have an account? Login"}
+            {tAuth("loginHere")}
           </a>
         </p>
       </div>

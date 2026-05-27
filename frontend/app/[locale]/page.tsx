@@ -64,7 +64,7 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
         {players.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 bg-surface-card rounded-xl border border-surface-border text-center">
             <span className="text-4xl mb-3">🏟️</span>
-            <p className="text-slate-400">選手データを取得できませんでした</p>
+            <p className="text-slate-400">{t("fetchFailed")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -11,7 +11,8 @@
     "title": "Samurai Stats",
     "subtitle": "Deep analysis of Japanese MLB players",
     "featuredPlayers": "Featured Players",
-    "todayGames": "Today's Games"
+    "todayGames": "Today's Games",
+    "fetchFailed": "Failed to fetch player data"
   },
   "players": {
     "title": "Japanese Players",
@@ -42,13 +43,16 @@
     "final": "Final",
     "scheduled": "Scheduled",
     "postponed": "Postponed",
-    "noGamesToday": "No games today"
+    "noGamesToday": "No games today",
+    "comingSoon": "Game detail coming soon"
   },
   "ai": {
     "generateSummary": "Generate AI Summary",
+    "regenerate": "Regenerate",
     "proFeature": "Pro members only",
     "limitReached": "Daily limit reached",
-    "remaining": "{count} uses remaining today"
+    "remaining": "{count} uses remaining today",
+    "error": "An error occurred. Please try again."
   },
   "errors": {
     "retry": "Retry",
@@ -59,5 +63,40 @@
     "free": "Free Plan",
     "pro": "Pro Plan",
     "upgrade": "Upgrade to Pro"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Login",
+    "signupButton": "Sign Up",
+    "haveAccount": "Have an account? Sign in",
+    "noAccount": "Don't have an account? Sign up",
+    "createAccount": "Create an account",
+    "loginHere": "Already have an account? Login",
+    "signupTitle": "Sign Up"
+  },
+  "billing": {
+    "freeBadge": "Free",
+    "recommended": "Recommended",
+    "perMonth": "/mo",
+    "comingSoon": "Coming soon",
+    "featurePlayers": "Player list & detail",
+    "featureSummaryFree": "AI summary 3x/day",
+    "featureAnalysis": "Detailed AI analysis (Claude)",
+    "featureGraphs": "Stats graphs",
+    "featureAll": "Everything in Free",
+    "featureSummaryPro": "AI summary 100x/day"
+  },
+  "pages": {
+    "rankings": {
+      "comingSoon": "Rankings coming soon"
+    },
+    "search": {
+      "comingSoon": "Full MLB player search coming soon"
+    },
+    "settings": {
+      "title": "Settings",
+      "comingSoon": "Settings coming soon"
+    }
   }
 }

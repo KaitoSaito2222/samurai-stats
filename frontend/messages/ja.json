@@ -11,7 +11,8 @@
     "title": "サムライスタッツ",
     "subtitle": "日本人MLB選手の成績を徹底分析",
     "featuredPlayers": "注目選手",
-    "todayGames": "今日の試合"
+    "todayGames": "今日の試合",
+    "fetchFailed": "選手データを取得できませんでした"
   },
   "players": {
     "title": "日本人選手一覧",
@@ -42,13 +43,16 @@
     "final": "試合終了",
     "scheduled": "試合予定",
     "postponed": "延期",
-    "noGamesToday": "今日の試合はありません"
+    "noGamesToday": "今日の試合はありません",
+    "comingSoon": "試合詳細は準備中です"
   },
   "ai": {
     "generateSummary": "AI要約を生成",
+    "regenerate": "再生成する",
     "proFeature": "Pro会員限定機能",
     "limitReached": "本日の利用上限に達しました",
-    "remaining": "残り{count}回"
+    "remaining": "残り{count}回",
+    "error": "エラーが発生しました。再度お試しください。"
   },
   "errors": {
     "retry": "再試行",
@@ -59,5 +63,40 @@
     "free": "無料プラン",
     "pro": "Proプラン",
     "upgrade": "Proにアップグレード"
+  },
+  "auth": {
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "loginButton": "ログイン",
+    "signupButton": "新規登録",
+    "haveAccount": "アカウントをお持ちの方",
+    "noAccount": "アカウントをお持ちでない方",
+    "createAccount": "新規登録はこちら",
+    "loginHere": "ログインはこちら",
+    "signupTitle": "新規登録"
+  },
+  "billing": {
+    "freeBadge": "無料",
+    "recommended": "おすすめ",
+    "perMonth": "/月",
+    "comingSoon": "準備中",
+    "featurePlayers": "選手一覧・詳細",
+    "featureSummaryFree": "AI要約 3回/日",
+    "featureAnalysis": "詳細AI分析（Claude）",
+    "featureGraphs": "成績グラフ",
+    "featureAll": "全機能含む",
+    "featureSummaryPro": "AI要約 100回/日"
+  },
+  "pages": {
+    "rankings": {
+      "comingSoon": "ランキング機能は準備中です"
+    },
+    "search": {
+      "comingSoon": "全MLB選手検索機能は準備中です"
+    },
+    "settings": {
+      "title": "設定",
+      "comingSoon": "設定機能は準備中です"
+    }
   }
 }
