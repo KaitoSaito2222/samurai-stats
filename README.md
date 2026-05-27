@@ -50,12 +50,12 @@ This starts six Docker containers:
 
 | Container | URL | Purpose |
 |---|---|---|
-| `frontend` | http://localhost:3000 | Next.js dev server (hot reload) |
-| `backend` | http://localhost:8000 | FastAPI (hot reload) |
-| `supabase-local` | http://localhost:8080 | Nginx proxy (auth + REST) |
-| `auth` | — | GoTrue (Supabase Auth) |
-| `rest` | — | PostgREST (table API) |
-| `db` | localhost:5432 | PostgreSQL |
+| `samurai-stats-frontend` | http://localhost:3000 | Next.js dev server (hot reload) |
+| `samurai-stats-backend` | http://localhost:8000 | FastAPI (hot reload) |
+| `samurai-stats-supabase` | http://localhost:8080 | Nginx proxy (auth + REST) |
+| `samurai-stats-auth` | — | GoTrue (Supabase Auth) |
+| `samurai-stats-rest` | — | PostgREST (table API) |
+| `samurai-stats-db` | localhost:5432 | PostgreSQL |
 
 The database schema is applied automatically on first start.
 
