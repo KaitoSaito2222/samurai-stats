@@ -16,6 +16,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from supabase import Client
 
 from database import get_supabase
+from services.japanese_data import mlb_photo_url, player_name_ja, team_name_ja
 from services.mlb_api import (
     detect_japanese_player_games,
     fetch_japanese_players,
@@ -63,11 +64,12 @@ async def sync_players(
     rows: list[dict[str, Any]] = [
         {
             "id": p["id"],
-            "names": {"en": p["fullName"], "ja": ""},
-            "team": {"en": p["currentTeam"], "ja": ""},
+            "names": {"en": p["fullName"], "ja": player_name_ja(p["id"])},
+            "team": {"en": p["currentTeam"], "ja": team_name_ja(p["currentTeam"])},
             "position": p["position"],
             "is_japanese": True,
             "active": p["active"],
+            "photo_url": mlb_photo_url(p["id"]),
         }
         for p in players
     ]
@@ -109,8 +111,8 @@ async def sync_schedule(
     game_rows: list[dict[str, Any]] = [
         {
             "id": g["gamePk"],
-            "home_team": {"en": g["homeTeam"], "ja": ""},
-            "away_team": {"en": g["awayTeam"], "ja": ""},
+            "home_team": {"en": g["homeTeam"], "ja": team_name_ja(g["homeTeam"])},
+            "away_team": {"en": g["awayTeam"], "ja": team_name_ja(g["awayTeam"])},
             "game_date": date_str,
             "status": g["status"],
             "venue": g["venue"],
