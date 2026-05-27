@@ -1,0 +1,131 @@
+version: "3.9"
+
+# Local dev stack — mirrors production Supabase without the cloud.
+# SUPABASE_URL inside containers points to the nginx proxy (supabase-local)
+# which routes /auth/v1/* → GoTrue and /rest/v1/* → PostgREST.
+#
+# Default local keys below are Supabase's well-known dev values.
+# Override any value by setting it in .env.local (copied from .env.local.example).
+
+x-local-keys: &local-keys
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-localpassword}
+  JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-token-with-at-least-32-characters-long}
+  ANON_KEY: &anon-key >-
+    ${ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRFA0NiK7kyqd6m0F3MhQdCCPAZdX4gIhJoMBXKGnfk}
+  SERVICE_KEY: &service-key >-
+    ${SERVICE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hj04zWl196z2-SBc0}
+
+services:
+  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  db:
+    image: supabase/postgres:15.1.0.117
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-localpassword}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Migrations run automatically on first start (empty pgdata).
+      # Re-run manually: make migrate
+      - ./supabase/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # ── GoTrue (Supabase Auth) ────────────────────────────────────────────────
+  auth:
+    image: supabase/gotrue:v2.149.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GOTRUE_DB_DRIVER: postgres
+      DATABASE_URL: postgres://supabase_auth_admin:${POSTGRES_PASSWORD:-localpassword}@db:5432/postgres
+      GOTRUE_JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-token-with-at-least-32-characters-long}
+      GOTRUE_JWT_EXP: 3600
+      API_EXTERNAL_URL: http://localhost:9999
+      GOTRUE_SITE_URL: http://localhost:3000
+      # Auto-confirm emails — no SMTP needed in local dev
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+      GOTRUE_SMTP_ADMIN_EMAIL: admin@localhost
+      GOTRUE_SMTP_HOST: localhost
+      GOTRUE_SMTP_PORT: "25"
+
+  # ── PostgREST (Supabase table API) ────────────────────────────────────────
+  rest:
+    image: postgrest/postgrest:v12.0.2
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD:-localpassword}@db:5432/postgres
+      PGRST_DB_SCHEMAS: public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET:-super-secret-jwt-token-with-at-least-32-characters-long}
+      PGRST_DB_EXTRA_SEARCH_PATH: public
+
+  # ── Nginx proxy — aggregates auth + rest under one URL ────────────────────
+  # supabase-py expects SUPABASE_URL/auth/v1/* and SUPABASE_URL/rest/v1/*
+  supabase-local:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - auth
+      - rest
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8080:80"
+
+  # ── FastAPI backend ───────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount source for hot-reload
+      - ./backend:/app
+    environment:
+      SUPABASE_URL: http://supabase-local:80
+      SUPABASE_SERVICE_ROLE_KEY: >-
+        ${SERVICE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hj04zWl196z2-SBc0}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_dummy}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-whsec_dummy}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-local-internal-key}
+      ALLOWED_ORIGINS: http://localhost:3000
+    depends_on:
+      - supabase-local
+
+  # ── Next.js frontend ──────────────────────────────────────────────────────
+  frontend:
+    image: node:20-alpine
+    restart: unless-stopped
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      # Isolate node_modules inside the container to avoid host/container conflicts
+      - frontend_nm:/app/node_modules
+    environment:
+      NEXT_PUBLIC_SUPABASE_URL: http://localhost:8080
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: >-
+        ${ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRFA0NiK7kyqd6m0F3MhQdCCPAZdX4gIhJoMBXKGnfk}
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+    command: sh -c "npm install && npm run dev"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  frontend_nm:
