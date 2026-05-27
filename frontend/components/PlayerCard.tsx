@@ -8,7 +8,9 @@ interface PlayerCardProps {
 }
 
 export default function PlayerCard({ player, locale }: PlayerCardProps) {
-  const displayName = locale === "ja" && player.fullNameJa ? player.fullNameJa : player.fullName;
+  const displayName = locale === "ja" && player.name_ja ? player.name_ja : player.name_en;
+  const subName = locale === "ja" && player.name_ja ? player.name_en : null;
+  const teamDisplay = locale === "ja" && player.team_ja ? player.team_ja : player.team_en;
 
   return (
     <Link
@@ -18,9 +20,9 @@ export default function PlayerCard({ player, locale }: PlayerCardProps) {
       <div className="flex items-center gap-4">
         {/* Player photo */}
         <div className="relative w-16 h-16 rounded-full overflow-hidden bg-surface-border flex-shrink-0">
-          {player.photoUrl ? (
+          {player.photo_url ? (
             <Image
-              src={player.photoUrl}
+              src={player.photo_url}
               alt={displayName}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-200"
@@ -38,15 +40,15 @@ export default function PlayerCard({ player, locale }: PlayerCardProps) {
           <h3 className="font-bold text-white truncate group-hover:text-brand transition-colors">
             {displayName}
           </h3>
-          {locale === "ja" && player.fullNameJa && (
-            <p className="text-xs text-slate-500 truncate">{player.fullName}</p>
+          {subName && (
+            <p className="text-xs text-slate-500 truncate">{subName}</p>
           )}
           <div className="flex flex-wrap gap-1 mt-2">
-            <span className="px-2 py-0.5 bg-brand/15 text-brand text-xs rounded-full font-medium">
-              {player.currentTeam.abbreviation}
+            <span className="px-2 py-0.5 bg-brand/15 text-brand text-xs rounded-full font-medium truncate max-w-[120px]">
+              {teamDisplay}
             </span>
             <span className="px-2 py-0.5 bg-surface-border text-slate-400 text-xs rounded-full">
-              {player.primaryPosition.abbreviation}
+              {player.position}
             </span>
           </div>
         </div>

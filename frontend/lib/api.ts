@@ -53,58 +53,57 @@ api.interceptors.response.use(
   }
 );
 
-// API response types
+// API response types — mirrors backend Pydantic schemas exactly
 export interface Player {
-  id: number;
-  fullName: string;
-  fullNameJa?: string;
-  currentTeam: {
-    id: number;
-    name: string;
-    abbreviation: string;
-  };
-  primaryPosition: {
-    code: string;
-    name: string;
-    type: string;
-    abbreviation: string;
-  };
-  photoUrl?: string;
-  active: boolean;
+  id: string;
+  name_ja: string;
+  name_en: string;
+  team_ja: string;
+  team_en: string;
+  position: string;
+  photo_url: string | null;
+  is_japanese: boolean;
+  active?: boolean;
+}
+
+export interface BattingStats {
+  avg: number | null;
+  home_runs: number | null;
+  rbi: number | null;
+  ops: number | null;
+  hits: number | null;
+  games: number | null;
+  season: number;
+}
+
+export interface PitchingStats {
+  era: number | null;
+  wins: number | null;
+  strikeouts: number | null;
+  whip: number | null;
+  innings_pitched: number | null;
+  games: number | null;
+  season: number;
 }
 
 export interface PlayerStats {
-  type: "batting" | "pitching";
-  season: number;
-  avg?: string;
-  hr?: number;
-  rbi?: number;
-  ops?: string;
-  era?: string;
-  wins?: number;
-  strikeouts?: number;
-  whip?: string;
-  games: number;
+  player_id: string;
+  batting: BattingStats | null;
+  pitching: PitchingStats | null;
 }
 
 export interface Game {
-  id: number;
-  homeTeam: {
-    id: number;
-    name: string;
-    abbreviation: string;
-    score?: number;
-  };
-  awayTeam: {
-    id: number;
-    name: string;
-    abbreviation: string;
-    score?: number;
-  };
-  status: "Live" | "Final" | "Scheduled" | "Postponed";
-  startTimeUtc: string;
-  inning?: number;
-  inningHalf?: string;
+  id: string;
+  home_team_ja: string;
+  home_team_en: string;
+  away_team_ja: string;
+  away_team_en: string;
+  home_score: number | null;
+  away_score: number | null;
+  inning: number | null;
+  game_date: string;
+  status: "scheduled" | "live" | "final" | "postponed" | "cancelled";
+  venue: string | null;
 }
 
 export interface UserPlan {
@@ -118,6 +117,7 @@ export interface PaginatedPlayers {
   total: number;
   page: number;
   limit: number;
+  has_next: boolean;
 }
 
 // API functions

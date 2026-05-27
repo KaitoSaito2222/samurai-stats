@@ -40,7 +40,7 @@ export default async function PlayerDetailPage({ params: { locale, id } }: Playe
     );
   }
 
-  const displayName = locale === "ja" && player.fullNameJa ? player.fullNameJa : player.fullName;
+  const displayName = locale === "ja" && player.name_ja ? player.name_ja : player.name_en;
   const remainingAi = userPlan
     ? userPlan.aiDailyLimit - userPlan.aiUsageToday
     : 0;
@@ -66,15 +66,15 @@ export default async function PlayerDetailPage({ params: { locale, id } }: Playe
         </div>
         <div className="text-center sm:text-left">
           <h1 className="text-2xl sm:text-3xl font-bold text-white">{displayName}</h1>
-          {locale === "ja" && player.fullNameJa && (
-            <p className="text-slate-400 text-sm mt-1">{player.fullName}</p>
+          {locale === "ja" && player.name_ja && (
+            <p className="text-slate-400 text-sm mt-1">{player.name_en}</p>
           )}
           <div className="flex flex-wrap gap-2 mt-3 justify-center sm:justify-start">
             <span className="px-3 py-1 bg-brand/20 text-brand rounded-full text-sm font-medium">
-              {player.currentTeam.name}
+              {locale === "ja" && player.team_ja ? player.team_ja : player.team_en}
             </span>
             <span className="px-3 py-1 bg-surface-border text-slate-300 rounded-full text-sm">
-              {player.primaryPosition.name}
+              {player.position}
             </span>
           </div>
         </div>
