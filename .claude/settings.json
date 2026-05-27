@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "ask":  ["Bash(git push *)"],
+    "deny": ["Bash(git push --force*)", "Bash(git push -f*)"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "statusMessage": "Scanning for secrets before push...",
+            "if": "Bash(git push*)",
+            "command": "cmd=$(jq -r '.tool_input.command // empty' 2>/dev/null); if echo \"$cmd\" | grep -qE '^git push'; then files=$(git diff HEAD --name-only 2>/dev/null | xargs grep -lE \"(AIza[0-9A-Za-z_-]{35}|sk-ant-[a-zA-Z0-9_-]+|sk_live_[a-zA-Z0-9]+|sk_test_[a-zA-Z0-9]+|eyJ[a-zA-Z0-9_-]{20,}|SUPABASE_SERVICE_ROLE_KEY[[:space:]]*=[[:space:]]*[^[:space:]]+|sbp_[a-zA-Z0-9]{40})\" 2>/dev/null); if [ -n \"$files\" ]; then echo \"{\\\"decision\\\":\\\"block\\\",\\\"reason\\\":\\\"Possible secrets detected — push blocked. Check these files: $files\\\"}\"; exit 2; fi; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "statusMessage": "Running lint checks...",
+            "command": "file=$(jq -r '.tool_input.file_path // empty' 2>/dev/null); if [[ \"$file\" == *.py ]]; then ruff check \"$file\" 2>/dev/null || true; mypy \"$file\" --ignore-missing-imports 2>/dev/null || true; elif [[ \"$file\" == *.ts || \"$file\" == *.tsx ]]; then cd /Users/saitoukaito/develop/dev/samurai-stats/frontend && npx tsc --noEmit 2>/dev/null || true; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
