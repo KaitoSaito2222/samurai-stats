@@ -157,14 +157,22 @@ api.interceptors.request.use(async (config) => {
 });
 
 // Handle error codes globally
-// Note: axios interceptors run outside React components — use window.location, not useRouter
+// Note: lib/api.ts may be imported in SSR (Server Components, Route Handlers).
+// Guard all browser APIs with typeof window !== "undefined" to avoid
+// "ReferenceError: window is not defined" in Node.js.
 api.interceptors.response.use(null, (error) => {
   const code = error.response?.data?.code;
-  if (code === "PRO_REQUIRED") {
+  if (code === "PRO_REQUIRED" && typeof window !== "undefined") {
     const locale = window.location.pathname.split("/")[1] || "ja";
     window.location.href = `/${locale}/billing`;
   }
   if (code === "LIMIT_EXCEEDED") { /* show upgrade prompt inline */ }
+  // X-AI-Remaining: warn Pro users when fewer than 10 daily AI calls remain
+  const remaining = error.response?.headers?.["x-ai-remaining"];
+  if (remaining !== undefined && typeof window !== "undefined") {
+    // dispatch a custom event; UI components listen and show a warning banner
+    window.dispatchEvent(new CustomEvent("ai-remaining", { detail: Number(remaining) }));
+  }
   return Promise.reject(error);
 });
 ```

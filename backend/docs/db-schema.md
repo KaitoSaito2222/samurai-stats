@@ -35,7 +35,7 @@ CREATE INDEX ON ai_logs(user_id, created_at);
 ## players
 ```sql
 id                VARCHAR PRIMARY KEY  -- MLB Stats API player_id (numeric string e.g. "660271")
-names             JSONB NOT NULL       -- {"en": "Shohei Ohtani", "ja": "大谷翔平", "ko": "..."}
+names             JSONB NOT NULL       -- {"en": "Shohei Ohtani", "ja": "大谷翔平"} — supported locales: en, ja only
 team              JSONB                -- {"en": "LA Dodgers", "ja": "ロサンゼルス・ドジャース"}
 position          VARCHAR
 is_japanese       BOOLEAN DEFAULT false
@@ -50,8 +50,8 @@ updated_at        TIMESTAMP DEFAULT NOW()
 ## player_stats
 ```sql
 id                SERIAL PRIMARY KEY
-player_id         VARCHAR REFERENCES players(id)
-season            INTEGER
+player_id         VARCHAR NOT NULL REFERENCES players(id)
+season            INTEGER NOT NULL
 stat_type         VARCHAR NOT NULL  -- 'batting' or 'pitching' (two-way players like Ohtani have 2 rows per season)
 games             INTEGER
 -- Batting (used when stat_type='batting')
@@ -99,7 +99,7 @@ UNIQUE(game_id, player_id)
 -- Password management handled by Supabase Auth
 id                UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE
 email             VARCHAR UNIQUE NOT NULL
-plan              VARCHAR DEFAULT 'free'  -- free/pro
+plan              VARCHAR NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro'))
 stripe_customer_id VARCHAR
 lang              VARCHAR DEFAULT 'ja'
 created_at        TIMESTAMP DEFAULT NOW()
@@ -118,10 +118,13 @@ UNIQUE(user_id, player_id)
 ```sql
 -- Per-game stats for graph rendering (Phase 2)
 -- Populated by the hourly sync job from MLB Stats API /people/{id}/gameLog
+-- game_date is denormalized from games.game_date for query performance (graph index).
+-- The sync job must always write game_date = games.game_date for the same game_id.
+-- On game postponement, update both games.game_date AND game_logs.game_date.
 id                SERIAL PRIMARY KEY
 player_id         VARCHAR REFERENCES players(id)
 game_id           VARCHAR REFERENCES games(id)
-game_date         DATE
+game_date         DATE NOT NULL
 stat_type         VARCHAR NOT NULL  -- 'batting' or 'pitching'
 -- Batting
 at_bats           INTEGER
@@ -143,7 +146,7 @@ UNIQUE(player_id, game_id, stat_type)
 id                SERIAL PRIMARY KEY
 user_id           UUID REFERENCES users(id)
 usage_date        DATE  -- JST date; must be set explicitly from app layer via usage_date_jst(), never rely on DB DEFAULT
-summary_count     INTEGER DEFAULT 0
+ai_call_count     INTEGER DEFAULT 0  -- counts both summary AND analysis calls (shared 3/day Free limit)
 created_at        TIMESTAMP DEFAULT NOW()
 UNIQUE(user_id, usage_date)
 ```
@@ -153,8 +156,8 @@ UNIQUE(user_id, usage_date)
 -- Every AI call is logged here for cost monitoring and Pro soft-limit tracking (100 calls/day)
 id                SERIAL PRIMARY KEY
 user_id           UUID REFERENCES users(id)
-feature           VARCHAR  -- 'summary' / 'analysis' / 'chat'
-model             VARCHAR  -- 'gemini-pro' / 'claude-sonnet-4-6'
+feature           VARCHAR NOT NULL CHECK (feature IN ('summary', 'analysis', 'chat'))
+model             VARCHAR NOT NULL CHECK (model IN ('gemini-pro', 'claude-sonnet-4-6'))
 input_tokens      INTEGER
 output_tokens     INTEGER
 latency_ms        INTEGER
