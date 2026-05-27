@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "home": "Home",
+    "players": "Players",
+    "rankings": "Rankings",
+    "search": "Search",
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "home": {
+    "title": "Samurai Stats",
+    "subtitle": "Deep analysis of Japanese MLB players",
+    "featuredPlayers": "Featured Players",
+    "todayGames": "Today's Games"
+  },
+  "players": {
+    "title": "Japanese Players",
+    "search": "Search players...",
+    "position": "Position",
+    "team": "Team",
+    "noResults": "No players found"
+  },
+  "player": {
+    "stats": "Stats",
+    "summary": "AI Summary",
+    "generating": "Generating...",
+    "summaryUnavailable": "Summary unavailable",
+    "proRequired": "Pro members only",
+    "batting": "Batting",
+    "pitching": "Pitching",
+    "avg": "AVG",
+    "hr": "HR",
+    "rbi": "RBI",
+    "ops": "OPS",
+    "era": "ERA",
+    "wins": "Wins",
+    "strikeouts": "Strikeouts",
+    "whip": "WHIP"
+  },
+  "games": {
+    "live": "Live",
+    "final": "Final",
+    "scheduled": "Scheduled",
+    "postponed": "Postponed",
+    "noGamesToday": "No games today"
+  },
+  "ai": {
+    "generateSummary": "Generate AI Summary",
+    "proFeature": "Pro members only",
+    "limitReached": "Daily limit reached",
+    "remaining": "{count} uses remaining today"
+  },
+  "errors": {
+    "retry": "Retry",
+    "notFound": "Page not found",
+    "serverError": "Something went wrong. Please try again later."
+  },
+  "plan": {
+    "free": "Free Plan",
+    "pro": "Pro Plan",
+    "upgrade": "Upgrade to Pro"
+  }
+}

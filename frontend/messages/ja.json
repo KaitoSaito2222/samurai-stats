@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "home": "ホーム",
+    "players": "選手一覧",
+    "rankings": "ランキング",
+    "search": "検索",
+    "login": "ログイン",
+    "logout": "ログアウト"
+  },
+  "home": {
+    "title": "サムライスタッツ",
+    "subtitle": "日本人MLB選手の成績を徹底分析",
+    "featuredPlayers": "注目選手",
+    "todayGames": "今日の試合"
+  },
+  "players": {
+    "title": "日本人選手一覧",
+    "search": "選手を検索...",
+    "position": "ポジション",
+    "team": "チーム",
+    "noResults": "選手が見つかりませんでした"
+  },
+  "player": {
+    "stats": "成績",
+    "summary": "AI要約",
+    "generating": "生成中...",
+    "summaryUnavailable": "要約を利用できません",
+    "proRequired": "Pro会員限定",
+    "batting": "打撃成績",
+    "pitching": "投球成績",
+    "avg": "打率",
+    "hr": "本塁打",
+    "rbi": "打点",
+    "ops": "OPS",
+    "era": "防御率",
+    "wins": "勝利",
+    "strikeouts": "奪三振",
+    "whip": "WHIP"
+  },
+  "games": {
+    "live": "試合中",
+    "final": "試合終了",
+    "scheduled": "試合予定",
+    "postponed": "延期",
+    "noGamesToday": "今日の試合はありません"
+  },
+  "ai": {
+    "generateSummary": "AI要約を生成",
+    "proFeature": "Pro会員限定機能",
+    "limitReached": "本日の利用上限に達しました",
+    "remaining": "残り{count}回"
+  },
+  "errors": {
+    "retry": "再試行",
+    "notFound": "ページが見つかりません",
+    "serverError": "エラーが発生しました。しばらくしてから再度お試しください。"
+  },
+  "plan": {
+    "free": "無料プラン",
+    "pro": "Proプラン",
+    "upgrade": "Proにアップグレード"
+  }
+}
