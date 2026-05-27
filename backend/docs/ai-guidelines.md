@@ -58,15 +58,52 @@ Always pass real MLB Stats API data in the system prompt. Never let the AI gener
 
 ## Streaming
 
-Use streaming responses for all chat endpoints — users should not wait 3–5s for a response.
+Use **Server-Sent Events (SSE)** for all chat endpoints — users should not wait 3–5s for a response.
+
+### Backend (FastAPI)
 
 ```python
-# FastAPI + Claude streaming
-async def stream_chat(...):
-    async with client.messages.stream(...) as stream:
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+import json
+
+async def _sse_generator(player_id: str, message: str, history: list):
+    async with anthropic_client.messages.stream(
+        model="claude-sonnet-4-6",
+        system=player_chat_system_prompt(...),
+        messages=[*history, {"role": "user", "content": message}],
+        max_tokens=1024,
+    ) as stream:
         async for text in stream.text_stream:
-            yield text
+            yield f"data: {json.dumps({'text': text})}\n\n"
+    yield "data: [DONE]\n\n"
+
+@router.post("/api/ai/chat")
+async def chat(body: ChatRequest, user: User = Depends(get_current_user)):
+    return StreamingResponse(_sse_generator(...), media_type="text/event-stream")
 ```
+
+### Frontend (Next.js)
+
+```ts
+// Use fetch + ReadableStream — EventSource does not support POST
+const res = await api.post("/api/ai/chat", body, { responseType: "stream" });
+const reader = res.data.getReader();
+const decoder = new TextDecoder();
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  const lines = decoder.decode(value).split("\n\n");
+  for (const line of lines) {
+    if (!line.startsWith("data: ") || line === "data: [DONE]") continue;
+    const { text } = JSON.parse(line.slice(6));
+    setResponse((prev) => prev + text);  // append token to state
+  }
+}
+```
+
+Wire the same pattern for Gemini streaming (`response.candidates[0].content.parts`).
 
 Frontend renders tokens incrementally as they arrive.
 
@@ -85,6 +122,8 @@ AI APIs will go down. Never let an outage block core features.
 > Limits per plan: see root `CLAUDE.md` Plan Features table.
 > `ai_logs` table schema: see `docs/db-schema.md`.
 
+- Gemini model: **`gemini-2.0-flash`** (use this exact string in API calls and `ai_logs.model`)
+- Claude model: **`claude-sonnet-4-6`** (use this exact string in API calls and `ai_logs.model`)
 - Free hard limit enforced via `ai_usage.ai_call_count` (counts both summary and analysis) — returns 403 `LIMIT_EXCEEDED` when exceeded
 - Pro soft limit (100 calls/day): return warning header `X-AI-Remaining: <n>` when fewer than 10 daily calls remain
 - Count Pro usage from `ai_logs` table using a JST-aware boundary:
