@@ -16,7 +16,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from supabase import Client
 
 from database import get_supabase
-from services.japanese_data import mlb_photo_url, player_name_ja, team_name_ja
+from services.japanese_data import mlb_photo_url, player_name_ja, team_name_from_id, team_name_ja
 from services.baseball_savant import fetch_statcast_aggregated
 from services.mlb_api import (
     detect_japanese_player_games,
@@ -62,18 +62,27 @@ async def sync_players(
     if not players:
         return {"synced": 0, "message": "No Japanese players returned from MLB API."}
 
-    rows: list[dict[str, Any]] = [
-        {
-            "id": p["id"],
-            "names": {"en": p["fullName"], "ja": player_name_ja(p["id"])},
-            "team": {"en": p["currentTeam"], "ja": team_name_ja(p["currentTeam"])},
-            "position": p["position"],
-            "is_japanese": True,
-            "active": p["active"],
-            "photo_url": mlb_photo_url(p["id"]),
-        }
-        for p in players
-    ]
+    rows: list[dict[str, Any]] = []
+    for p in players:
+        # Prefer name from API response; fall back to ID-based lookup.
+        # The bulk endpoint often omits name, returning only {id, link}.
+        team_en: str = p["currentTeam"]
+        if not team_en and p.get("currentTeamId"):
+            team_en, team_ja = team_name_from_id(p["currentTeamId"])
+        else:
+            team_ja = team_name_ja(team_en)
+
+        rows.append(
+            {
+                "id": p["id"],
+                "names": {"en": p["fullName"], "ja": player_name_ja(p["id"])},
+                "team": {"en": team_en, "ja": team_ja},
+                "position": p["position"],
+                "is_japanese": True,
+                "active": p["active"],
+                "photo_url": mlb_photo_url(p["id"]),
+            }
+        )
 
     # Upsert in batches of 100 to avoid request size limits.
     batch_size = 100

@@ -70,9 +70,12 @@ async def fetch_japanese_players(season: int) -> list[dict[str, Any]]:
         if player.get("birthCountry") != "Japan":
             continue
 
-        # Extract current team name — may be absent for free agents.
+        # The bulk endpoint returns currentTeam as {id, link} only — no name.
+        # Resolve team name via the stable team ID mapping.
         team_info: dict[str, Any] = player.get("currentTeam", {})
-        current_team: str = team_info.get("name", "")
+        team_id: int = int(team_info.get("id", 0)) if team_info.get("id") else 0
+        # name field may appear if API hydration changes in future; prefer it.
+        current_team: str = team_info.get("name", "") or ""
 
         # Primary position code/abbreviation.
         position_info: dict[str, Any] = player.get("primaryPosition", {})
@@ -83,6 +86,7 @@ async def fetch_japanese_players(season: int) -> list[dict[str, Any]]:
                 "id": str(player["id"]),
                 "fullName": player.get("fullName", ""),
                 "currentTeam": current_team,
+                "currentTeamId": team_id,
                 "position": position,
                 "active": player.get("active", False),
             }
