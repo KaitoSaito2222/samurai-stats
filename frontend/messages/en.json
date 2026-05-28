@@ -64,8 +64,12 @@
     "final": "Final",
     "scheduled": "Scheduled",
     "postponed": "Postponed",
+    "cancelled": "Cancelled",
     "noGamesToday": "No games today",
-    "comingSoon": "Game detail coming soon"
+    "comingSoon": "Game detail coming soon",
+    "home": "Home",
+    "away": "Away",
+    "japanesePlayers": "Japanese Players in this Game"
   },
   "ai": {
     "generateSummary": "Generate AI Summary",
@@ -106,18 +110,42 @@
     "featureAnalysis": "Detailed AI analysis (Claude)",
     "featureGraphs": "Stats graphs",
     "featureAll": "Everything in Free",
-    "featureSummaryPro": "AI summary 100x/day"
+    "featureSummaryPro": "AI summary 100x/day",
+    "upgradeButton": "Upgrade to Pro",
+    "redirecting": "Redirecting...",
+    "manageSubscription": "Manage Subscription"
+  },
+  "rankings": {
+    "title": "Rankings",
+    "battingTitle": "Batting Rankings (by OPS)",
+    "pitchingTitle": "Pitching Rankings (by ERA)",
+    "noData": "No data available",
+    "loadFailed": "Failed to load rankings",
+    "season": "{year} Season"
+  },
+  "search": {
+    "title": "MLB Player Search",
+    "placeholder": "Search player name...",
+    "searchButton": "Search",
+    "noResults": "No players found"
+  },
+  "chat": {
+    "title": "AI Chat",
+    "proOnly": "AI Chat is a Pro feature",
+    "upgrade": "Upgrade to Pro",
+    "placeholder": "Ask anything about this player...",
+    "inputPlaceholder": "Type a message...",
+    "send": "Send",
+    "error": "An error occurred. Please try again."
   },
   "pages": {
-    "rankings": {
-      "comingSoon": "Rankings coming soon"
-    },
-    "search": {
-      "comingSoon": "Full MLB player search coming soon"
-    },
     "settings": {
       "title": "Settings",
-      "comingSoon": "Settings coming soon"
+      "comingSoon": "Settings coming soon",
+      "planDescription": "You are currently on the Free plan. Upgrade to Pro to unlock all features.",
+      "language": "Display Language",
+      "subscription": "Subscription",
+      "subscriptionDescription": "Manage or cancel your subscription here."
     }
   }
 }

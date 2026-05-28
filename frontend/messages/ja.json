@@ -64,8 +64,12 @@
     "final": "試合終了",
     "scheduled": "試合予定",
     "postponed": "延期",
+    "cancelled": "中止",
     "noGamesToday": "今日の試合はありません",
-    "comingSoon": "試合詳細は準備中です"
+    "comingSoon": "試合詳細は準備中です",
+    "home": "ホーム",
+    "away": "アウェイ",
+    "japanesePlayers": "出場日本人選手"
   },
   "ai": {
     "generateSummary": "AI要約を生成",
@@ -106,18 +110,42 @@
     "featureAnalysis": "詳細AI分析（Claude）",
     "featureGraphs": "成績グラフ",
     "featureAll": "全機能含む",
-    "featureSummaryPro": "AI要約 100回/日"
+    "featureSummaryPro": "AI要約 100回/日",
+    "upgradeButton": "Proにアップグレード",
+    "redirecting": "リダイレクト中...",
+    "manageSubscription": "サブスクリプション管理"
+  },
+  "rankings": {
+    "title": "ランキング",
+    "battingTitle": "打撃ランキング（OPS順）",
+    "pitchingTitle": "投球ランキング（防御率順）",
+    "noData": "データがありません",
+    "loadFailed": "ランキングを読み込めませんでした",
+    "season": "{year}シーズン"
+  },
+  "search": {
+    "title": "MLB選手検索",
+    "placeholder": "選手名を入力...",
+    "searchButton": "検索",
+    "noResults": "選手が見つかりませんでした"
+  },
+  "chat": {
+    "title": "AIチャット",
+    "proOnly": "AIチャットはPro会員限定です",
+    "upgrade": "Proにアップグレード",
+    "placeholder": "この選手について質問してください...",
+    "inputPlaceholder": "メッセージを入力...",
+    "send": "送信",
+    "error": "エラーが発生しました。再度お試しください。"
   },
   "pages": {
-    "rankings": {
-      "comingSoon": "ランキング機能は準備中です"
-    },
-    "search": {
-      "comingSoon": "全MLB選手検索機能は準備中です"
-    },
     "settings": {
       "title": "設定",
-      "comingSoon": "設定機能は準備中です"
+      "comingSoon": "設定機能は準備中です",
+      "planDescription": "現在、無料プランをご利用中です。Proプランにアップグレードして全機能をご利用ください。",
+      "language": "表示言語",
+      "subscription": "サブスクリプション",
+      "subscriptionDescription": "プランの変更・解約はこちらから行えます。"
     }
   }
 }
