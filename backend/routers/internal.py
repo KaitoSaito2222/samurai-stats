@@ -103,15 +103,25 @@ async def sync_players(
 @router.post("/sync/schedule")
 async def sync_schedule(
     request: Request,
+    date: str | None = None,
     _: None = Depends(_verify_internal_key),
     supabase: Client = Depends(get_supabase),
 ) -> dict[str, Any]:
-    """Sync today's schedule and populate game_players junction table.
+    """Sync schedule and populate game_players junction table.
 
-    Run daily at 6:00 JST.
+    Run daily at 6:00 JST. Pass ?date=YYYY-MM-DD to backfill a historical date.
     """
-    today: datetime.date = datetime.datetime.now(JST).date()
-    date_str: str = today.isoformat()
+    if date is not None:
+        try:
+            game_date = datetime.date.fromisoformat(date)
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail={"code": "INVALID_REQUEST", "message": "date must be YYYY-MM-DD."},
+            )
+    else:
+        game_date = datetime.datetime.now(JST).date()
+    date_str: str = game_date.isoformat()
 
     schedule: list[dict[str, Any]] = await fetch_schedule(date_str)
     if not schedule:

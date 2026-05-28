@@ -31,3 +31,9 @@ export const getRankingsServer = (season?: number) =>
 
 export const getGameServer = (id: string) =>
   serverApi.get<GameDetail>(`/api/games/${id}`);
+
+export const getGamesByDateServer = (date: string) =>
+  serverApi.get<Game[]>("/api/games", { params: { date } });
+
+export const getYesterdayGamesServer = () =>
+  serverApi.get<Game[]>("/api/games/yesterday");

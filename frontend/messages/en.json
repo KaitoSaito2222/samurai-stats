@@ -12,7 +12,8 @@
     "subtitle": "Deep analysis of Japanese MLB players",
     "featuredPlayers": "Featured Players",
     "todayGames": "Today's Games",
-    "fetchFailed": "Failed to fetch player data"
+    "fetchFailed": "Failed to fetch player data",
+    "browseByDate": "Browse by date"
   },
   "players": {
     "title": "Japanese Players",
@@ -66,10 +67,15 @@
     "postponed": "Postponed",
     "cancelled": "Cancelled",
     "noGamesToday": "No games today",
+    "noGamesOnDate": "No games on this date",
+    "noGamesHint": "This date may not have been synced yet",
     "comingSoon": "Game detail coming soon",
     "home": "Home",
     "away": "Away",
-    "japanesePlayers": "Japanese Players in this Game"
+    "japanesePlayers": "Japanese Players in this Game",
+    "prevDay": "Prev Day",
+    "nextDay": "Next Day",
+    "backToToday": "Back to today"
   },
   "ai": {
     "generateSummary": "Generate AI Summary",

@@ -12,7 +12,8 @@
     "subtitle": "日本人MLB選手の成績を徹底分析",
     "featuredPlayers": "注目選手",
     "todayGames": "今日の試合",
-    "fetchFailed": "選手データを取得できませんでした"
+    "fetchFailed": "選手データを取得できませんでした",
+    "browseByDate": "日付で探す"
   },
   "players": {
     "title": "日本人選手一覧",
@@ -66,10 +67,15 @@
     "postponed": "延期",
     "cancelled": "中止",
     "noGamesToday": "今日の試合はありません",
+    "noGamesOnDate": "この日の試合はありません",
+    "noGamesHint": "まだ同期されていない日付かもしれません",
     "comingSoon": "試合詳細は準備中です",
     "home": "ホーム",
     "away": "アウェイ",
-    "japanesePlayers": "出場日本人選手"
+    "japanesePlayers": "出場日本人選手",
+    "prevDay": "前日",
+    "nextDay": "翌日",
+    "backToToday": "今日に戻る"
   },
   "ai": {
     "generateSummary": "AI要約を生成",

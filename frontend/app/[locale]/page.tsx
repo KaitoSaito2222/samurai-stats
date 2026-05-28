@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 import { getJapanesePlayersServer, getTodayGamesServer } from "@/lib/api-server";
 import PlayerCard from "@/components/PlayerCard";
 import GameCard from "@/components/GameCard";
@@ -43,11 +44,25 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
 
       {/* Today's Games */}
       <section>
-        <h2 className="text-xl font-bold text-slate-900 mb-4">{t("todayGames")}</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-slate-900">{t("todayGames")}</h2>
+          <Link
+            href={`/${locale}/games`}
+            className="text-sm text-brand hover:underline font-medium"
+          >
+            {t("browseByDate")} →
+          </Link>
+        </div>
         {games.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 bg-surface-card rounded-xl border border-surface-border text-center">
             <span className="text-4xl mb-3">⚾</span>
             <p className="text-slate-500">{tGames("noGamesToday")}</p>
+            <Link
+              href={`/${locale}/games`}
+              className="mt-3 text-sm text-brand hover:underline"
+            >
+              {t("browseByDate")} →
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

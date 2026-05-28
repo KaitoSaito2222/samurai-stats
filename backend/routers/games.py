@@ -73,6 +73,38 @@ def _fetch_games_for_date(
 
 
 # ---------------------------------------------------------------------------
+# GET /api/games  (date-based — must come before /today and /yesterday)
+# ---------------------------------------------------------------------------
+
+
+@router.get("", response_model=list[GameListItem])
+@limiter.limit("60/minute")
+async def get_games_by_date(
+    request: Request,
+    date: str | None = None,
+    supabase: Client = Depends(get_supabase),
+) -> list[GameListItem]:
+    """Return games for a given date (JST) that feature Japanese players.
+
+    date: YYYY-MM-DD. Defaults to today JST if omitted.
+    Returns an empty list (not 404) when no games are found for the date —
+    this is the expected response for dates not yet synced.
+    """
+    if date is None:
+        game_date = today_jst()
+    else:
+        try:
+            game_date = datetime.date.fromisoformat(date)
+        except ValueError:
+            from fastapi import HTTPException
+            raise HTTPException(
+                status_code=400,
+                detail={"code": "INVALID_REQUEST", "message": "date must be YYYY-MM-DD."},
+            )
+    return _fetch_games_for_date(supabase, game_date)
+
+
+# ---------------------------------------------------------------------------
 # GET /api/games/today
 # ---------------------------------------------------------------------------
 
