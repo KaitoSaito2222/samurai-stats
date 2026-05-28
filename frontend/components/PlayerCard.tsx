@@ -19,14 +19,14 @@ export default function PlayerCard({ player, locale }: PlayerCardProps) {
     >
       <div className="flex items-center gap-4">
         {/* Player photo */}
-        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
+        <div className="w-16 h-16 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
           {player.photo_url ? (
             <Image
               src={player.photo_url}
               alt={displayName}
-              fill
-              className="object-cover group-hover:scale-105 transition-transform duration-200"
-              sizes="64px"
+              width={64}
+              height={64}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-2xl">

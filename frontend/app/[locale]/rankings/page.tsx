@@ -36,9 +36,9 @@ function RankingRow({ player, rank, locale, statLabel, statValue }: {
         rank === 3 ? "bg-amber-600 text-white" :
         "bg-slate-100 text-slate-500"
       }`}>{rank}</span>
-      <div className="relative w-10 h-10 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
+      <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
         {player.photo_url ? (
-          <Image src={player.photo_url} alt={displayName} fill className="object-cover" sizes="40px" />
+          <Image src={player.photo_url} alt={displayName} width={40} height={40} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-lg">⚾</div>
         )}

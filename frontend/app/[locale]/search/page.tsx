@@ -85,9 +85,9 @@ export default function SearchPage() {
                 href={`/${locale}/players/${player.id}`}
                 className="flex items-center gap-4 p-4 bg-surface-card border border-surface-border rounded-xl hover:shadow-md transition-shadow group"
               >
-                <div className="relative w-10 h-10 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
+                <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
                   {player.photo_url ? (
-                    <Image src={player.photo_url} alt={displayName} fill className="object-cover" sizes="40px" />
+                    <Image src={player.photo_url} alt={displayName} width={40} height={40} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-lg">⚾</div>
                   )}

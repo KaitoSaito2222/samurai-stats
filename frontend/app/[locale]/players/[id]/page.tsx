@@ -54,14 +54,14 @@ export default async function PlayerDetailPage({ params: { locale, id } }: Playe
     <div className="space-y-6">
       {/* Player header */}
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 bg-surface-card rounded-xl border border-surface-border p-6 shadow-sm">
-        <div className="relative w-24 h-24 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
+        <div className="w-24 h-24 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
           {player.photo_url ? (
             <Image
               src={player.photo_url}
               alt={displayName}
-              fill
-              className="object-cover"
-              sizes="96px"
+              width={96}
+              height={96}
+              className="w-full h-full object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-3xl">⚾</div>
