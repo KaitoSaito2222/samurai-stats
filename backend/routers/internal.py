@@ -17,6 +17,7 @@ from supabase import Client
 
 from database import get_supabase
 from services.japanese_data import mlb_photo_url, player_name_ja, team_name_ja
+from services.baseball_savant import fetch_statcast_aggregated
 from services.mlb_api import (
     detect_japanese_player_games,
     fetch_japanese_players,
@@ -277,3 +278,61 @@ async def sync_live(
         updated_count += 1
 
     return {"updated": updated_count}
+
+
+# ---------------------------------------------------------------------------
+# POST /internal/sync/statcast
+# ---------------------------------------------------------------------------
+
+
+@router.post("/sync/statcast")
+async def sync_statcast(
+    request: Request,
+    _: None = Depends(_verify_internal_key),
+    supabase: Client = Depends(get_supabase),
+) -> dict[str, Any]:
+    """Sync Statcast aggregated data for all Japanese batters from Baseball Savant.
+
+    Fetches CSV data sequentially (not concurrent) to avoid rate-limiting.
+    Adds a 1-second delay between players to be polite to Baseball Savant.
+    Updates player_analytics table. Run weekly.
+    """
+    import asyncio
+
+    season: int = datetime.datetime.now(JST).year
+
+    jp_response = (
+        supabase.table("players")
+        .select("id")
+        .eq("is_japanese", True)
+        .execute()
+    )
+    player_ids: list[str] = [row["id"] for row in (jp_response.data or [])]
+
+    if not player_ids:
+        return {"synced": 0, "failed": 0, "message": "No Japanese players in DB."}
+
+    synced = 0
+    failed = 0
+
+    for player_id in player_ids:
+        statcast: dict[str, Any] = await fetch_statcast_aggregated(player_id, season)
+
+        if not statcast:
+            failed += 1
+        else:
+            supabase.table("player_analytics").upsert(
+                {
+                    "player_id": player_id,
+                    "season": season,
+                    "data": statcast,
+                    "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                },
+                on_conflict="player_id,season",
+            ).execute()
+            synced += 1
+
+        # Polite delay between requests to avoid rate-limiting Baseball Savant.
+        await asyncio.sleep(1)
+
+    return {"synced": synced, "failed": failed}

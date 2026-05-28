@@ -289,6 +289,132 @@ async def fetch_live_game(game_pk: str) -> dict[str, Any]:
     }
 
 
+async def fetch_player_splits(
+    player_id: str, season: int
+) -> dict[str, Any]:
+    """Fetch hitting splits (vs LHP/RHP, Home/Away, Day/Night).
+
+    Calls GET /people/{id}/stats?stats=splits&group=hitting&season={year}
+    &sitCodes=vl,vr,h,a,d,n
+
+    Returns a dict with keys: vs_left, vs_right, home, away, day, night.
+    Each value is {"pa": int, "avg": float|None, "ops": float|None,
+    "hr": int|None} or None when data is absent.
+    """
+    _SITCODE_MAP: dict[str, str] = {
+        "vl": "vs_left",
+        "vr": "vs_right",
+        "h": "home",
+        "a": "away",
+        "d": "day",
+        "n": "night",
+    }
+
+    try:
+        response = await _client.get(
+            f"/people/{player_id}/stats",
+            params={
+                "stats": "splits",
+                "group": "hitting",
+                "season": season,
+                "sitCodes": "vl,vr,h,a,d,n",
+            },
+        )
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        logger.error(
+            "fetch_player_splits player_id=%s season=%d failed: %s",
+            player_id,
+            season,
+            exc,
+        )
+        return {}
+
+    data: dict[str, Any] = response.json()
+    stats_list: list[dict[str, Any]] = data.get("stats", [])
+    if not stats_list:
+        return {}
+
+    splits: list[dict[str, Any]] = stats_list[0].get("splits", [])
+
+    result: dict[str, Any] = {}
+    for split in splits:
+        code: str = split.get("split", {}).get("code", "")
+        key = _SITCODE_MAP.get(code)
+        if key is None:
+            continue
+
+        stat: dict[str, Any] = split.get("stat", {})
+        avg_raw: str = stat.get("avg", "")
+        ops_raw: str = stat.get("ops", "")
+        result[key] = {
+            "pa": stat.get("plateAppearances"),
+            "avg": float(avg_raw) if avg_raw else None,
+            "ops": float(ops_raw) if ops_raw else None,
+            "hr": stat.get("homeRuns"),
+        }
+
+    # Fill missing keys with None.
+    for key in _SITCODE_MAP.values():
+        result.setdefault(key, None)
+
+    return result
+
+
+async def fetch_player_monthly(
+    player_id: str, season: int, group: str = "hitting"
+) -> list[dict[str, Any]]:
+    """Fetch monthly hitting stats.
+
+    Calls GET /people/{id}/stats?stats=byMonth&group={group}&season={year}
+
+    Returns a list of dicts sorted by month:
+        {"month": int, "avg": float|None, "ops": float|None,
+         "hr": int|None, "games": int|None}
+    """
+    try:
+        response = await _client.get(
+            f"/people/{player_id}/stats",
+            params={"stats": "byMonth", "group": group, "season": season},
+        )
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        logger.error(
+            "fetch_player_monthly player_id=%s season=%d group=%s failed: %s",
+            player_id,
+            season,
+            group,
+            exc,
+        )
+        return []
+
+    data: dict[str, Any] = response.json()
+    stats_list: list[dict[str, Any]] = data.get("stats", [])
+    if not stats_list:
+        return []
+
+    splits: list[dict[str, Any]] = stats_list[0].get("splits", [])
+    monthly: list[dict[str, Any]] = []
+    for split in splits:
+        month_raw: str = split.get("month", "")
+        stat: dict[str, Any] = split.get("stat", {})
+        avg_raw: str = stat.get("avg", "")
+        ops_raw: str = stat.get("ops", "")
+        monthly.append(
+            {
+                "month": int(month_raw) if month_raw else None,
+                "avg": float(avg_raw) if avg_raw else None,
+                "ops": float(ops_raw) if ops_raw else None,
+                "hr": stat.get("homeRuns"),
+                "games": stat.get("gamesPlayed"),
+            }
+        )
+
+    # Sort by month, placing None-month entries last.
+    monthly.sort(key=lambda x: (x["month"] is None, x["month"]))
+    return monthly
+
+
 async def detect_japanese_player_games(
     schedule: list[dict[str, Any]],
     japanese_player_ids: set[str],

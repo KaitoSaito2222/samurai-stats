@@ -120,6 +120,64 @@ export interface PaginatedPlayers {
   has_next: boolean;
 }
 
+export interface SplitStat {
+  pa: number;
+  avg: number | null;
+  ops: number | null;
+  hr: number | null;
+}
+
+export interface MonthStat {
+  month: number;
+  avg: number | null;
+  ops: number | null;
+  hr: number | null;
+  games: number | null;
+}
+
+export interface PitchSplit {
+  pitch_type: string;
+  pitch_name_ja: string;
+  pitch_name_en: string;
+  pa: number;
+  avg: number | null;
+  whiff_rate: number | null;
+  hr: number | null;
+  k: number | null;
+}
+
+export interface ZoneStat {
+  zone: number; // 1-9
+  pa: number;
+  avg: number | null;
+}
+
+export interface StatcastStats {
+  exit_velocity_avg: number | null;
+  barrel_rate: number | null;
+  hard_hit_rate: number | null;
+  launch_angle_avg: number | null;
+  xba: number | null;
+  xslg: number | null;
+  pitch_splits: PitchSplit[];
+  zone_stats: ZoneStat[];
+}
+
+export interface PlayerAnalytics {
+  player_id: string;
+  season: number;
+  splits: {
+    vs_left: SplitStat | null;
+    vs_right: SplitStat | null;
+    home: SplitStat | null;
+    away: SplitStat | null;
+    day: SplitStat | null;
+    night: SplitStat | null;
+  } | null;
+  monthly: MonthStat[] | null;
+  statcast: StatcastStats | null;
+}
+
 // API functions
 export const getJapanesePlayers = (page = 1, limit = 20) =>
   api.get<PaginatedPlayers>("/api/players/japanese", { params: { page, limit } });
