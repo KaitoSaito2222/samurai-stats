@@ -508,6 +508,253 @@ async def detect_japanese_player_games(
     return deduped
 
 
+async def fetch_player_recent_form(
+    player_id: str,
+    season: int,
+) -> dict[str, dict[str, Any]]:
+    """Return batting stats for last 7, 14, and 30 days using byDateRange.
+
+    Keys: "7d", "14d", "30d". Each value is a stat dict or {}.
+    Uses fetch_player_period_stats internally for each window.
+    """
+    today = datetime.date.today()
+    windows: dict[str, int] = {"7d": 7, "14d": 14, "30d": 30}
+
+    import asyncio
+
+    async def _fetch_window(key: str, days: int) -> tuple[str, dict[str, Any]]:
+        start = today - datetime.timedelta(days=days)
+        result = await fetch_player_period_stats(player_id, start, today, season)
+        return key, result
+
+    pairs = await asyncio.gather(*[_fetch_window(k, d) for k, d in windows.items()])
+    return dict(pairs)
+
+
+async def fetch_player_career(player_id: str) -> list[dict[str, Any]]:
+    """Return year-by-year batting and pitching stats for a player.
+
+    Calls GET /people/{player_id}/stats?stats=yearByYear&group=hitting  (batting)
+    and   GET /people/{player_id}/stats?stats=yearByYear&group=pitching (pitching)
+    concurrently.
+
+    Returns a list of dicts with keys:
+        season, stat_type, avg, ops, home_runs, rbi, era, wins, strikeouts, whip, games
+    sorted by season ascending.
+    """
+    import asyncio
+
+    async def _fetch_year_by_year(group: str) -> list[dict[str, Any]]:
+        try:
+            response = await _client.get(
+                f"/people/{player_id}/stats",
+                params={"stats": "yearByYear", "group": group},
+            )
+            response.raise_for_status()
+        except httpx.HTTPError as exc:
+            logger.error(
+                "fetch_player_career player_id=%s group=%s failed: %s",
+                player_id,
+                group,
+                exc,
+            )
+            return []
+
+        data: dict[str, Any] = response.json()
+        stats_list: list[dict[str, Any]] = data.get("stats", [])
+        if not stats_list:
+            return []
+
+        splits: list[dict[str, Any]] = stats_list[0].get("splits", [])
+        result: list[dict[str, Any]] = []
+        for split in splits:
+            season_raw: Any = split.get("season")
+            if not season_raw:
+                continue
+            try:
+                season_int = int(season_raw)
+            except (ValueError, TypeError):
+                continue
+
+            stat: dict[str, Any] = split.get("stat") or {}
+
+            if group == "hitting":
+                avg_raw: str = stat.get("avg", "")
+                ops_raw: str = stat.get("ops", "")
+                result.append(
+                    {
+                        "season": season_int,
+                        "stat_type": "batting",
+                        "avg": float(avg_raw) if avg_raw else None,
+                        "ops": float(ops_raw) if ops_raw else None,
+                        "home_runs": stat.get("homeRuns"),
+                        "rbi": stat.get("rbi"),
+                        "games": stat.get("gamesPlayed"),
+                        "era": None,
+                        "wins": None,
+                        "strikeouts": None,
+                        "whip": None,
+                    }
+                )
+            else:
+                era_raw: str = stat.get("era", "")
+                whip_raw: str = stat.get("whip", "")
+                result.append(
+                    {
+                        "season": season_int,
+                        "stat_type": "pitching",
+                        "avg": None,
+                        "ops": None,
+                        "home_runs": None,
+                        "rbi": None,
+                        "games": stat.get("gamesPlayed"),
+                        "era": float(era_raw) if era_raw else None,
+                        "wins": stat.get("wins"),
+                        "strikeouts": stat.get("strikeOuts"),
+                        "whip": float(whip_raw) if whip_raw else None,
+                    }
+                )
+
+        return result
+
+    batting_seasons, pitching_seasons = await asyncio.gather(
+        _fetch_year_by_year("hitting"),
+        _fetch_year_by_year("pitching"),
+    )
+
+    all_seasons = batting_seasons + pitching_seasons
+    all_seasons.sort(key=lambda x: x["season"])
+    return all_seasons
+
+
+async def fetch_player_clutch_splits(
+    player_id: str, season: int
+) -> dict[str, Any]:
+    """Fetch clutch hitting splits: RISP and Late & Close.
+
+    Calls GET /people/{id}/stats?stats=splits&group=hitting&season={year}
+    &sitCodes=risp,late
+
+    Returns a dict with keys: risp, late.
+    Each value is {"pa": int, "avg": float|None, "ops": float|None,
+    "hr": int|None} or None when data is absent.
+    """
+    _SITCODE_MAP: dict[str, str] = {
+        "risp": "risp",
+        "late": "late",
+    }
+
+    try:
+        response = await _client.get(
+            f"/people/{player_id}/stats",
+            params={
+                "stats": "splits",
+                "group": "hitting",
+                "season": season,
+                "sitCodes": "risp,late",
+            },
+        )
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        logger.error(
+            "fetch_player_clutch_splits player_id=%s season=%d failed: %s",
+            player_id,
+            season,
+            exc,
+        )
+        return {}
+
+    data: dict[str, Any] = response.json()
+    stats_list: list[dict[str, Any]] = data.get("stats", [])
+    if not stats_list:
+        return {}
+
+    splits: list[dict[str, Any]] = stats_list[0].get("splits", [])
+
+    result: dict[str, Any] = {}
+    for split in splits:
+        code: str = split.get("split", {}).get("code", "")
+        key = _SITCODE_MAP.get(code)
+        if key is None:
+            continue
+
+        stat: dict[str, Any] = split.get("stat", {})
+        avg_raw: str = stat.get("avg", "")
+        ops_raw: str = stat.get("ops", "")
+        result[key] = {
+            "pa": stat.get("plateAppearances"),
+            "avg": float(avg_raw) if avg_raw else None,
+            "ops": float(ops_raw) if ops_raw else None,
+            "hr": stat.get("homeRuns"),
+        }
+
+    # Fill missing keys with None.
+    for key in _SITCODE_MAP.values():
+        result.setdefault(key, None)
+
+    return result
+
+
+async def fetch_player_game_log(
+    player_id: str, season: int
+) -> list[dict[str, Any]]:
+    """Fetch per-game hitting stats for a player.
+
+    Calls GET /people/{player_id}/stats?stats=gameLog&group=hitting&season={season}
+
+    Returns a list of dicts with keys: date, opponent, game_pk, at_bats, hits,
+    home_runs, rbi, avg sorted by date ascending.
+    """
+    try:
+        response = await _client.get(
+            f"/people/{player_id}/stats",
+            params={"stats": "gameLog", "group": "hitting", "season": season},
+        )
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        logger.error(
+            "fetch_player_game_log player_id=%s season=%d failed: %s",
+            player_id,
+            season,
+            exc,
+        )
+        return []
+
+    data: dict[str, Any] = response.json()
+    stats_list: list[dict[str, Any]] = data.get("stats", [])
+    if not stats_list:
+        return []
+
+    splits: list[dict[str, Any]] = stats_list[0].get("splits", [])
+    entries: list[dict[str, Any]] = []
+    for split in splits:
+        date_str: str = split.get("date", "")
+        opponent_info: dict[str, Any] = split.get("opponent", {})
+        opponent: str = opponent_info.get("name", "")
+        game_info: dict[str, Any] = split.get("game", {})
+        game_pk: str = str(game_info.get("gamePk", ""))
+        stat: dict[str, Any] = split.get("stat", {})
+
+        avg_raw: str = stat.get("avg", "")
+
+        entries.append(
+            {
+                "date": date_str,
+                "opponent": opponent,
+                "game_pk": game_pk,
+                "at_bats": stat.get("atBats"),
+                "hits": stat.get("hits"),
+                "home_runs": stat.get("homeRuns"),
+                "rbi": stat.get("rbi"),
+                "avg": float(avg_raw) if avg_raw else None,
+            }
+        )
+
+    # Sort by date ascending.
+    entries.sort(key=lambda x: x["date"])
+    return entries
+
+
 async def fetch_player_period_stats(
     player_id: str,
     start_date: datetime.date,

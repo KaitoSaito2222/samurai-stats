@@ -24,6 +24,8 @@ from dependencies.plan import require_pro
 from gotrue.types import User
 from schemas.players import (
     BattingStats,
+    CareerResponse,
+    CareerSeasonStat,
     PaginatedPlayers,
     PeriodComparisonResponse,
     PeriodStats,
@@ -31,10 +33,14 @@ from schemas.players import (
     PlayerDetail,
     PlayerListItem,
     PlayerStats,
+    RecentFormResponse,
+    RecentFormWindow,
 )
 from services.mlb_api import (
+    fetch_player_career,
     fetch_player_monthly,
     fetch_player_period_stats,
+    fetch_player_recent_form,
     fetch_player_splits,
 )
 
@@ -490,3 +496,120 @@ async def get_period_comparison(
         current=_build_period_stats(current_raw, current_year, current_start, current_end),
         last_year=_build_period_stats(last_raw, last_year, last_start, last_end),
     )
+
+
+# ---------------------------------------------------------------------------
+# GET /api/players/{id}/recent-form
+# ---------------------------------------------------------------------------
+
+
+@router.get("/{player_id}/recent-form", response_model=RecentFormResponse)
+@limiter.limit("60/minute")
+async def get_recent_form(
+    request: Request,
+    player_id: str,
+    supabase: Client = Depends(get_supabase),
+) -> RecentFormResponse:
+    """Return batting stats for the last 7, 14, and 30 days.
+
+    Public endpoint — no Pro gate required.
+    Uses the MLB Stats API byDateRange stat type for each window.
+    """
+    from datetime import datetime
+
+    import pytz
+
+    current_season: int = datetime.now(pytz.timezone("Asia/Tokyo")).year
+
+    # Verify the player exists.
+    player_check = (
+        supabase.table("players")
+        .select("id")
+        .eq("id", player_id)
+        .single()
+        .execute()
+    )
+    if not player_check.data:
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "NOT_FOUND", "message": "Player not found."},
+        )
+
+    windows_raw: dict[str, dict] = await fetch_player_recent_form(player_id, current_season)
+
+    _window_days: dict[str, int] = {"7d": 7, "14d": 14, "30d": 30}
+    windows: list[RecentFormWindow] = []
+    for key, days in _window_days.items():
+        raw: dict = windows_raw.get(key, {})
+        avg_val = raw.get("avg")
+        ops_val = raw.get("ops")
+        hr_val = raw.get("homeRuns")
+        rbi_val = raw.get("rbi")
+        hits_val = raw.get("hits")
+        pa_val = raw.get("plateAppearances")
+        windows.append(
+            RecentFormWindow(
+                days=days,
+                avg=float(avg_val) if avg_val is not None else None,
+                ops=float(ops_val) if ops_val is not None else None,
+                home_runs=int(hr_val) if hr_val is not None else None,
+                rbi=int(rbi_val) if rbi_val is not None else None,
+                hits=int(hits_val) if hits_val is not None else None,
+                plate_appearances=int(pa_val) if pa_val is not None else None,
+            )
+        )
+
+    return RecentFormResponse(player_id=player_id, windows=windows)
+
+
+# ---------------------------------------------------------------------------
+# GET /api/players/{id}/career
+# ---------------------------------------------------------------------------
+
+
+@router.get("/{player_id}/career", response_model=CareerResponse)
+@limiter.limit("30/minute")
+async def get_career(
+    request: Request,
+    player_id: str,
+    supabase: Client = Depends(get_supabase),
+) -> CareerResponse:
+    """Return year-by-year career stats for a player (batting and/or pitching).
+
+    Public endpoint — no Pro gate required.
+    Fetches from the MLB Stats API yearByYear stat type for both groups.
+    """
+    # Verify the player exists.
+    player_check = (
+        supabase.table("players")
+        .select("id")
+        .eq("id", player_id)
+        .single()
+        .execute()
+    )
+    if not player_check.data:
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "NOT_FOUND", "message": "Player not found."},
+        )
+
+    seasons_raw: list[dict] = await fetch_player_career(player_id)
+
+    seasons: list[CareerSeasonStat] = [
+        CareerSeasonStat(
+            season=s["season"],
+            stat_type=s["stat_type"],
+            avg=s.get("avg"),
+            ops=s.get("ops"),
+            home_runs=s.get("home_runs"),
+            rbi=s.get("rbi"),
+            era=s.get("era"),
+            wins=s.get("wins"),
+            strikeouts=s.get("strikeouts"),
+            whip=s.get("whip"),
+            games=s.get("games"),
+        )
+        for s in seasons_raw
+    ]
+
+    return CareerResponse(player_id=player_id, seasons=seasons)

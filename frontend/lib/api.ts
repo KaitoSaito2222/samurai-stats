@@ -316,4 +316,46 @@ export const getPeriodComparison = (
     },
   });
 
+// Recent form types
+export interface RecentFormWindow {
+  days: number;
+  avg: number | null;
+  ops: number | null;
+  home_runs: number | null;
+  rbi: number | null;
+  hits: number | null;
+  plate_appearances: number | null;
+}
+
+export interface RecentFormResponse {
+  player_id: string;
+  windows: RecentFormWindow[];
+}
+
+export const getRecentForm = (playerId: string) =>
+  api.get<RecentFormResponse>(`/api/players/${playerId}/recent-form`);
+
+// Career types
+export interface CareerSeasonStat {
+  season: number;
+  stat_type: string;
+  avg?: number | null;
+  ops?: number | null;
+  home_runs?: number | null;
+  rbi?: number | null;
+  era?: number | null;
+  wins?: number | null;
+  strikeouts?: number | null;
+  whip?: number | null;
+  games?: number | null;
+}
+
+export interface CareerResponse {
+  player_id: string;
+  seasons: CareerSeasonStat[];
+}
+
+export const getCareer = (playerId: string) =>
+  api.get<CareerResponse>(`/api/players/${playerId}/career`);
+
 export default api;
