@@ -1,10 +1,11 @@
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
-import { getPlayerServer, getPlayerStatsServer } from "@/lib/api-server";
+import { getPlayerServer, getPlayerStatsServer, getPlayerAnalyticsServer } from "@/lib/api-server";
 import { getUserPlan } from "@/lib/api";
 import StatsTable from "@/components/StatsTable";
 import AISummaryButton from "@/components/AISummaryButton";
-import type { Player, PlayerStats, UserPlan } from "@/lib/api";
+import AnalyticsPanel from "@/components/AnalyticsPanel";
+import type { Player, PlayerStats, UserPlan, PlayerAnalytics } from "@/lib/api";
 
 interface PlayerDetailPageProps {
   params: { locale: string; id: string };
@@ -12,23 +13,25 @@ interface PlayerDetailPageProps {
 
 async function fetchPlayerData(
   id: string
-): Promise<{ player: Player | null; stats: PlayerStats | null; userPlan: UserPlan | null }> {
-  const [playerRes, statsRes, planRes] = await Promise.allSettled([
+): Promise<{ player: Player | null; stats: PlayerStats | null; userPlan: UserPlan | null; analytics: PlayerAnalytics | null }> {
+  const [playerRes, statsRes, planRes, analyticsRes] = await Promise.allSettled([
     getPlayerServer(id),
     getPlayerStatsServer(id),
     getUserPlan(),
+    getPlayerAnalyticsServer(id),
   ]);
 
   return {
     player: playerRes.status === "fulfilled" ? playerRes.value.data : null,
     stats: statsRes.status === "fulfilled" ? statsRes.value.data : null,
     userPlan: planRes.status === "fulfilled" ? planRes.value.data : null,
+    analytics: analyticsRes.status === "fulfilled" ? analyticsRes.value.data : null,
   };
 }
 
 export default async function PlayerDetailPage({ params: { locale, id } }: PlayerDetailPageProps) {
   const t = await getTranslations("player");
-  const { player, stats, userPlan } = await fetchPlayerData(id);
+  const { player, stats, userPlan, analytics } = await fetchPlayerData(id);
 
   if (!player) {
     const tErrors = await getTranslations("errors");
@@ -100,6 +103,16 @@ export default async function PlayerDetailPage({ params: { locale, id } }: Playe
           aiUsageToday={userPlan?.aiUsageToday ?? 0}
           aiDailyLimit={userPlan?.aiDailyLimit ?? 3}
           remainingAi={remainingAi}
+        />
+      </div>
+
+      {/* Analytics */}
+      <div className="bg-surface-card rounded-xl border border-surface-border p-6">
+        <h2 className="text-lg font-bold text-white mb-4">{t("analytics")}</h2>
+        <AnalyticsPanel
+          analytics={analytics}
+          userPlan={userPlan?.plan ?? "free"}
+          locale={locale}
         />
       </div>
     </div>
