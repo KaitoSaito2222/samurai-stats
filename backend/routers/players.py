@@ -8,24 +8,35 @@ so FastAPI does not match those literal path segments as player IDs.
 from __future__ import annotations
 
 import asyncio
+import datetime
 import time
 from typing import Any
 
+import pytz
 from fastapi import APIRouter, Depends, HTTPException, Request
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from supabase import Client
 
 from database import get_supabase
+from dependencies.auth import get_current_user
+from dependencies.plan import require_pro
+from gotrue.types import User
 from schemas.players import (
     BattingStats,
     PaginatedPlayers,
+    PeriodComparisonResponse,
+    PeriodStats,
     PitchingStats,
     PlayerDetail,
     PlayerListItem,
     PlayerStats,
 )
-from services.mlb_api import fetch_player_monthly, fetch_player_splits
+from services.mlb_api import (
+    fetch_player_monthly,
+    fetch_player_period_stats,
+    fetch_player_splits,
+)
 
 limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/players", tags=["players"])
@@ -364,3 +375,118 @@ async def get_player_analytics(
     _analytics_cache[cache_key] = (response_payload, time.monotonic() + _CACHE_TTL)
 
     return response_payload
+
+
+# ---------------------------------------------------------------------------
+# GET /api/players/{id}/period-comparison
+# ---------------------------------------------------------------------------
+
+_JST = pytz.timezone("Asia/Tokyo")
+
+
+@router.get("/{player_id}/period-comparison", response_model=PeriodComparisonResponse)
+@limiter.limit("60/minute")
+async def get_period_comparison(
+    request: Request,
+    player_id: str,
+    start: str | None = None,
+    end: str | None = None,
+    user: User = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase),
+) -> PeriodComparisonResponse:
+    """Return hitting stats for a player comparing the current year vs same period last year.
+
+    Query params:
+        start (str, optional): Period start in MM-DD format, e.g. "04-01". Defaults to April 1.
+        end   (str, optional): Period end in MM-DD format, e.g. "05-28". Defaults to today JST.
+
+    Pro only. Fetches both years concurrently from the MLB Stats API byDateRange endpoint.
+    """
+    # Pro gate — raises 403 if user is free.
+    require_pro(user, supabase)
+
+    today_jst: datetime.date = datetime.datetime.now(_JST).date()
+    current_year: int = today_jst.year
+
+    # Parse start date (MM-DD → month, day).
+    if start:
+        try:
+            start_parsed = datetime.datetime.strptime(start, "%m-%d").date()
+            start_month, start_day = start_parsed.month, start_parsed.day
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "code": "INVALID_REQUEST",
+                    "message": "start must be in MM-DD format, e.g. '04-01'.",
+                },
+            )
+    else:
+        # Default: April 1 of current year.
+        start_month, start_day = 4, 1
+
+    # Parse end date (MM-DD → month, day).
+    if end:
+        try:
+            end_parsed = datetime.datetime.strptime(end, "%m-%d").date()
+            end_month, end_day = end_parsed.month, end_parsed.day
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "code": "INVALID_REQUEST",
+                    "message": "end must be in MM-DD format, e.g. '05-28'.",
+                },
+            )
+    else:
+        # Default: today in JST, clamped to today.
+        end_month, end_day = today_jst.month, today_jst.day
+
+    # Build date objects for current year and last year.
+    current_start = datetime.date(current_year, start_month, start_day)
+    current_end = datetime.date(current_year, end_month, end_day)
+    # Clamp current end to today so we don't query future dates.
+    if current_end > today_jst:
+        current_end = today_jst
+
+    last_year = current_year - 1
+    last_start = datetime.date(last_year, start_month, start_day)
+    last_end = datetime.date(last_year, end_month, end_day)
+
+    # Fetch both periods concurrently.
+    current_raw, last_raw = await asyncio.gather(
+        fetch_player_period_stats(player_id, current_start, current_end, current_year),
+        fetch_player_period_stats(player_id, last_start, last_end, last_year),
+    )
+
+    def _build_period_stats(
+        raw: dict[str, Any],
+        season: int,
+        period_start: datetime.date,
+        period_end: datetime.date,
+    ) -> PeriodStats:
+        """Coerce raw MLB API stat dict into a PeriodStats schema."""
+        avg_val = raw.get("avg")
+        ops_val = raw.get("ops")
+        hr_val = raw.get("homeRuns")
+        rbi_val = raw.get("rbi")
+        hits_val = raw.get("hits")
+        pa_val = raw.get("plateAppearances")
+
+        return PeriodStats(
+            season=season,
+            start_date=period_start.isoformat(),
+            end_date=period_end.isoformat(),
+            avg=float(avg_val) if avg_val is not None else None,
+            ops=float(ops_val) if ops_val is not None else None,
+            home_runs=int(hr_val) if hr_val is not None else None,
+            rbi=int(rbi_val) if rbi_val is not None else None,
+            hits=int(hits_val) if hits_val is not None else None,
+            plate_appearances=int(pa_val) if pa_val is not None else None,
+        )
+
+    return PeriodComparisonResponse(
+        player_id=player_id,
+        current=_build_period_stats(current_raw, current_year, current_start, current_end),
+        last_year=_build_period_stats(last_raw, last_year, last_start, last_end),
+    )

@@ -54,3 +54,21 @@ class PaginatedPlayers(BaseModel):
     page: int
     limit: int
     has_next: bool
+
+
+class PeriodStats(BaseModel):
+    season: int
+    start_date: str  # YYYY-MM-DD
+    end_date: str  # YYYY-MM-DD
+    avg: float | None
+    ops: float | None
+    home_runs: int | None
+    rbi: int | None
+    hits: int | None
+    plate_appearances: int | None
+
+
+class PeriodComparisonResponse(BaseModel):
+    player_id: str
+    current: PeriodStats
+    last_year: PeriodStats

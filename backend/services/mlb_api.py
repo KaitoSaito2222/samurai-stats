@@ -6,6 +6,7 @@ Base URL: https://statsapi.mlb.com/api/v1/
 No authentication is required.
 """
 
+import datetime
 import logging
 from typing import Any
 
@@ -505,3 +506,69 @@ async def detect_japanese_player_games(
             deduped.append(pair)
 
     return deduped
+
+
+async def fetch_player_period_stats(
+    player_id: str,
+    start_date: datetime.date,
+    end_date: datetime.date,
+    season: int,
+) -> dict[str, Any]:
+    """Fetch hitting stats for a player over a date range via MLB Stats API byDateRange.
+
+    Calls GET /people/{player_id}/stats?stats=byDateRange&group=hitting
+        &startDate=YYYY-MM-DD&endDate=YYYY-MM-DD&season={season}
+
+    Returns the first split's stat dict, or {} if no data is available.
+    Stat values (avg, ops) are returned as strings by the API and coerced to float.
+    """
+    start_str: str = start_date.isoformat()
+    end_str: str = end_date.isoformat()
+
+    try:
+        response = await _client.get(
+            f"/people/{player_id}/stats",
+            params={
+                "stats": "byDateRange",
+                "group": "hitting",
+                "startDate": start_str,
+                "endDate": end_str,
+                "season": season,
+            },
+        )
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        logger.error(
+            "fetch_player_period_stats player_id=%s season=%d start=%s end=%s failed: %s",
+            player_id,
+            season,
+            start_str,
+            end_str,
+            exc,
+        )
+        return {}
+
+    data: dict[str, Any] = response.json()
+    stats_list: list[dict[str, Any]] = data.get("stats", [])
+    if not stats_list:
+        return {}
+
+    splits: list[dict[str, Any]] = stats_list[0].get("splits", [])
+    if not splits:
+        return {}
+
+    stat: dict[str, Any] = splits[0].get("stat", {})
+
+    # avg and ops come back as strings (".342") — coerce to float.
+    avg_raw: str = stat.get("avg", "")
+    ops_raw: str = stat.get("ops", "")
+
+    return {
+        "avg": float(avg_raw) if avg_raw else None,
+        "ops": float(ops_raw) if ops_raw else None,
+        "homeRuns": stat.get("homeRuns"),
+        "rbi": stat.get("rbi"),
+        "hits": stat.get("hits"),
+        "atBats": stat.get("atBats"),
+        "plateAppearances": stat.get("plateAppearances"),
+    }
