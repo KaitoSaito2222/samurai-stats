@@ -59,7 +59,9 @@
     "pitchType": "球種",
     "whiffRate": "空振り率",
     "noStatcastData": "Statcastデータはまだ同期されていません",
-    "analyticsProOnly": "詳細分析はPro会員限定です"
+    "analyticsProOnly": "詳細分析はPro会員限定です",
+    "splitsNoData": "データなし",
+    "splitsHeader": "状況"
   },
   "games": {
     "live": "試合中",

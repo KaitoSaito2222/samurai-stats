@@ -59,7 +59,9 @@
     "pitchType": "Pitch Type",
     "whiffRate": "Whiff%",
     "noStatcastData": "Statcast data not yet synced",
-    "analyticsProOnly": "Advanced stats are Pro only"
+    "analyticsProOnly": "Advanced stats are Pro only",
+    "splitsNoData": "No data",
+    "splitsHeader": "Situation"
   },
   "games": {
     "live": "Live",
