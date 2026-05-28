@@ -26,6 +26,9 @@ from schemas.players import (
     BattingStats,
     CareerResponse,
     CareerSeasonStat,
+    ClutchSplits,
+    GameLogEntry,
+    GameLogResponse,
     PaginatedPlayers,
     PeriodComparisonResponse,
     PeriodStats,
@@ -35,9 +38,12 @@ from schemas.players import (
     PlayerStats,
     RecentFormResponse,
     RecentFormWindow,
+    SplitStat,
 )
 from services.mlb_api import (
     fetch_player_career,
+    fetch_player_clutch_splits,
+    fetch_player_game_log,
     fetch_player_monthly,
     fetch_player_period_stats,
     fetch_player_recent_form,
@@ -347,14 +353,25 @@ async def get_player_analytics(
         if time.monotonic() < expires_at:
             return payload
 
-    # Fetch splits and monthly stats concurrently from the MLB Stats API.
-    splits_raw, monthly_raw = await asyncio.gather(
+    # Fetch splits, clutch splits, and monthly stats concurrently from the MLB Stats API.
+    splits_raw, clutch_raw, monthly_raw = await asyncio.gather(
         fetch_player_splits(player_id, season),
+        fetch_player_clutch_splits(player_id, season),
         fetch_player_monthly(player_id, season),
     )
 
     splits: dict[str, Any] | None = splits_raw if splits_raw else None
     monthly: list[dict[str, Any]] | None = monthly_raw if monthly_raw else None
+
+    # Build ClutchSplits model from raw dict.
+    clutch: ClutchSplits | None = None
+    if clutch_raw:
+        risp_raw: dict[str, Any] | None = clutch_raw.get("risp")
+        late_raw: dict[str, Any] | None = clutch_raw.get("late")
+        clutch = ClutchSplits(
+            risp=SplitStat(**risp_raw) if risp_raw else None,
+            late=SplitStat(**late_raw) if late_raw else None,
+        )
 
     # Fetch Statcast from the player_analytics DB table.
     analytics_result = (
@@ -373,6 +390,7 @@ async def get_player_analytics(
         "player_id": player_id,
         "season": season,
         "splits": splits,
+        "clutch": clutch.model_dump() if clutch else None,
         "monthly": monthly,
         "statcast": statcast,
     }
@@ -560,6 +578,65 @@ async def get_recent_form(
         )
 
     return RecentFormResponse(player_id=player_id, windows=windows)
+
+
+# ---------------------------------------------------------------------------
+# GET /api/players/{id}/game-logs
+# ---------------------------------------------------------------------------
+
+
+@router.get("/{player_id}/game-logs", response_model=GameLogResponse)
+@limiter.limit("30/minute")
+async def get_game_logs(
+    request: Request,
+    player_id: str,
+    season: int | None = None,
+    supabase: Client = Depends(get_supabase),
+) -> GameLogResponse:
+    """Return per-game hitting stats for a player for the given season.
+
+    Public endpoint — no Pro gate needed (basic stats).
+    Query params:
+        season (int, optional): MLB season year. Defaults to current JST year.
+    """
+    from datetime import datetime
+
+    import pytz
+
+    if season is None:
+        season = datetime.now(pytz.timezone("Asia/Tokyo")).year
+
+    # Verify the player exists.
+    player_check = (
+        supabase.table("players")
+        .select("id")
+        .eq("id", player_id)
+        .single()
+        .execute()
+    )
+    if not player_check.data:
+        raise HTTPException(
+            status_code=404,
+            detail={"code": "NOT_FOUND", "message": "Player not found."},
+        )
+
+    entries_raw: list[dict[str, Any]] = await fetch_player_game_log(player_id, season)
+
+    entries: list[GameLogEntry] = [
+        GameLogEntry(
+            date=e["date"],
+            opponent=e["opponent"],
+            game_pk=e["game_pk"],
+            at_bats=e.get("at_bats"),
+            hits=e.get("hits"),
+            home_runs=e.get("home_runs"),
+            rbi=e.get("rbi"),
+            avg=e.get("avg"),
+        )
+        for e in entries_raw
+    ]
+
+    return GameLogResponse(player_id=player_id, season=season, entries=entries)
 
 
 # ---------------------------------------------------------------------------

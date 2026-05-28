@@ -108,6 +108,26 @@ class CareerResponse(BaseModel):
     seasons: list[CareerSeasonStat]
 
 
+class VelocityDataPoint(BaseModel):
+    month: int
+    pitch_type: str
+    pitch_name_ja: str
+    pitch_name_en: str
+    avg_velocity: float
+
+
+class StatcastStats(BaseModel):
+    exit_velocity_avg: float | None = None
+    barrel_rate: float | None = None
+    hard_hit_rate: float | None = None
+    launch_angle_avg: float | None = None
+    xba: float | None = None
+    xslg: float | None = None
+    pitch_splits: list[dict] = []
+    zone_stats: list[dict] = []
+    velocity_by_month: list[VelocityDataPoint] = []
+
+
 class SplitStat(BaseModel):
     pa: int | None = None
     avg: float | None = None

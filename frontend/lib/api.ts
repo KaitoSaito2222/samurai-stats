@@ -160,6 +160,14 @@ export interface ZoneStat {
   avg: number | null;
 }
 
+export interface VelocityDataPoint {
+  month: number;
+  pitch_type: string;
+  pitch_name_ja: string;
+  pitch_name_en: string;
+  avg_velocity: number;
+}
+
 export interface StatcastStats {
   exit_velocity_avg: number | null;
   barrel_rate: number | null;
@@ -169,6 +177,7 @@ export interface StatcastStats {
   xslg: number | null;
   pitch_splits: PitchSplit[];
   zone_stats: ZoneStat[];
+  velocity_by_month?: VelocityDataPoint[];
 }
 
 export interface PlayerAnalytics {
@@ -182,8 +191,26 @@ export interface PlayerAnalytics {
     day: SplitStat | null;
     night: SplitStat | null;
   } | null;
+  clutch?: { risp: SplitStat | null; late: SplitStat | null } | null;
   monthly: MonthStat[] | null;
   statcast: StatcastStats | null;
+}
+
+export interface GameLogEntry {
+  date: string;
+  opponent: string;
+  game_pk: string;
+  at_bats: number | null;
+  hits: number | null;
+  home_runs: number | null;
+  rbi: number | null;
+  avg: number | null;
+}
+
+export interface GameLogResponse {
+  player_id: string;
+  season: number;
+  entries: GameLogEntry[];
 }
 
 // API functions
@@ -357,5 +384,10 @@ export interface CareerResponse {
 
 export const getCareer = (playerId: string) =>
   api.get<CareerResponse>(`/api/players/${playerId}/career`);
+
+export const getGameLogs = (playerId: string, season?: number) =>
+  api.get<GameLogResponse>(`/api/players/${playerId}/game-logs`, {
+    params: season ? { season } : {},
+  });
 
 export default api;

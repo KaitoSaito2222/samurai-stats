@@ -66,7 +66,16 @@
     "periodLabel": "{start}〜{end}",
     "currentYear": "{year}年",
     "lastYear": "昨年同期",
-    "noPeriodData": "この期間のデータがありません"
+    "noPeriodData": "この期間のデータがありません",
+    "recent": "直近の調子",
+    "career": "通算成績",
+    "last7d": "直近7日",
+    "last14d": "直近14日",
+    "last30d": "直近30日",
+    "hot": "好調🔥",
+    "cold": "低調",
+    "careerNoData": "通算データがありません",
+    "recentNoData": "この期間のデータがありません"
   },
   "games": {
     "live": "試合中",

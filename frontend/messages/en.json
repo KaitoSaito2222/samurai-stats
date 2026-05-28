@@ -66,7 +66,16 @@
     "periodLabel": "{start}–{end}",
     "currentYear": "{year}",
     "lastYear": "Same period last year",
-    "noPeriodData": "No data for this period"
+    "noPeriodData": "No data for this period",
+    "recent": "Recent Form",
+    "career": "Career",
+    "last7d": "Last 7 Days",
+    "last14d": "Last 14 Days",
+    "last30d": "Last 30 Days",
+    "hot": "Hot 🔥",
+    "cold": "Cold",
+    "careerNoData": "No career data",
+    "recentNoData": "No data for this period"
   },
   "games": {
     "live": "Live",

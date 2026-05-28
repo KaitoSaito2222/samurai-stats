@@ -7,6 +7,8 @@ import SplitsTab from "./analytics/SplitsTab";
 import MonthlyTab from "./analytics/MonthlyTab";
 import StatcastTab from "./analytics/StatcastTab";
 import PeriodTab from "./analytics/PeriodTab";
+import RecentFormTab from "./analytics/RecentFormTab";
+import CareerTab from "./analytics/CareerTab";
 
 interface AnalyticsPanelProps {
   analytics: PlayerAnalytics | null;
@@ -15,7 +17,7 @@ interface AnalyticsPanelProps {
   playerId: string;
 }
 
-type TabKey = "splits" | "monthly" | "statcast" | "period";
+type TabKey = "splits" | "monthly" | "statcast" | "period" | "recent" | "career";
 
 export default function AnalyticsPanel({
   analytics,
@@ -32,6 +34,8 @@ export default function AnalyticsPanel({
     { key: "monthly", label: t("monthly") },
     { key: "statcast", label: t("statcast") },
     { key: "period", label: t("period") },
+    { key: "recent", label: t("recent") },
+    { key: "career", label: t("career") },
   ];
 
   const content = (
@@ -69,6 +73,12 @@ export default function AnalyticsPanel({
         )}
         {activeTab === "period" && (
           <PeriodTab playerId={playerId} locale={locale} />
+        )}
+        {activeTab === "recent" && (
+          <RecentFormTab playerId={playerId} />
+        )}
+        {activeTab === "career" && (
+          <CareerTab playerId={playerId} />
         )}
       </div>
     </div>
