@@ -105,7 +105,8 @@
     "noAccount": "アカウントをお持ちでない方",
     "createAccount": "新規登録はこちら",
     "loginHere": "ログインはこちら",
-    "signupTitle": "新規登録"
+    "signupTitle": "新規登録",
+    "checkEmail": "確認メールを送信しました。メールをご確認ください。"
   },
   "billing": {
     "freeBadge": "無料",

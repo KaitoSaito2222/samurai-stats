@@ -67,6 +67,7 @@ export default function SignupPage({ params: { locale } }: SignupPageProps) {
                   password_label: tAuth("password"),
                   button_label: tAuth("signupButton"),
                   link_text: tAuth("noAccount"),
+                  confirmation_text: tAuth("checkEmail"),
                 },
               },
             }}

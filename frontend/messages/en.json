@@ -105,7 +105,8 @@
     "noAccount": "Don't have an account? Sign up",
     "createAccount": "Create an account",
     "loginHere": "Already have an account? Login",
-    "signupTitle": "Sign Up"
+    "signupTitle": "Sign Up",
+    "checkEmail": "Check your email to confirm your account."
   },
   "billing": {
     "freeBadge": "Free",

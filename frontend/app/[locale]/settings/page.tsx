@@ -1,11 +1,35 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
+import { redirect } from "next/navigation";
 
 interface SettingsPageProps {
   params: { locale: string };
 }
 
 export default async function SettingsPage({ params: { locale } }: SettingsPageProps) {
+  // Double-check auth server-side (middleware is the primary gate)
+  const cookieStore = cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll() {
+          // read-only in RSC — no-op
+        },
+      },
+    }
+  );
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    redirect(`/${locale}/login?redirectTo=/${locale}/settings`);
+  }
+
   const t = await getTranslations("pages.settings");
   const tPlan = await getTranslations("plan");
   const tBilling = await getTranslations("billing");
@@ -16,7 +40,12 @@ export default async function SettingsPage({ params: { locale } }: SettingsPageP
 
       {/* Plan section */}
       <div className="bg-surface-card border border-surface-border rounded-xl p-6 shadow-sm space-y-4">
-        <h2 className="text-lg font-bold text-slate-900">{tPlan("free")}</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-lg font-bold text-slate-900">{tPlan("free")}</h2>
+          <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-slate-200 text-slate-600">
+            {tBilling("freeBadge")}
+          </span>
+        </div>
         <p className="text-sm text-slate-500">{t("planDescription")}</p>
         <Link
           href={`/${locale}/billing`}

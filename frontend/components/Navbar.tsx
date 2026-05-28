@@ -47,6 +47,7 @@ export default function Navbar({ locale }: NavbarProps) {
     { href: `/${locale}`, label: t("home") },
     { href: `/${locale}/players`, label: t("players") },
     { href: `/${locale}/rankings`, label: t("rankings") },
+    { href: `/${locale}/games`, label: t("games") },
   ];
 
   if (session) {

@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { StatcastStats, PitchSplit } from "@/lib/api";
 import ZoneHeatmap from "./ZoneHeatmap";
+import StatTooltip from "@/components/StatTooltip";
 
 interface StatcastTabProps {
   statcast: StatcastStats | null;
@@ -31,13 +32,17 @@ function fmtDeg(v: number | null): string {
 
 interface MetricCardProps {
   label: string;
+  term: string;
   value: string;
+  locale: string;
 }
 
-function MetricCard({ label, value }: MetricCardProps) {
+function MetricCard({ label, term, value, locale }: MetricCardProps) {
   return (
     <div className="bg-surface-card rounded-lg border border-surface-border p-3 flex flex-col gap-1 min-w-[100px] shadow-sm">
-      <span className="text-xs text-slate-500 uppercase tracking-wide">{label}</span>
+      <span className="text-xs text-slate-500 uppercase tracking-wide">
+        <StatTooltip term={term} locale={locale}>{label}</StatTooltip>
+      </span>
       <span className="text-lg font-bold text-slate-900 tabular-nums">{value}</span>
     </div>
   );
@@ -80,12 +85,48 @@ export default function StatcastTab({ statcast, locale }: StatcastTabProps) {
 
   return (
     <div className="space-y-6">
-      {/* Metric cards */}
+      {/* Metric cards — row 1 */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <MetricCard label={t("exitVelocity")} value={fmtMph(statcast.exit_velocity_avg)} />
-        <MetricCard label={t("barrelRate")} value={fmtPct(statcast.barrel_rate)} />
-        <MetricCard label={t("hardHitRate")} value={fmtPct(statcast.hard_hit_rate)} />
-        <MetricCard label={t("xba")} value={fmtAvg(statcast.xba)} />
+        <MetricCard
+          term="exit-velocity"
+          label={t("exitVelocity")}
+          value={fmtMph(statcast.exit_velocity_avg)}
+          locale={locale}
+        />
+        <MetricCard
+          term="barrel-rate"
+          label={t("barrelRate")}
+          value={fmtPct(statcast.barrel_rate)}
+          locale={locale}
+        />
+        <MetricCard
+          term="hard-hit"
+          label={t("hardHitRate")}
+          value={fmtPct(statcast.hard_hit_rate)}
+          locale={locale}
+        />
+        <MetricCard
+          term="launch-angle"
+          label={t("launchAngle")}
+          value={fmtDeg(statcast.launch_angle_avg)}
+          locale={locale}
+        />
+      </div>
+
+      {/* Metric cards — row 2 */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <MetricCard
+          term="xba"
+          label={t("xba")}
+          value={fmtAvg(statcast.xba)}
+          locale={locale}
+        />
+        <MetricCard
+          term="xslg"
+          label={t("xslg")}
+          value={fmtAvg(statcast.xslg)}
+          locale={locale}
+        />
       </div>
 
       {/* Pitch splits table */}
