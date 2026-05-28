@@ -232,7 +232,7 @@ export interface Rankings {
 }
 
 // Game detail types
-export interface GameDetail extends Game {
+export interface GameDetail extends Omit<Game, "japanese_players"> {
   japanese_players?: {
     player_id: string;
     name_en: string;
