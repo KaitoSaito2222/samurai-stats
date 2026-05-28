@@ -285,4 +285,35 @@ export const createCheckout = () =>
 export const createPortal = () =>
   api.get<{ url: string }>("/api/billing/portal");
 
+// Period comparison types
+export interface PeriodStats {
+  season: number;
+  start_date: string;
+  end_date: string;
+  avg: number | null;
+  ops: number | null;
+  home_runs: number | null;
+  rbi: number | null;
+  hits: number | null;
+  plate_appearances: number | null;
+}
+
+export interface PeriodComparison {
+  player_id: string;
+  current: PeriodStats;
+  last_year: PeriodStats;
+}
+
+export const getPeriodComparison = (
+  playerId: string,
+  start?: string,
+  end?: string
+) =>
+  api.get<PeriodComparison>(`/api/players/${playerId}/period-comparison`, {
+    params: {
+      ...(start ? { start } : {}),
+      ...(end ? { end } : {}),
+    },
+  });
+
 export default api;

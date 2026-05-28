@@ -116,6 +116,7 @@ export default async function PlayerDetailPage({ params: { locale, id } }: Playe
           analytics={analytics}
           userPlan={userPlan?.plan ?? "free"}
           locale={locale}
+          playerId={id}
         />
       </div>
 

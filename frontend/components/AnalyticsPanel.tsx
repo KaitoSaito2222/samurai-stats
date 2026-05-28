@@ -6,19 +6,22 @@ import type { PlayerAnalytics } from "@/lib/api";
 import SplitsTab from "./analytics/SplitsTab";
 import MonthlyTab from "./analytics/MonthlyTab";
 import StatcastTab from "./analytics/StatcastTab";
+import PeriodTab from "./analytics/PeriodTab";
 
 interface AnalyticsPanelProps {
   analytics: PlayerAnalytics | null;
   userPlan: "free" | "pro";
   locale: string;
+  playerId: string;
 }
 
-type TabKey = "splits" | "monthly" | "statcast";
+type TabKey = "splits" | "monthly" | "statcast" | "period";
 
 export default function AnalyticsPanel({
   analytics,
   userPlan,
   locale,
+  playerId,
 }: AnalyticsPanelProps) {
   const t = useTranslations("player");
   const tPlan = useTranslations("plan");
@@ -28,12 +31,13 @@ export default function AnalyticsPanel({
     { key: "splits", label: t("splits") },
     { key: "monthly", label: t("monthly") },
     { key: "statcast", label: t("statcast") },
+    { key: "period", label: t("period") },
   ];
 
   const content = (
     <div>
       {/* Tab bar */}
-      <div className="flex bg-slate-50 rounded-t-lg border-b border-surface-border mb-4" role="tablist">
+      <div className="flex flex-wrap bg-slate-50 rounded-t-lg border-b border-surface-border mb-4" role="tablist">
         {tabs.map((tab) => (
           <button
             key={tab.key}
@@ -62,6 +66,9 @@ export default function AnalyticsPanel({
         )}
         {activeTab === "statcast" && (
           <StatcastTab statcast={analytics?.statcast ?? null} locale={locale} />
+        )}
+        {activeTab === "period" && (
+          <PeriodTab playerId={playerId} locale={locale} />
         )}
       </div>
     </div>

@@ -61,7 +61,12 @@
     "noStatcastData": "Statcastデータはまだ同期されていません",
     "analyticsProOnly": "詳細分析はPro会員限定です",
     "splitsNoData": "データなし",
-    "splitsHeader": "状況"
+    "splitsHeader": "状況",
+    "period": "同期間比較",
+    "periodLabel": "{start}〜{end}",
+    "currentYear": "{year}年",
+    "lastYear": "昨年同期",
+    "noPeriodData": "この期間のデータがありません"
   },
   "games": {
     "live": "試合中",

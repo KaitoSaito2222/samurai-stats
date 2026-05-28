@@ -61,7 +61,12 @@
     "noStatcastData": "Statcast data not yet synced",
     "analyticsProOnly": "Advanced stats are Pro only",
     "splitsNoData": "No data",
-    "splitsHeader": "Situation"
+    "splitsHeader": "Situation",
+    "period": "Period Comparison",
+    "periodLabel": "{start}–{end}",
+    "currentYear": "{year}",
+    "lastYear": "Same period last year",
+    "noPeriodData": "No data for this period"
   },
   "games": {
     "live": "Live",
