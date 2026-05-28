@@ -107,11 +107,41 @@ curl -X POST http://localhost:8000/internal/sync/schedule \
 
 Then refresh the home page — today's games with Japanese players appear.
 
+### Stats sync (required for Rankings page)
+```bash
+curl -X POST http://localhost:8000/internal/sync/stats \
+  -H "X-Internal-API-Key: local-internal-key"
+```
+
+Then open http://localhost:3000/ja/rankings — batting (OPS) and pitching (ERA) rankings appear.
+
+### Statcast analytics (zone heatmap, barrel rate, etc.)
+Takes ~1 second per player. Run after `sync/players`:
+```bash
+curl -X POST http://localhost:8000/internal/sync/statcast \
+  -H "X-Internal-API-Key: local-internal-key"
+```
+
+Then navigate to any player detail page → **詳細分析** tab → Statcast data and zone heatmap.
+
 ### AI summary
 1. Sign up at http://localhost:3000/signup
 2. Navigate to any player detail page
 3. Click **Generate AI Summary** (requires `GEMINI_API_KEY` in `.env.local`)
 4. Free users get 3 summaries per day (JST)
+
+### AI chat (Pro only)
+1. Sign up and upgrade to Pro (or manually set `plan = 'pro'` in the DB: `make shell-db` → `UPDATE users SET plan='pro' WHERE email='you@example.com';`)
+2. Navigate to any player detail page → **AIチャット** section
+3. Requires `ANTHROPIC_API_KEY` in `.env.local`
+
+### MLB player search
+Open http://localhost:3000/ja/search (auth required) → type a player name → results from the full MLB roster appear.
+
+### Billing page
+Open http://localhost:3000/ja/billing — Free/Pro plan cards are shown.
+The **Upgrade to Pro** button requires real Stripe test keys (`STRIPE_SECRET_KEY=sk_test_...`).
+For local testing without Stripe, upgrade manually via `make shell-db`.
 
 ### API docs (Swagger UI)
 FastAPI's interactive docs are available at:
