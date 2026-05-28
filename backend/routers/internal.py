@@ -22,6 +22,7 @@ from services.mlb_api import (
     detect_japanese_player_games,
     fetch_japanese_players,
     fetch_live_game,
+    fetch_player_game_log,
     fetch_player_stats,
     fetch_schedule,
 )
@@ -353,5 +354,75 @@ async def sync_statcast(
 
         # Polite delay between requests to avoid rate-limiting Baseball Savant.
         await asyncio.sleep(1)
+
+    return {"synced": synced, "failed": failed}
+
+
+# ---------------------------------------------------------------------------
+# POST /internal/sync/game-logs
+# ---------------------------------------------------------------------------
+
+
+@router.post("/sync/game-logs")
+async def sync_game_logs(
+    request: Request,
+    _: None = Depends(_verify_internal_key),
+    supabase: Client = Depends(get_supabase),
+) -> dict[str, Any]:
+    """Sync per-game stats for all Japanese players into game_logs table.
+
+    Fetches current season game log from MLB Stats API for each player.
+    Upserts into game_logs table. Run hourly alongside sync/stats.
+    """
+    season: int = datetime.datetime.now(JST).year
+
+    jp_response = (
+        supabase.table("players")
+        .select("id")
+        .eq("is_japanese", True)
+        .execute()
+    )
+    player_ids: list[str] = [row["id"] for row in (jp_response.data or [])]
+
+    if not player_ids:
+        return {"synced": 0, "failed": 0, "message": "No Japanese players in DB."}
+
+    synced = 0
+    failed = 0
+
+    for player_id in player_ids:
+        entries: list[dict[str, Any]] = await fetch_player_game_log(player_id, season)
+
+        if not entries:
+            failed += 1
+            continue
+
+        rows: list[dict[str, Any]] = []
+        for entry in entries:
+            game_pk: str = entry.get("game_pk", "")
+            if not game_pk:
+                continue
+            rows.append(
+                {
+                    "player_id": player_id,
+                    "game_id": game_pk,
+                    "game_date": entry["date"],
+                    "stat_type": "batting",
+                    "at_bats": entry.get("at_bats"),
+                    "hits": entry.get("hits"),
+                    "home_runs": entry.get("home_runs"),
+                    "rbi": entry.get("rbi"),
+                    "avg": entry.get("avg"),
+                }
+            )
+
+        if rows:
+            batch_size = 100
+            for i in range(0, len(rows), batch_size):
+                batch = rows[i : i + batch_size]
+                supabase.table("game_logs").upsert(
+                    batch, on_conflict="player_id,game_id,stat_type"
+                ).execute()
+            synced += 1
 
     return {"synced": synced, "failed": failed}
