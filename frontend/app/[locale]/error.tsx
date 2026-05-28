@@ -23,7 +23,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4 space-y-6">
       <div className="text-6xl">⚾</div>
-      <h2 className="text-2xl font-bold text-white">{t("serverError")}</h2>
+      <h2 className="text-2xl font-bold text-slate-900">{t("serverError")}</h2>
       <div className="flex gap-3">
         <button
           onClick={() => reset()}
@@ -33,7 +33,7 @@ export default function GlobalError({ error, reset }: ErrorProps) {
         </button>
         <button
           onClick={() => router.back()}
-          className="px-6 py-2 bg-surface-card hover:bg-surface-border text-white font-semibold rounded-lg transition-colors border border-surface-border"
+          className="px-6 py-2 bg-surface-card hover:bg-surface-muted text-slate-700 font-semibold rounded-lg transition-colors border border-surface-border shadow-sm"
         >
           Back
         </button>

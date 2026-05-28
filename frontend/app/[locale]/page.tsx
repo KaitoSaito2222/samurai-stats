@@ -34,20 +34,20 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
   return (
     <div className="space-y-10">
       {/* Hero */}
-      <section className="rounded-2xl bg-gradient-to-br from-brand/20 to-surface-card border border-surface-border p-8 text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
+      <section className="rounded-2xl bg-gradient-to-br from-navy/10 to-brand/5 border border-navy/20 p-8 text-center">
+        <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">
           {t("title")}
         </h1>
-        <p className="text-lg text-slate-300">{t("subtitle")}</p>
+        <p className="text-lg text-slate-600">{t("subtitle")}</p>
       </section>
 
       {/* Today's Games */}
       <section>
-        <h2 className="text-xl font-bold text-white mb-4">{t("todayGames")}</h2>
+        <h2 className="text-xl font-bold text-slate-900 mb-4">{t("todayGames")}</h2>
         {games.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 bg-surface-card rounded-xl border border-surface-border text-center">
             <span className="text-4xl mb-3">⚾</span>
-            <p className="text-slate-400">{tGames("noGamesToday")}</p>
+            <p className="text-slate-500">{tGames("noGamesToday")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -60,11 +60,11 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
 
       {/* Featured Players */}
       <section>
-        <h2 className="text-xl font-bold text-white mb-4">{t("featuredPlayers")}</h2>
+        <h2 className="text-xl font-bold text-slate-900 mb-4">{t("featuredPlayers")}</h2>
         {players.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 bg-surface-card rounded-xl border border-surface-border text-center">
             <span className="text-4xl mb-3">🏟️</span>
-            <p className="text-slate-400">{t("fetchFailed")}</p>
+            <p className="text-slate-500">{t("fetchFailed")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

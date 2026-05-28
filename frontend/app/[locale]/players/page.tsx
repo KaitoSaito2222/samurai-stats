@@ -25,12 +25,12 @@ export default async function PlayersPage({ params: { locale }, searchParams }: 
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-white">{t("title")}</h1>
+      <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>
 
       {players.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 bg-surface-card rounded-xl border border-surface-border text-center">
           <span className="text-5xl mb-4">🏟️</span>
-          <p className="text-slate-400 text-lg">{t("noResults")}</p>
+          <p className="text-slate-500 text-lg">{t("noResults")}</p>
         </div>
       ) : (
         <>
@@ -46,7 +46,7 @@ export default async function PlayersPage({ params: { locale }, searchParams }: 
               {page > 1 && (
                 <a
                   href={`/${locale}/players?page=${page - 1}`}
-                  className="px-4 py-2 bg-surface-card hover:bg-surface-border rounded-lg text-white border border-surface-border transition-colors"
+                  className="px-4 py-2 bg-surface-card hover:bg-surface-muted rounded-lg text-slate-700 border border-surface-border transition-colors shadow-sm"
                 >
                   ←
                 </a>
@@ -57,10 +57,10 @@ export default async function PlayersPage({ params: { locale }, searchParams }: 
                   <a
                     key={pageNum}
                     href={`/${locale}/players?page=${pageNum}`}
-                    className={`px-4 py-2 rounded-lg border transition-colors ${
+                    className={`px-4 py-2 rounded-lg border transition-colors shadow-sm ${
                       pageNum === page
                         ? "bg-brand border-brand text-white font-bold"
-                        : "bg-surface-card hover:bg-surface-border border-surface-border text-white"
+                        : "bg-surface-card hover:bg-surface-muted border-surface-border text-slate-700"
                     }`}
                   >
                     {pageNum}
@@ -70,7 +70,7 @@ export default async function PlayersPage({ params: { locale }, searchParams }: 
               {page < totalPages && (
                 <a
                   href={`/${locale}/players?page=${page + 1}`}
-                  className="px-4 py-2 bg-surface-card hover:bg-surface-border rounded-lg text-white border border-surface-border transition-colors"
+                  className="px-4 py-2 bg-surface-card hover:bg-surface-muted rounded-lg text-slate-700 border border-surface-border transition-colors shadow-sm"
                 >
                   →
                 </a>

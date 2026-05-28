@@ -6,8 +6,12 @@ interface ZoneHeatmapProps {
   zoneStats: ZoneStat[];
 }
 
+function isEmptyZone(stat: ZoneStat | undefined): boolean {
+  return !stat || stat.pa < 5 || stat.avg === null;
+}
+
 function getZoneBg(stat: ZoneStat | undefined): string {
-  if (!stat || stat.pa < 5 || stat.avg === null) return "bg-slate-700";
+  if (isEmptyZone(stat)) return "bg-slate-200";
   const avg = stat.avg;
   if (avg < 0.2) return "bg-blue-900";
   if (avg < 0.25) return "bg-blue-700";
@@ -39,17 +43,18 @@ export default function ZoneHeatmap({ zoneStats }: ZoneHeatmapProps) {
       {rows.flat().map((zone) => {
         const stat = statByZone[zone] as ZoneStat | undefined;
         const bg = getZoneBg(stat);
+        const isEmpty = isEmptyZone(stat);
         return (
           <div
             key={zone}
             className={`${bg} rounded flex flex-col items-center justify-center w-16 h-16 sm:w-20 sm:h-20`}
             title={`Zone ${zone}`}
           >
-            <span className="text-white text-sm font-bold tabular-nums">
+            <span className={`text-sm font-bold tabular-nums ${isEmpty ? "text-slate-400" : "text-white"}`}>
               {fmtAvg(stat?.avg ?? null)}
             </span>
             {stat && stat.pa > 0 && (
-              <span className="text-white/60 text-xs tabular-nums">{stat.pa}PA</span>
+              <span className={`text-xs tabular-nums ${isEmpty ? "text-slate-400" : "text-white/60"}`}>{stat.pa}PA</span>
             )}
           </div>
         );

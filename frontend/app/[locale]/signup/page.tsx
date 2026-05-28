@@ -16,16 +16,16 @@ const authAppearance = {
   variables: {
     default: {
       colors: {
-        brand: "#C8102E",
-        brandAccent: "#9E0B24",
-        inputBackground: "#1E293B",
-        inputText: "white",
-        inputBorder: "#334155",
-        inputBorderFocus: "#C8102E",
-        inputBorderHover: "#334155",
-        messageText: "#94a3b8",
-        anchorTextColor: "#C8102E",
-        dividerBackground: "#334155",
+        brand: "#E01A38",
+        brandAccent: "#B5122C",
+        inputBackground: "#FFFFFF",
+        inputText: "#0F172A",
+        inputBorder: "#DDE3ED",
+        inputBorderFocus: "#E01A38",
+        inputBorderHover: "#DDE3ED",
+        messageText: "#475569",
+        anchorTextColor: "#E01A38",
+        dividerBackground: "#DDE3ED",
       },
     },
   },
@@ -48,7 +48,7 @@ export default function SignupPage({ params: { locale } }: SignupPageProps) {
     <div className="flex items-center justify-center min-h-[70vh] px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white">{tAuth("signupTitle")}</h1>
+          <h1 className="text-2xl font-bold text-slate-900">{tAuth("signupTitle")}</h1>
         </div>
         <div className="bg-surface-card rounded-xl border border-surface-border p-6">
           <Auth
@@ -75,7 +75,7 @@ export default function SignupPage({ params: { locale } }: SignupPageProps) {
             redirectTo={`${typeof window !== "undefined" ? window.location.origin : ""}/${locale}`}
           />
         </div>
-        <p className="text-center text-slate-400 text-sm mt-4">
+        <p className="text-center text-slate-600 text-sm mt-4">
           <a href={`/${locale}/login`} className="text-brand hover:underline">
             {tAuth("loginHere")}
           </a>
