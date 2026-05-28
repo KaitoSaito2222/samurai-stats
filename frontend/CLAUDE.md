@@ -119,6 +119,32 @@ import { VictoryLine, VictoryBar, VictoryChart } from "victory";
 
 ---
 
+## Analytics Components
+
+`AnalyticsPanel` and its sub-components live in `components/analytics/`:
+
+```
+components/
+├── AnalyticsPanel.tsx          # Tabbed container + Pro gate (blur + lock overlay)
+└── analytics/
+    ├── SplitsTab.tsx           # vs LHP/RHP, Home/Away, Day/Night table
+    ├── MonthlyTab.tsx          # Victory line chart — AVG/OPS/HR by month
+    ├── StatcastTab.tsx         # Metric cards + pitch splits table
+    └── ZoneHeatmap.tsx         # 3×3 CSS grid, color-coded by batting avg
+```
+
+**Zone heatmap color scale** (avg thresholds):
+- `< 5 PA` or null → `bg-slate-700` (insufficient sample)
+- `< .200` → `bg-blue-900`
+- `.200–.250` → `bg-blue-700`
+- `.250–.280` → `bg-slate-600`
+- `.280–.320` → `bg-orange-700`
+- `≥ .320` → `bg-red-700`
+
+**Pro gate pattern**: Free users see the full panel blurred (`blur-sm`) with an absolute-positioned lock overlay and an upgrade CTA linking to `/{locale}/billing`. Never hide the panel entirely — it's a conversion opportunity.
+
+---
+
 ## Timezone Display
 
 - The backend always returns timestamps in **UTC**

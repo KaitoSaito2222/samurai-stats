@@ -28,7 +28,8 @@ Planned future migration to React Native. Web components should be designed with
 | AI (Pro users) | Claude API (claude-sonnet-4-6) |
 | Payments | Stripe |
 | Infrastructure | Railway |
-| Data source | MLB Stats API (free, no auth required) |
+| Data source (stats) | MLB Stats API (free, no auth required) |
+| Data source (Statcast) | Baseball Savant CSV (free, no auth required) |
 | Languages | Japanese / English (i18n) |
 
 ---
@@ -41,6 +42,7 @@ samurai-stats/
 │   ├── app/
 │   │   └── [locale]/          # i18n (ja/en)
 │   ├── components/
+│   │   └── analytics/         # SplitsTab, MonthlyTab, StatcastTab, ZoneHeatmap
 │   ├── lib/
 │   └── messages/              # ja.json / en.json
 │
@@ -51,6 +53,8 @@ samurai-stats/
 │   ├── schemas/
 │   ├── services/
 │   │   ├── mlb_api.py
+│   │   ├── baseball_savant.py  # Statcast CSV fetch & aggregation
+│   │   ├── japanese_data.py    # Japanese name/team mappings + photo URLs
 │   │   ├── gemini.py
 │   │   ├── claude.py
 │   │   └── stripe.py
@@ -70,6 +74,7 @@ samurai-stats/
 | AI detailed analysis (Claude) | ✗ | ✓ (100/day soft cap†) |
 | AI chat (Claude) | ✗ | ✓ (100/day soft cap†) |
 | Stats trend graphs | ✗ | ✓ |
+| Statcast analytics (splits / monthly / zone heatmap) | ✗ | ✓ |
 | Favorite notifications (post-app) | ✗ | ✓ |
 
 > † Pro soft cap: backend returns `X-AI-Remaining: <n>` header when fewer than 10 calls remain in the day (JST). Frontend shows a warning banner. Hard block does not apply to Pro users.
@@ -131,8 +136,10 @@ samurai-stats/
 Phase 2+: Stripe billing, AI chat, detailed stats analysis, React Native migration.
 
 ### Phase 2 — Detailed Stats Analysis
-- **Period comparison**: current season vs same period last year (MLB API `byDateRange`)
-- **Monthly trend graphs**: batting avg / ERA by month using Victory charts
-- **AI performance evaluation**: Claude analyzes multi-year trends and highlights weak/strong periods
-- **Game log storage**: persist per-game stats in `game_logs` table for fast graph rendering
+- **Monthly trend graphs**: ✅ batting avg / OPS / HR by month (Victory charts) — implemented
+- **Splits**: ✅ vs LHP/RHP, Home/Away, Day/Night — implemented
+- **Statcast analytics**: ✅ exit velocity, barrel rate, xBA, pitch splits, 9-zone heatmap — implemented
+- **Period comparison**: current season vs same period last year (MLB API `byDateRange`) — pending
+- **AI performance evaluation**: Claude analyzes multi-year trends and highlights weak/strong periods — pending
+- **Game log storage**: persist per-game stats in `game_logs` table for fast graph rendering — pending
 - All analysis features are **Pro only**

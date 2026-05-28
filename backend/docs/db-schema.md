@@ -5,6 +5,9 @@
 Apply after all tables are created:
 
 ```sql
+-- player_analytics: Statcast lookup by player + season
+CREATE INDEX ON player_analytics(player_id, season);
+
 -- player_stats: stats lookup by player + season
 CREATE INDEX ON player_stats(player_id, season);
 CREATE INDEX ON player_stats(player_id, season, stat_type);
@@ -31,6 +34,27 @@ CREATE INDEX ON ai_logs(user_id, created_at);
 ```
 
 ---
+
+## player_analytics
+```sql
+-- Aggregated Statcast data from Baseball Savant CSV, synced weekly.
+-- Stores exit velocity, barrel rate, xBA, pitch splits, and 9-zone batting avg.
+-- Raw pitch data is NOT stored — only pre-aggregated results (keeps table tiny).
+player_id  VARCHAR NOT NULL REFERENCES players(id) ON DELETE CASCADE
+season     INTEGER NOT NULL
+data       JSONB NOT NULL DEFAULT '{}'
+           -- Shape: {
+           --   exit_velocity_avg, barrel_rate, hard_hit_rate, launch_angle_avg,
+           --   xba, xslg,
+           --   pitch_splits: [{pitch_type, pitch_name_ja, pitch_name_en, pa, avg, whiff_rate, hr, k}],
+           --   zone_stats:   [{zone (1-9), pa, avg}]
+           -- }
+updated_at TIMESTAMP DEFAULT NOW()
+PRIMARY KEY (player_id, season)
+```
+> Statcast data is only available for batters. Pitchers do not have a `data` row.
+> Raw pitch CSVs (3,000 rows/player/season) are processed by `services/baseball_savant.py`
+> and discarded — only the aggregated dict is stored here.
 
 ## players
 ```sql
