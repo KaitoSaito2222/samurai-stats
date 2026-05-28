@@ -195,4 +195,86 @@ export const generateAISummary = (playerId: number | string, lang: "ja" | "en") 
 
 export const getUserPlan = () => api.get<UserPlan>("/api/user/plan");
 
+// Rankings types
+export interface RankingPlayer {
+  player_id: string;
+  name_en: string;
+  name_ja: string;
+  team_en: string;
+  team_ja: string;
+  photo_url: string | null;
+  position: string | null;
+  // batting-specific
+  avg?: number | null;
+  home_runs?: number | null;
+  rbi?: number | null;
+  ops?: number | null;
+  games?: number | null;
+  // pitching-specific
+  era?: number | null;
+  wins?: number | null;
+  strikeouts?: number | null;
+  whip?: number | null;
+}
+
+export interface Rankings {
+  season: number;
+  batting: RankingPlayer[];
+  pitching: RankingPlayer[];
+}
+
+// Game detail types
+export interface GameDetail extends Game {
+  japanese_players?: {
+    player_id: string;
+    name_en: string;
+    name_ja: string;
+  }[];
+}
+
+// Chat types
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+// Favorites
+export interface FavoritePlayer {
+  player_id: string;
+  created_at: string;
+}
+
+// API functions
+export const getRankings = (season?: number) =>
+  api.get<Rankings>("/api/rankings", { params: season ? { season } : {} });
+
+export const getGame = (id: string) =>
+  api.get<GameDetail>(`/api/games/${id}`);
+
+export const getPlayerAnalytics = (id: string, season?: number) =>
+  api.get<PlayerAnalytics>(`/api/players/${id}/analytics`, {
+    params: season ? { season } : {},
+  });
+
+export const generateAIAnalysis = (playerId: string, lang: "ja" | "en") =>
+  api.post<{ analysis: string; calls_used: number; calls_limit: number }>(
+    `/api/ai/analysis/${playerId}`,
+    { lang }
+  );
+
+export const getFavorites = () =>
+  api.get<FavoritePlayer[]>("/api/user/favorites");
+
+export const addFavorite = (playerId: string) =>
+  api.post(`/api/user/favorites/${playerId}`);
+
+export const removeFavorite = (playerId: string) =>
+  api.delete(`/api/user/favorites/${playerId}`);
+
+export const createCheckout = () =>
+  api.post<{ url: string }>("/api/billing/checkout");
+
+export const createPortal = () =>
+  api.get<{ url: string }>("/api/billing/portal");
+
 export default api;

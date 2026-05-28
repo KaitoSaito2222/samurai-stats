@@ -16,7 +16,7 @@ interface MonthlyTabProps {
 }
 
 // Brand/chart colors — must match tailwind.config.ts tokens
-const COLOR_AVG = "#C8102E";    // brand red
+const COLOR_AVG = "#E01A38";    // brand red (updated for light theme)
 const COLOR_OPS = "#F59E0B";    // amber
 const COLOR_HR = "#6366F1";     // indigo
 
@@ -25,7 +25,7 @@ export default function MonthlyTab({ monthly }: MonthlyTabProps) {
 
   if (!monthly || monthly.length === 0) {
     return (
-      <p className="text-slate-400 text-sm py-4 text-center">
+      <p className="text-slate-500 text-sm py-4 text-center">
         {t("summaryUnavailable")}
       </p>
     );
@@ -36,7 +36,7 @@ export default function MonthlyTab({ monthly }: MonthlyTabProps) {
 
   if (months.length === 0) {
     return (
-      <p className="text-slate-400 text-sm py-4 text-center">
+      <p className="text-slate-500 text-sm py-4 text-center">
         {t("summaryUnavailable")}
       </p>
     );
@@ -77,8 +77,8 @@ export default function MonthlyTab({ monthly }: MonthlyTabProps) {
             tickValues={tickValues}
             tickFormat={(t: number) => `${t}月`}
             style={{
-              axis: { stroke: "#475569" },
-              tickLabels: { fill: "#94A3B8", fontSize: 11 },
+              axis: { stroke: "#CBD5E1" },
+              tickLabels: { fill: "#64748B", fontSize: 11 },
               grid: { stroke: "transparent" },
             }}
           />
@@ -88,9 +88,9 @@ export default function MonthlyTab({ monthly }: MonthlyTabProps) {
             domain={[0, 0.4]}
             tickFormat={(v: number) => v.toFixed(3).replace(/^0/, "")}
             style={{
-              axis: { stroke: "#475569" },
-              tickLabels: { fill: "#94A3B8", fontSize: 10 },
-              grid: { stroke: "#1E293B" },
+              axis: { stroke: "#CBD5E1" },
+              tickLabels: { fill: "#64748B", fontSize: 10 },
+              grid: { stroke: "#E2E8F0" },
             }}
           />
 
@@ -121,7 +121,7 @@ export default function MonthlyTab({ monthly }: MonthlyTabProps) {
         </VictoryChart>
 
         {/* Legend */}
-        <div className="flex gap-4 justify-center mt-1 text-xs text-slate-400">
+        <div className="flex gap-4 justify-center mt-1 text-xs text-slate-500">
           <span className="flex items-center gap-1">
             <span className="inline-block w-6 h-0.5 bg-brand" />
             {t("avg")}
@@ -139,7 +139,7 @@ export default function MonthlyTab({ monthly }: MonthlyTabProps) {
     );
   } catch {
     return (
-      <p className="text-slate-400 text-sm py-4 text-center">
+      <p className="text-slate-500 text-sm py-4 text-center">
         {t("summaryUnavailable")}
       </p>
     );
