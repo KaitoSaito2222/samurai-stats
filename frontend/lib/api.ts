@@ -92,6 +92,13 @@ export interface PlayerStats {
   pitching: PitchingStats | null;
 }
 
+export interface GamePlayer {
+  id: string;
+  name_ja: string;
+  name_en: string;
+  photo_url: string | null;
+}
+
 export interface Game {
   id: string;
   home_team_ja: string;
@@ -104,6 +111,7 @@ export interface Game {
   game_date: string;
   status: "scheduled" | "live" | "final" | "postponed" | "cancelled";
   venue: string | null;
+  japanese_players: GamePlayer[];
 }
 
 export interface UserPlan {

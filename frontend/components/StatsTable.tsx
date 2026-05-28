@@ -1,6 +1,7 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+import StatTooltip from "@/components/StatTooltip";
 import type { PlayerStats } from "@/lib/api";
 
 interface StatsTableProps {
@@ -9,6 +10,7 @@ interface StatsTableProps {
 
 export default function StatsTable({ stats }: StatsTableProps) {
   const t = useTranslations("player");
+  const locale = useLocale();
 
   return (
     <div className="space-y-4">
@@ -22,14 +24,18 @@ export default function StatsTable({ stats }: StatsTableProps) {
           </div>
           <div className="divide-y divide-surface-border">
             {[
-              { label: t("avg"),            value: stats.batting.avg?.toFixed(3) ?? "—" },
-              { label: t("hr"),             value: stats.batting.home_runs?.toString() ?? "—" },
-              { label: t("rbi"),            value: stats.batting.rbi?.toString() ?? "—" },
-              { label: t("ops"),            value: stats.batting.ops?.toFixed(3) ?? "—" },
-              { label: t("stats") + " (G)", value: stats.batting.games?.toString() ?? "—" },
-            ].map(({ label, value }) => (
+              { term: "avg",  label: t("avg"),            value: stats.batting.avg?.toFixed(3) ?? "—" },
+              { term: "hr",   label: t("hr"),             value: stats.batting.home_runs?.toString() ?? "—" },
+              { term: "rbi",  label: t("rbi"),            value: stats.batting.rbi?.toString() ?? "—" },
+              { term: "ops",  label: t("ops"),            value: stats.batting.ops?.toFixed(3) ?? "—" },
+              { term: "",     label: t("stats") + " (G)", value: stats.batting.games?.toString() ?? "—" },
+            ].map(({ term, label, value }) => (
               <div key={label} className="flex items-center justify-between px-6 py-3">
-                <span className="text-slate-600 text-sm">{label}</span>
+                <span className="text-slate-600 text-sm">
+                  {term ? (
+                    <StatTooltip term={term} locale={locale}>{label}</StatTooltip>
+                  ) : label}
+                </span>
                 <span className="text-slate-900 font-semibold tabular-nums">{value}</span>
               </div>
             ))}
@@ -47,14 +53,18 @@ export default function StatsTable({ stats }: StatsTableProps) {
           </div>
           <div className="divide-y divide-surface-border">
             {[
-              { label: t("era"),            value: stats.pitching.era?.toFixed(2) ?? "—" },
-              { label: t("wins"),           value: stats.pitching.wins?.toString() ?? "—" },
-              { label: t("strikeouts"),     value: stats.pitching.strikeouts?.toString() ?? "—" },
-              { label: t("whip"),           value: stats.pitching.whip?.toFixed(2) ?? "—" },
-              { label: t("stats") + " (G)", value: stats.pitching.games?.toString() ?? "—" },
-            ].map(({ label, value }) => (
+              { term: "era",        label: t("era"),            value: stats.pitching.era?.toFixed(2) ?? "—" },
+              { term: "wins",       label: t("wins"),           value: stats.pitching.wins?.toString() ?? "—" },
+              { term: "strikeouts", label: t("strikeouts"),     value: stats.pitching.strikeouts?.toString() ?? "—" },
+              { term: "whip",       label: t("whip"),           value: stats.pitching.whip?.toFixed(2) ?? "—" },
+              { term: "",           label: t("stats") + " (G)", value: stats.pitching.games?.toString() ?? "—" },
+            ].map(({ term, label, value }) => (
               <div key={label} className="flex items-center justify-between px-6 py-3">
-                <span className="text-slate-600 text-sm">{label}</span>
+                <span className="text-slate-600 text-sm">
+                  {term ? (
+                    <StatTooltip term={term} locale={locale}>{label}</StatTooltip>
+                  ) : label}
+                </span>
                 <span className="text-slate-900 font-semibold tabular-nums">{value}</span>
               </div>
             ))}

@@ -15,7 +15,7 @@ from slowapi.util import get_remote_address
 from supabase import Client
 
 from database import get_supabase
-from schemas.games import GameDetail, GameListItem
+from schemas.games import GameDetail, GameListItem, GamePlayer
 
 limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/games", tags=["games"])
@@ -28,7 +28,9 @@ def today_jst() -> datetime.date:
     return datetime.datetime.now(JST).date()
 
 
-def _row_to_game_list_item(row: dict) -> GameListItem:
+def _row_to_game_list_item(
+    row: dict, players: list[GamePlayer] | None = None
+) -> GameListItem:
     """Convert a Supabase games row to a GameListItem."""
     home_team: dict = row.get("home_team") or {}
     away_team: dict = row.get("away_team") or {}
@@ -44,6 +46,7 @@ def _row_to_game_list_item(row: dict) -> GameListItem:
         game_date=row["game_date"],
         status=row.get("status", "scheduled"),
         venue=row.get("venue"),
+        japanese_players=players or [],
     )
 
 
@@ -51,16 +54,17 @@ def _fetch_games_for_date(
     supabase: Client, game_date: datetime.date
 ) -> list[GameListItem]:
     """Fetch games that include Japanese players on the given date."""
-    # Find game IDs that have at least one Japanese player via game_players junction.
-    gp_response = supabase.table("game_players").select("game_id").execute()
+    date_str: str = game_date.isoformat()
+
+    # Fetch games for the date that have at least one Japanese player.
+    gp_ids_response = supabase.table("game_players").select("game_id").execute()
     game_ids_with_japanese: list[str] = [
-        row["game_id"] for row in (gp_response.data or [])
+        row["game_id"] for row in (gp_ids_response.data or [])
     ]
 
     if not game_ids_with_japanese:
         return []
 
-    date_str: str = game_date.isoformat()
     games_response = (
         supabase.table("games")
         .select("*")
@@ -69,7 +73,39 @@ def _fetch_games_for_date(
         .execute()
     )
     rows: list[dict] = games_response.data or []
-    return [_row_to_game_list_item(row) for row in rows]
+
+    if not rows:
+        return []
+
+    # Fetch Japanese players for these specific games (with player name + photo).
+    game_ids_on_date: list[str] = [row["id"] for row in rows]
+    gp_response = (
+        supabase.table("game_players")
+        .select("game_id, players(id, names, photo_url)")
+        .in_("game_id", game_ids_on_date)
+        .execute()
+    )
+
+    players_by_game: dict[str, list[GamePlayer]] = {}
+    for gp in gp_response.data or []:
+        gid: str = gp["game_id"]
+        p: dict = gp.get("players") or {}
+        if not p.get("id"):
+            continue
+        names: dict = p.get("names") or {}
+        players_by_game.setdefault(gid, []).append(
+            GamePlayer(
+                id=p["id"],
+                name_ja=names.get("ja", ""),
+                name_en=names.get("en", ""),
+                photo_url=p.get("photo_url"),
+            )
+        )
+
+    return [
+        _row_to_game_list_item(row, players_by_game.get(row["id"], []))
+        for row in rows
+    ]
 
 
 # ---------------------------------------------------------------------------

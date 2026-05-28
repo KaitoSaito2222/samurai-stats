@@ -9,6 +9,13 @@ import datetime
 from pydantic import BaseModel
 
 
+class GamePlayer(BaseModel):
+    id: str
+    name_ja: str
+    name_en: str
+    photo_url: str | None
+
+
 class GameListItem(BaseModel):
     id: str
     home_team_ja: str
@@ -21,6 +28,7 @@ class GameListItem(BaseModel):
     game_date: datetime.date
     status: str
     venue: str | None
+    japanese_players: list[GamePlayer] = []
 
 
 class GameDetail(GameListItem):
