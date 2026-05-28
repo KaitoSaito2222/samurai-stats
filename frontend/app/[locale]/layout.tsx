@@ -36,7 +36,7 @@ export default async function RootLayout({ children, params: { locale } }: RootL
 
   return (
     <html lang={locale} className={`${inter.variable} ${notoSansJP.variable}`}>
-      <body className="bg-surface text-white font-sans min-h-screen">
+      <body className="bg-surface text-slate-900 font-sans min-h-screen">
         <NextIntlClientProvider messages={messages}>
           <Navbar locale={locale} />
           <AiRemainingBanner />

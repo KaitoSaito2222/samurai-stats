@@ -9,7 +9,7 @@ import os
 import google.generativeai as genai
 from fastapi import HTTPException
 
-from services.prompts import player_summary_prompt
+from services.prompts import player_analysis_prompt, player_summary_prompt
 
 # Initialize Gemini client at module level using the GEMINI_API_KEY environment variable.
 _api_key = os.environ.get("GEMINI_API_KEY", "")
@@ -79,3 +79,55 @@ async def generate_player_summary(player: dict, stats: dict, lang: str) -> str:
         )
 
     return text
+
+
+async def generate_player_analysis(player: dict, trends: dict, lang: str) -> str:
+    """Generate AI detailed analysis using gemini-2.0-flash.
+
+    Args:
+        player: {"id", "name_en", "name_ja", "team", "position"}
+        trends: multi-year and period-comparison stats dict
+        lang:   "ja" | "en"
+
+    Returns:
+        The generated analysis text.
+
+    Raises:
+        HTTPException 504: if the Gemini API does not respond within 30 seconds.
+        HTTPException 503: on any Gemini API error.
+    """
+    prompt = player_analysis_prompt(player, trends, lang)
+    model = genai.GenerativeModel("gemini-2.0-flash")
+
+    try:
+        response = await asyncio.wait_for(
+            asyncio.get_event_loop().run_in_executor(
+                None,
+                lambda: model.generate_content(prompt),
+            ),
+            timeout=_GEMINI_TIMEOUT_SECONDS,
+        )
+    except asyncio.TimeoutError:
+        raise HTTPException(
+            status_code=504,
+            detail={"code": "GATEWAY_TIMEOUT", "message": "AI analysis timed out."},
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "SERVICE_UNAVAILABLE",
+                "message": "AI analysis temporarily unavailable.",
+            },
+        )
+
+    try:
+        return response.text
+    except Exception:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "SERVICE_UNAVAILABLE",
+                "message": "AI analysis temporarily unavailable.",
+            },
+        )

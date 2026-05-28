@@ -54,7 +54,7 @@ export default function Navbar({ locale }: NavbarProps) {
   }
 
   return (
-    <nav className="bg-surface-card border-b border-surface-border sticky top-0 z-50">
+    <nav className="bg-navy-dark border-b border-navy sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
@@ -83,13 +83,13 @@ export default function Navbar({ locale }: NavbarProps) {
           {/* Right side: locale toggle + auth */}
           <div className="flex items-center gap-3">
             {/* Language toggle */}
-            <div className="flex rounded-lg border border-surface-border overflow-hidden text-xs">
+            <div className="flex rounded-lg border border-navy overflow-hidden text-xs">
               <Link
                 href={switchLocale("ja")}
                 className={`px-2 py-1 font-medium transition-colors ${
                   locale === "ja"
                     ? "bg-brand text-white"
-                    : "text-slate-400 hover:text-white hover:bg-surface-border"
+                    : "text-slate-300 hover:text-white hover:bg-navy"
                 }`}
               >
                 JA
@@ -99,7 +99,7 @@ export default function Navbar({ locale }: NavbarProps) {
                 className={`px-2 py-1 font-medium transition-colors ${
                   locale === "en"
                     ? "bg-brand text-white"
-                    : "text-slate-400 hover:text-white hover:bg-surface-border"
+                    : "text-slate-300 hover:text-white hover:bg-navy"
                 }`}
               >
                 EN
@@ -142,7 +142,7 @@ export default function Navbar({ locale }: NavbarProps) {
 
         {/* Mobile menu */}
         {menuOpen && (
-          <div className="md:hidden border-t border-surface-border py-3 space-y-1">
+          <div className="md:hidden border-t border-navy py-3 space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -151,17 +151,17 @@ export default function Navbar({ locale }: NavbarProps) {
                 className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   pathname === link.href
                     ? "text-brand bg-brand/10"
-                    : "text-slate-300 hover:text-white hover:bg-surface-border"
+                    : "text-slate-200 hover:text-white hover:bg-navy"
                 }`}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="pt-2 border-t border-surface-border">
+            <div className="pt-2 border-t border-navy">
               {session ? (
                 <button
                   onClick={() => { handleLogout(); setMenuOpen(false); }}
-                  className="block w-full text-left px-3 py-2 text-sm text-slate-300 hover:text-white"
+                  className="block w-full text-left px-3 py-2 text-sm text-slate-200 hover:text-white"
                 >
                   {t("logout")}
                 </button>

@@ -33,7 +33,7 @@ export default function AnalyticsPanel({
   const content = (
     <div>
       {/* Tab bar */}
-      <div className="flex border-b border-surface-border mb-4" role="tablist">
+      <div className="flex bg-slate-50 rounded-t-lg border-b border-surface-border mb-4" role="tablist">
         {tabs.map((tab) => (
           <button
             key={tab.key}
@@ -43,8 +43,8 @@ export default function AnalyticsPanel({
             className={[
               "px-4 py-2 text-sm font-medium transition-colors focus:outline-none",
               activeTab === tab.key
-                ? "border-b-2 border-brand text-brand"
-                : "text-slate-400 hover:text-slate-200",
+                ? "bg-white text-brand border-b-2 border-brand shadow-sm"
+                : "text-slate-500 hover:text-slate-700",
             ].join(" ")}
           >
             {tab.label}
@@ -77,9 +77,9 @@ export default function AnalyticsPanel({
         </div>
 
         {/* Lock overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-surface-DEFAULT/80 rounded-lg">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-white/90 rounded-lg">
           <span className="text-4xl" role="img" aria-label="lock">🔒</span>
-          <p className="text-white font-semibold text-center px-4">
+          <p className="text-navy font-semibold text-center px-4">
             {t("analyticsProOnly")}
           </p>
           <a

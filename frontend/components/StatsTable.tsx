@@ -15,9 +15,9 @@ export default function StatsTable({ stats }: StatsTableProps) {
       {stats.batting && (
         <div className="bg-surface-card rounded-xl border border-surface-border overflow-hidden">
           <div className="px-6 py-4 border-b border-surface-border">
-            <h2 className="text-lg font-bold text-white">
+            <h2 className="text-lg font-bold text-slate-900">
               {t("batting")}{" "}
-              <span className="text-sm font-normal text-slate-400">({stats.batting.season})</span>
+              <span className="text-sm font-normal text-slate-500">({stats.batting.season})</span>
             </h2>
           </div>
           <div className="divide-y divide-surface-border">
@@ -29,8 +29,8 @@ export default function StatsTable({ stats }: StatsTableProps) {
               { label: t("stats") + " (G)", value: stats.batting.games?.toString() ?? "—" },
             ].map(({ label, value }) => (
               <div key={label} className="flex items-center justify-between px-6 py-3">
-                <span className="text-slate-400 text-sm">{label}</span>
-                <span className="text-white font-semibold tabular-nums">{value}</span>
+                <span className="text-slate-600 text-sm">{label}</span>
+                <span className="text-slate-900 font-semibold tabular-nums">{value}</span>
               </div>
             ))}
           </div>
@@ -40,9 +40,9 @@ export default function StatsTable({ stats }: StatsTableProps) {
       {stats.pitching && (
         <div className="bg-surface-card rounded-xl border border-surface-border overflow-hidden">
           <div className="px-6 py-4 border-b border-surface-border">
-            <h2 className="text-lg font-bold text-white">
+            <h2 className="text-lg font-bold text-slate-900">
               {t("pitching")}{" "}
-              <span className="text-sm font-normal text-slate-400">({stats.pitching.season})</span>
+              <span className="text-sm font-normal text-slate-500">({stats.pitching.season})</span>
             </h2>
           </div>
           <div className="divide-y divide-surface-border">
@@ -54,8 +54,8 @@ export default function StatsTable({ stats }: StatsTableProps) {
               { label: t("stats") + " (G)", value: stats.pitching.games?.toString() ?? "—" },
             ].map(({ label, value }) => (
               <div key={label} className="flex items-center justify-between px-6 py-3">
-                <span className="text-slate-400 text-sm">{label}</span>
-                <span className="text-white font-semibold tabular-nums">{value}</span>
+                <span className="text-slate-600 text-sm">{label}</span>
+                <span className="text-slate-900 font-semibold tabular-nums">{value}</span>
               </div>
             ))}
           </div>

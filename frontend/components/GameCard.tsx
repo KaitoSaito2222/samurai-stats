@@ -10,11 +10,11 @@ interface GameCardProps {
 }
 
 const statusStyles: Record<string, string> = {
-  live:      "bg-green-500/20 text-green-400 border-green-500/30",
-  final:     "bg-slate-500/20 text-slate-400 border-slate-500/30",
-  scheduled: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  postponed: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  cancelled: "bg-red-500/20 text-red-400 border-red-500/30",
+  live:      "bg-green-50 text-green-700 border-green-200",
+  final:     "bg-slate-100 text-slate-600 border-slate-200",
+  scheduled: "bg-blue-50 text-blue-700 border-blue-200",
+  postponed: "bg-yellow-50 text-yellow-700 border-yellow-200",
+  cancelled: "bg-red-50 text-red-700 border-red-200",
 };
 
 export default function GameCard({ game, locale }: GameCardProps) {
@@ -35,7 +35,7 @@ export default function GameCard({ game, locale }: GameCardProps) {
   return (
     <Link
       href={`/${locale}/games/${game.id}`}
-      className="block bg-surface-card border border-surface-border rounded-xl p-4 space-y-3 hover:bg-surface-border transition-colors"
+      className="block bg-surface-card border border-surface-border rounded-xl p-4 space-y-3 hover:bg-surface-muted transition-all shadow-sm hover:shadow-md"
     >
       {/* Status badge */}
       <div className="flex justify-between items-center">
@@ -45,33 +45,33 @@ export default function GameCard({ game, locale }: GameCardProps) {
           }`}
         >
           {game.status === "live" && (
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-400 mr-1.5 animate-pulse" />
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-600 mr-1.5 animate-pulse" />
           )}
           {statusLabel[game.status] ?? game.status}
         </span>
         {game.status === "live" && game.inning && (
-          <span className="text-slate-500 text-xs">{game.inning}回</span>
+          <span className="text-slate-600 text-xs">{game.inning}回</span>
         )}
         {!isLiveOrFinal && (
-          <span className="text-slate-500 text-xs">{game.game_date}</span>
+          <span className="text-slate-600 text-xs">{game.game_date}</span>
         )}
       </div>
 
       {/* Teams and scores */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="font-medium text-white truncate">{awayTeam}</span>
+          <span className="font-medium text-slate-900 truncate">{awayTeam}</span>
           {isLiveOrFinal && (
-            <span className="text-xl font-bold text-white tabular-nums">
+            <span className="text-xl font-bold text-slate-900 tabular-nums">
               {game.away_score ?? 0}
             </span>
           )}
         </div>
         <div className="border-t border-surface-border" />
         <div className="flex items-center justify-between">
-          <span className="font-medium text-white truncate">{homeTeam}</span>
+          <span className="font-medium text-slate-900 truncate">{homeTeam}</span>
           {isLiveOrFinal && (
-            <span className="text-xl font-bold text-white tabular-nums">
+            <span className="text-xl font-bold text-slate-900 tabular-nums">
               {game.home_score ?? 0}
             </span>
           )}
@@ -79,7 +79,7 @@ export default function GameCard({ game, locale }: GameCardProps) {
       </div>
 
       {game.venue && (
-        <p className="text-xs text-slate-500 truncate">{game.venue}</p>
+        <p className="text-xs text-slate-600 truncate">{game.venue}</p>
       )}
     </Link>
   );

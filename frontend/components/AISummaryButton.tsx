@@ -68,11 +68,11 @@ export default function AISummaryButton({
   if (summary) {
     return (
       <div className="space-y-4">
-        <div className="bg-surface-border/40 rounded-lg p-4 text-slate-200 leading-relaxed whitespace-pre-wrap">
+        <div className="bg-surface-muted rounded-lg p-4 text-slate-700 leading-relaxed whitespace-pre-wrap border border-surface-border">
           {summary}
         </div>
         {isFree && (
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-600">
             {t("remaining", { count: Math.max(0, freeLimit - currentUsage) })}
           </p>
         )}
@@ -90,7 +90,7 @@ export default function AISummaryButton({
   if (limitReached) {
     return (
       <div className="space-y-3">
-        <p className="text-yellow-400 text-sm font-medium">{t("limitReached")}</p>
+        <p className="text-amber-700 text-sm font-medium">{t("limitReached")}</p>
         {isFree && (
           <Link
             href={`/${locale}/billing`}
@@ -113,12 +113,12 @@ export default function AISummaryButton({
               <div
                 key={i}
                 className={`w-2.5 h-2.5 rounded-full ${
-                  i < currentUsage ? "bg-surface-border" : "bg-brand"
+                  i < currentUsage ? "bg-slate-300" : "bg-brand"
                 }`}
               />
             ))}
           </div>
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-slate-500">
             {t("remaining", { count: Math.max(0, currentRemaining) })}
           </span>
         </div>
@@ -155,7 +155,7 @@ export default function AISummaryButton({
         </button>
       ) : (
         <div className="space-y-2">
-          <p className="text-slate-400 text-sm">{t("limitReached")}</p>
+          <p className="text-slate-600 text-sm">{t("limitReached")}</p>
           <Link
             href={`/${locale}/billing`}
             className="inline-block px-4 py-2 bg-pro text-black text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity"

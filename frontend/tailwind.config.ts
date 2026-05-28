@@ -6,14 +6,19 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          DEFAULT: "#C8102E",
-          dark: "#9E0B24",
+          DEFAULT: "#E01A38",  // MLB red — slightly brighter for light backgrounds
+          dark: "#B5122C",
         },
-        pro: "#F5A623",
+        pro: "#F59E0B",        // gold — Pro badges, upgrade prompts
+        navy: {
+          DEFAULT: "#1B3A6B",  // navy blue — navbar background
+          dark: "#0E2347",     // darker navy — hover/active
+        },
         surface: {
-          DEFAULT: "#0F172A",
-          card: "#1E293B",
-          border: "#334155",
+          DEFAULT: "#F0F4F8",  // light blue-gray page background
+          card: "#FFFFFF",     // white card backgrounds
+          border: "#DDE3ED",   // light blue-gray borders
+          muted: "#F8FAFC",    // subtle off-white sections
         },
       },
       fontFamily: {
