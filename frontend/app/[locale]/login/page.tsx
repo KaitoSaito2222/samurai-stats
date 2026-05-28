@@ -36,7 +36,7 @@ export default function LoginPage({ params: { locale } }: LoginPageProps) {
   const tAuth = useTranslations("auth");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const nextPath = searchParams.get("next") || `/${locale}`;
+  const nextPath = searchParams.get("redirectTo") || `/${locale}`;
 
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange((event) => {
