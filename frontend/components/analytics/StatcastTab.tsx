@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import type { StatcastStats, PitchSplit } from "@/lib/api";
 import ZoneHeatmap from "./ZoneHeatmap";
+import VelocityChart from "./VelocityChart";
 import StatTooltip from "@/components/StatTooltip";
 
 interface StatcastTabProps {
@@ -177,6 +178,11 @@ export default function StatcastTab({ statcast, locale }: StatcastTabProps) {
             </span>
           </div>
         </div>
+      )}
+
+      {/* Pitcher velocity trends */}
+      {statcast.velocity_by_month && statcast.velocity_by_month.length > 0 && (
+        <VelocityChart data={statcast.velocity_by_month} locale={locale} />
       )}
     </div>
   );

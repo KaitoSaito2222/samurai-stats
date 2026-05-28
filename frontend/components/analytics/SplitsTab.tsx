@@ -13,6 +13,7 @@ import type { SplitStat, PlayerAnalytics } from "@/lib/api";
 
 interface SplitsTabProps {
   splits: PlayerAnalytics["splits"];
+  clutch?: { risp: SplitStat | null; late: SplitStat | null } | null;
 }
 
 // Brand colors matching tailwind.config.ts tokens
@@ -138,7 +139,7 @@ function SummaryRow({ label, stat }: SummaryRowProps) {
   );
 }
 
-export default function SplitsTab({ splits }: SplitsTabProps) {
+export default function SplitsTab({ splits, clutch }: SplitsTabProps) {
   const t = useTranslations("player");
   const [metric, setMetric] = useState<Metric>("avg");
 
@@ -282,6 +283,32 @@ export default function SplitsTab({ splits }: SplitsTabProps) {
           </tbody>
         </table>
       </div>
+
+      {/* Clutch / RISP section */}
+      {clutch && (
+        <div className="mt-4 border-t border-surface-border pt-4">
+          <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">
+            {t("clutchSituations")}
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[300px]">
+              <thead>
+                <tr className="text-xs text-slate-500 uppercase tracking-wider bg-slate-100">
+                  <th className="py-1.5 px-3 text-left font-medium">{t("splitsHeader")}</th>
+                  <th className="py-1.5 px-3 text-center font-medium">{t("vsBatter")}</th>
+                  <th className="py-1.5 px-3 text-center font-medium">{t("avg")}</th>
+                  <th className="py-1.5 px-3 text-center font-medium">{t("ops")}</th>
+                  <th className="py-1.5 px-3 text-center font-medium">{t("hr")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <SummaryRow label={t("risp")} stat={clutch.risp} />
+                <SummaryRow label={t("lateClose")} stat={clutch.late} />
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
