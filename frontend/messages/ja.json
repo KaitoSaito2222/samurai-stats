@@ -78,7 +78,13 @@
     "hot": "好調🔥",
     "cold": "低調",
     "careerNoData": "通算データがありません",
-    "recentNoData": "この期間のデータがありません"
+    "recentNoData": "この期間のデータがありません",
+    "gameLogs": "試合ログ",
+    "clutchSituations": "クラッチ・得点圏",
+    "risp": "得点圏",
+    "lateClose": "終盤接戦",
+    "opponent": "対戦相手",
+    "gameLogNoData": "試合ログデータがありません"
   },
   "games": {
     "live": "試合中",

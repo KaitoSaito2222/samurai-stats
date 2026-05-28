@@ -9,6 +9,7 @@ import StatcastTab from "./analytics/StatcastTab";
 import PeriodTab from "./analytics/PeriodTab";
 import RecentFormTab from "./analytics/RecentFormTab";
 import CareerTab from "./analytics/CareerTab";
+import GameLogTab from "./analytics/GameLogTab";
 
 interface AnalyticsPanelProps {
   analytics: PlayerAnalytics | null;
@@ -17,7 +18,7 @@ interface AnalyticsPanelProps {
   playerId: string;
 }
 
-type TabKey = "splits" | "monthly" | "statcast" | "period" | "recent" | "career";
+type TabKey = "splits" | "monthly" | "statcast" | "period" | "recent" | "career" | "gamelogs";
 
 export default function AnalyticsPanel({
   analytics,
@@ -36,6 +37,7 @@ export default function AnalyticsPanel({
     { key: "period", label: t("period") },
     { key: "recent", label: t("recent") },
     { key: "career", label: t("career") },
+    { key: "gamelogs", label: t("gameLogs") },
   ];
 
   const content = (
@@ -63,7 +65,7 @@ export default function AnalyticsPanel({
       {/* Tab panels */}
       <div role="tabpanel">
         {activeTab === "splits" && (
-          <SplitsTab splits={analytics?.splits ?? null} />
+          <SplitsTab splits={analytics?.splits ?? null} clutch={analytics?.clutch} />
         )}
         {activeTab === "monthly" && (
           <MonthlyTab monthly={analytics?.monthly ?? null} />
@@ -79,6 +81,9 @@ export default function AnalyticsPanel({
         )}
         {activeTab === "career" && (
           <CareerTab playerId={playerId} />
+        )}
+        {activeTab === "gamelogs" && (
+          <GameLogTab playerId={playerId} locale={locale} />
         )}
       </div>
     </div>

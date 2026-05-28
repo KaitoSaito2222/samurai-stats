@@ -125,7 +125,12 @@ def _safe_int(value: str) -> int | None:
 
 
 def _aggregate(rows: list[dict[str, str]]) -> dict[str, Any]:
-    """Aggregate raw Statcast CSV rows into the analytics payload."""
+    """Aggregate raw Statcast CSV rows into the analytics payload.
+
+    For pitcher data (rows with release_speed populated in >50% of rows),
+    also computes velocity_by_month: average release_speed per pitch type
+    per calendar month, for detecting fatigue or injury recovery trends.
+    """
 
     # ── Overall / batted-ball aggregates ────────────────────────────────────
     exit_velocities: list[float] = []
@@ -145,6 +150,10 @@ def _aggregate(rows: list[dict[str, str]]) -> dict[str, Any]:
     # zone (1-9) → {"pa": int, "hits": int}
     zone_acc: dict[int, dict[str, int]] = {}
 
+    # ── Velocity-by-month accumulators (pitchers only) ──────────────────────
+    # (pitch_type, month) → list of release_speed floats
+    velocity_acc: dict[tuple[str, int], list[float]] = {}
+
     for row in rows:
         launch_speed_raw = row.get("launch_speed", "").strip()
         launch_angle_raw = row.get("launch_angle", "").strip()
@@ -155,6 +164,8 @@ def _aggregate(rows: list[dict[str, str]]) -> dict[str, Any]:
         zone_raw = row.get("zone", "").strip()
         xba_raw = row.get("estimated_ba_using_speedangle", "").strip()
         xslg_raw = row.get("estimated_slg_using_speedangle", "").strip()
+        release_speed_raw = row.get("release_speed", "").strip()
+        game_date_raw = row.get("game_date", "").strip()
 
         launch_speed = _safe_float(launch_speed_raw)
 
@@ -220,6 +231,27 @@ def _aggregate(rows: list[dict[str, str]]) -> dict[str, Any]:
                 zacc["pa"] += 1
                 if events_raw in HIT_EVENTS:
                     zacc["hits"] += 1
+
+        # ── Velocity by month (pitcher rows have release_speed) ───────────────
+        release_speed = _safe_float(release_speed_raw)
+        if release_speed is not None and pitch_type_raw and game_date_raw:
+            # Parse month from "YYYY-MM-DD" format.
+            try:
+                month = int(game_date_raw[5:7])
+            except (ValueError, IndexError):
+                month = 0
+            if month > 0:
+                vel_key: tuple[str, int] = (pitch_type_raw, month)
+                if vel_key not in velocity_acc:
+                    velocity_acc[vel_key] = []
+                velocity_acc[vel_key].append(release_speed)
+
+    # ── Detect pitcher vs batter ─────────────────────────────────────────────
+    # Pitcher data has release_speed populated in >50% of rows.
+    release_speed_count: int = sum(
+        1 for row in rows if row.get("release_speed", "").strip()
+    )
+    is_pitcher: bool = len(rows) > 0 and release_speed_count / len(rows) > 0.5
 
     # ── Build output dict ────────────────────────────────────────────────────
     result: dict[str, Any] = {
@@ -289,6 +321,29 @@ def _aggregate(rows: list[dict[str, str]]) -> dict[str, Any]:
         avg = round(hits / pa, 3) if pa else None
         zone_stats.append({"zone": zone, "pa": pa, "avg": avg})
     result["zone_stats"] = zone_stats
+
+    # Velocity by month (pitchers only).
+    # Only include pitch types with PA >= MIN_PITCH_PA and months with >= 3 pitches.
+    velocity_by_month: list[dict[str, Any]] = []
+    if is_pitcher:
+        eligible_pitch_types: set[str] = {
+            pt for pt, acc in pitch_acc.items() if acc["pa"] >= MIN_PITCH_PA
+        }
+        for (pitch_type, month), speeds in sorted(velocity_acc.items()):
+            if pitch_type not in eligible_pitch_types:
+                continue
+            if len(speeds) < 3:
+                continue
+            velocity_by_month.append(
+                {
+                    "month": month,
+                    "pitch_type": pitch_type,
+                    "pitch_name_ja": PITCH_NAMES_JA.get(pitch_type, pitch_type),
+                    "pitch_name_en": PITCH_NAMES_EN.get(pitch_type, pitch_type),
+                    "avg_velocity": round(sum(speeds) / len(speeds), 1),
+                }
+            )
+    result["velocity_by_month"] = velocity_by_month
 
     return result
 

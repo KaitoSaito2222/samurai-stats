@@ -78,7 +78,13 @@
     "hot": "Hot 🔥",
     "cold": "Cold",
     "careerNoData": "No career data",
-    "recentNoData": "No data for this period"
+    "recentNoData": "No data for this period",
+    "gameLogs": "Game Log",
+    "clutchSituations": "Clutch Situations",
+    "risp": "RISP",
+    "lateClose": "Late & Close",
+    "opponent": "Opponent",
+    "gameLogNoData": "No game log data"
   },
   "games": {
     "live": "Live",
