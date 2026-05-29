@@ -9,7 +9,7 @@ Supabase or MLB API calls are made.
 """
 
 import uuid
-from typing import Any
+from collections.abc import Generator
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -93,7 +93,7 @@ def _make_supabase_mock(plan: str = "free") -> MagicMock:
 
 
 @pytest.fixture()
-def free_client() -> TestClient:
+def free_client() -> Generator[TestClient, None, None]:
     """TestClient with Free user injected via dependency overrides."""
     supabase_mock = _make_supabase_mock("free")
 
@@ -110,7 +110,7 @@ def free_client() -> TestClient:
 
 
 @pytest.fixture()
-def pro_client() -> TestClient:
+def pro_client() -> Generator[TestClient, None, None]:
     """TestClient with Pro user injected via dependency overrides."""
     supabase_mock = _make_supabase_mock("pro")
 
@@ -127,7 +127,7 @@ def pro_client() -> TestClient:
 
 
 @pytest.fixture()
-def anon_client() -> TestClient:
+def anon_client() -> Generator[TestClient, None, None]:
     """TestClient with no authenticated user (anonymous)."""
     supabase_mock = _make_supabase_mock("free")
 

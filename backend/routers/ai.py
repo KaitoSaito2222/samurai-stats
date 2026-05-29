@@ -118,7 +118,7 @@ def _count_pro_calls_today(supabase: Client, user_id: str) -> int:
     utc_start: str = today_jst_utc_start().strftime("%Y-%m-%dT%H:%M:%SZ")
     result = (
         supabase.table("ai_logs")
-        .select("id", count="exact")
+        .select("id", count="exact")  # type: ignore[arg-type]
         .eq("user_id", user_id)
         .gte("created_at", utc_start)
         .execute()

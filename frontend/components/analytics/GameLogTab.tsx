@@ -106,10 +106,8 @@ export default function GameLogTab({ playerId }: GameLogTabProps) {
             data={scatterData}
             x="x"
             y="y"
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            size={({ datum }: any) => datum.size}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            style={{ data: { fill: ({ datum }: any) => datum.fill, opacity: 0.8 } }}
+            size={({ datum }: { datum?: { size: number } }) => datum?.size ?? 4}
+            style={{ data: { fill: ({ datum }: { datum?: { fill: string } }) => datum?.fill ?? "#999", opacity: 0.8 } }}
           />
         </VictoryChart>
         {/* Legend */}

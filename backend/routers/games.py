@@ -56,26 +56,32 @@ def _fetch_games_for_date(
     """Fetch games that include Japanese players on the given date."""
     date_str: str = game_date.isoformat()
 
-    # Fetch games for the date that have at least one Japanese player.
-    gp_ids_response = supabase.table("game_players").select("game_id").execute()
-    game_ids_with_japanese: list[str] = [
-        row["game_id"] for row in (gp_ids_response.data or [])
-    ]
-
-    if not game_ids_with_japanese:
-        return []
-
+    # Fetch games for the date first, then cross-reference with game_players.
     games_response = (
         supabase.table("games")
         .select("*")
         .eq("game_date", date_str)
-        .in_("id", game_ids_with_japanese)
         .execute()
     )
-    rows: list[dict] = games_response.data or []
-
-    if not rows:
+    all_rows: list[dict] = games_response.data or []
+    if not all_rows:
         return []
+
+    all_game_ids: list[str] = [row["id"] for row in all_rows]
+    gp_ids_response = (
+        supabase.table("game_players")
+        .select("game_id")
+        .in_("game_id", all_game_ids)
+        .execute()
+    )
+    game_ids_with_japanese: list[str] = list({
+        row["game_id"] for row in (gp_ids_response.data or [])
+    })
+
+    if not game_ids_with_japanese:
+        return []
+
+    rows: list[dict] = [r for r in all_rows if r["id"] in set(game_ids_with_japanese)]
 
     # Fetch Japanese players for these specific games (with player name + photo).
     game_ids_on_date: list[str] = [row["id"] for row in rows]

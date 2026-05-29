@@ -18,9 +18,16 @@ def get_current_user(
     Raises:
         HTTPException 401: if the token is missing, malformed, or expired.
     """
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail={"code": "UNAUTHORIZED", "message": "Invalid or expired token."},
+        )
     token: str = authorization.removeprefix("Bearer ")
     try:
         response = supabase.auth.get_user(token)
+        if response is None or response.user is None:
+            raise ValueError("No user in response")
         return response.user
     except Exception:
         raise HTTPException(

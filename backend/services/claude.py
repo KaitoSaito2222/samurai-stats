@@ -81,14 +81,14 @@ async def stream_player_chat(
         # Apply prompt caching to the system prompt. The system prompt contains
         # only structured data (player info, stats, game context) and is stable
         # across turns, making it an ideal cache candidate.
-        system=[
+        system=[  # type: ignore[arg-type]
             {
                 "type": "text",
                 "text": system_prompt,
-                "cache_control": {"type": "ephemeral"},
+                "cache_control": {"type": "ephemeral"},  # type: ignore[typeddict-unknown-key]
             }
         ],
-        messages=messages,
+        messages=messages,  # type: ignore[arg-type]
     ) as stream:
         async for text in stream.text_stream:
             yield text

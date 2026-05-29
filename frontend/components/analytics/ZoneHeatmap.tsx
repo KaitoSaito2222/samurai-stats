@@ -11,8 +11,8 @@ function isEmptyZone(stat: ZoneStat | undefined): boolean {
 }
 
 function getZoneBg(stat: ZoneStat | undefined): string {
-  if (!stat || stat.pa < 5 || stat.avg === null) return "bg-slate-200";
-  const avg = stat.avg;
+  if (isEmptyZone(stat)) return "bg-slate-200";
+  const avg = stat!.avg!;
   if (avg < 0.2) return "bg-blue-900";
   if (avg < 0.25) return "bg-blue-700";
   if (avg < 0.28) return "bg-slate-600";

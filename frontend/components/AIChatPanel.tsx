@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import api from "@/lib/api";
 import type { ChatMessage } from "@/lib/api";
 
 interface AIChatPanelProps {
@@ -18,9 +17,6 @@ export default function AIChatPanel({ playerId, userPlan, locale }: AIChatPanelP
   const [streaming, setStreaming] = useState(false);
   const [streamingText, setStreamingText] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
-
-  // Suppress unused import warning — api is available for future non-SSE calls
-  void api;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

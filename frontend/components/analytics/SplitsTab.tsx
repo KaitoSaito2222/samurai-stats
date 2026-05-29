@@ -96,11 +96,9 @@ function SituationChart({ labelA, labelB, statA, statB, metric }: SituationChart
           data={barData}
           x="x"
           y="y"
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          style={{ data: { fill: ({ datum }: any) => datum.fill } }}
+          style={{ data: { fill: ({ datum }: { datum?: { fill: string } }) => datum?.fill ?? "#999" } }}
           barWidth={32}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          labels={({ datum }: any) => datum.label}
+          labels={({ datum }: { datum?: { label: string } }) => datum?.label ?? ""}
           labelComponent={
             <VictoryLabel
               dy={-6}

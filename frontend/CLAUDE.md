@@ -134,7 +134,7 @@ components/
 ```
 
 **Zone heatmap color scale** (avg thresholds):
-- `< 5 PA` or null → `bg-slate-700` (insufficient sample)
+- `< 5 PA` or null → `bg-slate-200` (insufficient sample)
 - `< .200` → `bg-blue-900`
 - `.200–.250` → `bg-blue-700`
 - `.250–.280` → `bg-slate-600`

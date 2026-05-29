@@ -27,7 +27,10 @@ reset:
 
 # Re-run migrations manually (useful after adding a new migration file)
 migrate:
-	docker compose exec db psql -U postgres -f /docker-entrypoint-initdb.d/001_initial_schema.sql
+	@for f in $$(ls supabase/migrations/*.sql | sort); do \
+	  echo "Applying $$f..."; \
+	  docker compose exec -T db psql -U postgres -f /docker-entrypoint-initdb.d/$$(basename $$f); \
+	done
 
 # Open a psql shell inside the DB container
 shell-db:

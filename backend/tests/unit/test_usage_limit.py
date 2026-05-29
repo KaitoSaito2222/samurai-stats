@@ -88,7 +88,9 @@ def test_free_limit_blocks_at_3() -> None:
             )
 
     assert exc_info.value.status_code == 403
-    assert exc_info.value.detail["code"] == "LIMIT_EXCEEDED"
+    detail = exc_info.value.detail
+    assert isinstance(detail, dict)
+    assert detail["code"] == "LIMIT_EXCEEDED"
 
 
 # ---------------------------------------------------------------------------
@@ -157,9 +159,6 @@ def test_pro_no_hard_limit() -> None:
     ai_usage against FREE_DAILY_LIMIT. Verify that 100 calls does not
     trigger the free-limit path.
     """
-    today = usage_date_jst()
-    user_id = "user-pro-xyz"
-
     # Even if somehow ai_usage were queried, count=100 should not matter for Pro.
     # The key assertion: the free-limit condition (calls >= FREE_DAILY_LIMIT)
     # is never applied to Pro users. We verify this by checking the condition

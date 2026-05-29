@@ -10,11 +10,7 @@ interface GamesPageProps {
 }
 
 function todayJST(): string {
-  return new Date(
-    new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" })
-  )
-    .toISOString()
-    .split("T")[0];
+  return new Intl.DateTimeFormat("sv", { timeZone: "Asia/Tokyo" }).format(new Date());
 }
 
 function addDays(dateStr: string, days: number): string {

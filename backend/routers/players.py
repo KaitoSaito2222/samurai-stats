@@ -97,7 +97,7 @@ async def list_japanese_players(
     # Count total matching rows.
     count_response = (
         supabase.table("players")
-        .select("id", count="exact")
+        .select("id", count="exact")  # type: ignore[arg-type]
         .eq("is_japanese", True)
         .execute()
     )
@@ -145,7 +145,7 @@ async def search_players(
     if not q:
         # Return all players when no query is provided.
         count_response = (
-            supabase.table("players").select("id", count="exact").execute()
+            supabase.table("players").select("id", count="exact").execute()  # type: ignore[arg-type]
         )
         total: int = count_response.count or 0
         data_response = (
@@ -160,7 +160,7 @@ async def search_players(
         # Supabase supports JSONB text extraction in filters via ->> operator.
         count_response = (
             supabase.table("players")
-            .select("id", count="exact")
+            .select("id", count="exact")  # type: ignore[arg-type]
             .or_(f"names->>en.ilike.%{q}%,names->>ja.ilike.%{q}%")
             .execute()
         )
@@ -382,9 +382,8 @@ async def get_player_analytics(
         .maybe_single()
         .execute()
     )
-    statcast: dict[str, Any] | None = (
-        analytics_result.data["data"] if analytics_result.data else None
-    )
+    analytics_data: dict | None = analytics_result.data if analytics_result is not None and analytics_result.data else None
+    statcast: dict[str, Any] | None = analytics_data["data"] if analytics_data else None
 
     response_payload: dict[str, Any] = {
         "player_id": player_id,
