@@ -15,7 +15,6 @@ import json
 import logging
 import time
 from collections.abc import AsyncGenerator
-from typing import Any
 
 import pytz
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
@@ -59,42 +58,6 @@ def today_jst_utc_start() -> datetime.datetime:
     jst_midnight = JST.localize(datetime.datetime.combine(today, datetime.time.min))
     return jst_midnight.astimezone(pytz.utc)
 
-
-def _get_or_create_usage_row(
-    supabase: Client, user_id: str, date: datetime.date
-) -> dict[str, Any]:
-    """Return the ai_usage row for (user_id, date), creating it if absent."""
-    date_str: str = date.isoformat()
-    existing = (
-        supabase.table("ai_usage")
-        .select("*")
-        .eq("user_id", user_id)
-        .eq("usage_date", date_str)
-        .single()
-        .execute()
-    )
-    if existing.data:
-        return existing.data
-
-    # Row does not exist — create it.
-    supabase.table("ai_usage").insert(
-        {"user_id": user_id, "usage_date": date_str, "ai_call_count": 0}
-    ).execute()
-    return {"user_id": user_id, "usage_date": date_str, "ai_call_count": 0}
-
-
-def _increment_usage(
-    supabase: Client, user_id: str, date: datetime.date
-) -> int:
-    """Increment ai_call_count and return the new value."""
-    date_str: str = date.isoformat()
-    # Fetch the current count, then update.
-    row = _get_or_create_usage_row(supabase, user_id, date)
-    new_count: int = row["ai_call_count"] + 1
-    supabase.table("ai_usage").update({"ai_call_count": new_count}).eq(
-        "user_id", user_id
-    ).eq("usage_date", date_str).execute()
-    return new_count
 
 
 def _try_increment_atomic(
