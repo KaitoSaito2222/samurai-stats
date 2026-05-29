@@ -155,3 +155,12 @@ class GameLogResponse(BaseModel):
     player_id: str
     season: int
     entries: list[GameLogEntry]
+
+
+class TodayStats(BaseModel):
+    """Batting stats for a player in today's game(s), from the game_logs DB table."""
+    date: str           # YYYY-MM-DD (JST)
+    at_bats: int
+    hits: int
+    home_runs: int
+    rbi: int

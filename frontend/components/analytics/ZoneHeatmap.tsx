@@ -54,7 +54,7 @@ export default function ZoneHeatmap({ zoneStats }: ZoneHeatmapProps) {
               {fmtAvg(stat?.avg ?? null)}
             </span>
             {!isEmptyZone(stat) && (
-              <span className={`text-xs tabular-nums ${isEmpty ? "text-slate-400" : "text-white/60"}`}>{stat.pa}PA</span>
+              <span className={`text-xs tabular-nums ${isEmpty ? "text-slate-400" : "text-white/60"}`}>{stat?.pa}PA</span>
             )}
           </div>
         );

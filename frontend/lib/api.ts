@@ -267,6 +267,14 @@ export interface GameDetail extends Omit<Game, "japanese_players"> {
   }[];
 }
 
+export interface TodayStats {
+  date: string;
+  at_bats: number;
+  hits: number;
+  home_runs: number;
+  rbi: number;
+}
+
 // Chat types
 export interface ChatMessage {
   role: "user" | "assistant";

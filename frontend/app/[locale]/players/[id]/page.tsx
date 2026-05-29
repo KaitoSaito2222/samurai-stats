@@ -1,13 +1,13 @@
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
-import { getPlayerServer, getPlayerStatsServer, getPlayerAnalyticsServer } from "@/lib/api-server";
+import { getPlayerServer, getPlayerStatsServer, getPlayerAnalyticsServer, getPlayerTodayStatsServer } from "@/lib/api-server";
 import { getUserPlan } from "@/lib/api";
 import StatsTable from "@/components/StatsTable";
 import AISummaryButton from "@/components/AISummaryButton";
 import AnalyticsPanel from "@/components/AnalyticsPanel";
 import AIChatPanel from "@/components/AIChatPanel";
 import FavoriteButton from "@/components/FavoriteButton";
-import type { Player, PlayerStats, UserPlan, PlayerAnalytics } from "@/lib/api";
+import type { Player, PlayerStats, UserPlan, PlayerAnalytics, TodayStats } from "@/lib/api";
 
 interface PlayerDetailPageProps {
   params: { locale: string; id: string };
@@ -15,12 +15,13 @@ interface PlayerDetailPageProps {
 
 async function fetchPlayerData(
   id: string
-): Promise<{ player: Player | null; stats: PlayerStats | null; userPlan: UserPlan | null; analytics: PlayerAnalytics | null }> {
-  const [playerRes, statsRes, planRes, analyticsRes] = await Promise.allSettled([
+): Promise<{ player: Player | null; stats: PlayerStats | null; userPlan: UserPlan | null; analytics: PlayerAnalytics | null; todayStats: TodayStats | null }> {
+  const [playerRes, statsRes, planRes, analyticsRes, todayRes] = await Promise.allSettled([
     getPlayerServer(id),
     getPlayerStatsServer(id),
     getUserPlan(),
     getPlayerAnalyticsServer(id),
+    getPlayerTodayStatsServer(id),
   ]);
 
   return {
@@ -28,13 +29,14 @@ async function fetchPlayerData(
     stats: statsRes.status === "fulfilled" ? statsRes.value.data : null,
     userPlan: planRes.status === "fulfilled" ? planRes.value.data : null,
     analytics: analyticsRes.status === "fulfilled" ? analyticsRes.value.data : null,
+    todayStats: todayRes.status === "fulfilled" ? todayRes.value.data : null,
   };
 }
 
 export default async function PlayerDetailPage({ params: { locale, id } }: PlayerDetailPageProps) {
   const t = await getTranslations("player");
   const tChat = await getTranslations("chat");
-  const { player, stats, userPlan, analytics } = await fetchPlayerData(id);
+  const { player, stats, userPlan, analytics, todayStats } = await fetchPlayerData(id);
 
   if (!player) {
     const tErrors = await getTranslations("errors");
@@ -93,6 +95,18 @@ export default async function PlayerDetailPage({ params: { locale, id } }: Playe
         <div className="bg-surface-card rounded-xl border border-surface-border p-6 shadow-sm">
           <h2 className="text-lg font-bold text-slate-900 mb-3">{t("stats")}</h2>
           <p className="text-slate-500">{t("summaryUnavailable")}</p>
+        </div>
+      )}
+
+      {/* Today's in-game batting stats */}
+      {todayStats && (
+        <div className="flex items-center gap-2 flex-wrap px-1">
+          <span className="text-sm font-semibold text-slate-500">{t("todayLabel")}:</span>
+          <span className="px-3 py-1 bg-brand/10 text-brand rounded-full text-sm font-bold">
+            {todayStats.hits}-for-{todayStats.at_bats}
+            {todayStats.home_runs > 0 && `, ${todayStats.home_runs} HR`}
+            {todayStats.rbi > 0 && `, ${todayStats.rbi} RBI`}
+          </span>
         </div>
       )}
 

@@ -84,7 +84,9 @@
     "risp": "得点圏",
     "lateClose": "終盤接戦",
     "opponent": "対戦相手",
-    "gameLogNoData": "試合ログデータがありません"
+    "gameLogNoData": "試合ログデータがありません",
+    "todayStats": "今日の成績",
+    "todayLabel": "今日"
   },
   "games": {
     "live": "試合中",

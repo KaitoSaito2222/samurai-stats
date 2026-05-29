@@ -39,6 +39,7 @@ from schemas.players import (
     RecentFormResponse,
     RecentFormWindow,
     SplitStat,
+    TodayStats,
 )
 from services.mlb_api import (
     fetch_player_career,
@@ -689,3 +690,46 @@ async def get_career(
     ]
 
     return CareerResponse(player_id=player_id, seasons=seasons)
+
+
+# ---------------------------------------------------------------------------
+# GET /api/players/{id}/today-stats
+# ---------------------------------------------------------------------------
+
+
+@router.get("/{player_id}/today-stats", response_model=TodayStats | None)
+@limiter.limit("60/minute")
+async def get_today_stats(
+    request: Request,
+    player_id: str,
+    supabase: Client = Depends(get_supabase),
+) -> TodayStats | None:
+    """Return today's batting stats (AB/H/HR/RBI) for a player from game_logs.
+
+    Returns null if the player has no game today (JST). Public endpoint.
+    """
+    today: datetime.date = datetime.datetime.now(_JST).date()
+
+    result = (
+        supabase.table("game_logs")
+        .select("game_date,at_bats,hits,home_runs,rbi")
+        .eq("player_id", player_id)
+        .eq("game_date", today.isoformat())
+        .eq("stat_type", "batting")
+        .order("id", desc=True)
+        .limit(1)
+        .execute()
+    )
+
+    rows: list[dict[str, Any]] = result.data or []
+    if not rows:
+        return None
+
+    row = rows[0]
+    return TodayStats(
+        date=str(row["game_date"]),
+        at_bats=row.get("at_bats") or 0,
+        hits=row.get("hits") or 0,
+        home_runs=row.get("home_runs") or 0,
+        rbi=row.get("rbi") or 0,
+    )

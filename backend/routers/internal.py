@@ -20,6 +20,7 @@ from services.japanese_data import mlb_photo_url, player_name_ja, team_name_from
 from services.baseball_savant import fetch_statcast_aggregated
 from services.mlb_api import (
     detect_japanese_player_games,
+    fetch_boxscore_batting,
     fetch_japanese_players,
     fetch_live_game,
     fetch_player_game_log,
@@ -265,24 +266,32 @@ async def sync_live(
 
     Run every 2 minutes during game hours.
     """
-    # Find currently live games.
-    live_response = (
-        supabase.table("games").select("id").eq("status", "live").execute()
-    )
-    live_game_ids: list[str] = [
-        row["id"] for row in (live_response.data or [])
-    ]
-
-    if not live_game_ids:
-        return {"updated": 0, "message": "No live games."}
-
     import asyncio
 
-    updated_count = 0
-    live_data_list: list[dict[str, Any]] = await asyncio.gather(
-        *[fetch_live_game(gid) for gid in live_game_ids]
+    # Find currently live games with their dates.
+    live_response = (
+        supabase.table("games").select("id,game_date").eq("status", "live").execute()
+    )
+    live_rows: list[dict[str, Any]] = live_response.data or []
+
+    if not live_rows:
+        return {"updated": 0, "game_logs_updated": 0, "message": "No live games."}
+
+    live_game_ids: list[str] = [row["id"] for row in live_rows]
+    game_date_map: dict[str, str] = {
+        row["id"]: str(row["game_date"]) for row in live_rows if row.get("game_date")
+    }
+
+    # Fetch live scores and boxscores concurrently.
+    live_data_list: list[dict[str, Any]]
+    boxscore_lists: list[list[dict[str, Any]]]
+    live_data_list, boxscore_lists = await asyncio.gather(  # type: ignore[assignment]
+        asyncio.gather(*[fetch_live_game(gid) for gid in live_game_ids]),
+        asyncio.gather(*[fetch_boxscore_batting(gid) for gid in live_game_ids]),
     )
 
+    # Update game scores.
+    updated_count = 0
     for live_data in live_data_list:
         if not live_data:
             continue
@@ -297,7 +306,46 @@ async def sync_live(
         ).eq("id", game_pk).execute()
         updated_count += 1
 
-    return {"updated": updated_count}
+    # Update game_logs with live batting stats for Japanese players.
+    gp_resp = (
+        supabase.table("game_players")
+        .select("game_id,player_id")
+        .in_("game_id", live_game_ids)
+        .execute()
+    )
+    japanese_by_game: dict[str, set[str]] = {}
+    for gp_row in gp_resp.data or []:
+        japanese_by_game.setdefault(gp_row["game_id"], set()).add(gp_row["player_id"])
+
+    game_logs_updated = 0
+    for game_pk, batting_list in zip(live_game_ids, boxscore_lists):
+        jp_players = japanese_by_game.get(game_pk, set())
+        if not jp_players:
+            continue
+        game_date_str = game_date_map.get(game_pk, "")
+        if not game_date_str:
+            continue
+        rows: list[dict[str, Any]] = [
+            {
+                "player_id": b["player_id"],
+                "game_id": game_pk,
+                "game_date": game_date_str,
+                "stat_type": "batting",
+                "at_bats": b["at_bats"],
+                "hits": b["hits"],
+                "home_runs": b["home_runs"],
+                "rbi": b["rbi"],
+            }
+            for b in batting_list
+            if b["player_id"] in jp_players
+        ]
+        if rows:
+            supabase.table("game_logs").upsert(
+                rows, on_conflict="player_id,game_id,stat_type"
+            ).execute()
+            game_logs_updated += len(rows)
+
+    return {"updated": updated_count, "game_logs_updated": game_logs_updated}
 
 
 # ---------------------------------------------------------------------------

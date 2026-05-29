@@ -84,7 +84,9 @@
     "risp": "RISP",
     "lateClose": "Late & Close",
     "opponent": "Opponent",
-    "gameLogNoData": "No game log data"
+    "gameLogNoData": "No game log data",
+    "todayStats": "Today's Stats",
+    "todayLabel": "Today"
   },
   "games": {
     "live": "Live",

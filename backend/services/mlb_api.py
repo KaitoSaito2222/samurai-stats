@@ -294,6 +294,52 @@ async def fetch_live_game(game_pk: str) -> dict[str, Any]:
     }
 
 
+async def fetch_boxscore_batting(game_pk: str) -> list[dict[str, Any]]:
+    """Fetch batting stats for all players from a game's boxscore.
+
+    Calls GET /game/{gamePk}/boxscore and extracts batting lines.
+    Returns only batters with at_bats > 0 (skips pitchers and DNP players).
+
+    Returns a list of dicts with player_id, at_bats, hits, home_runs, rbi.
+    Returns an empty list on failure.
+    """
+    try:
+        response = await _client.get(f"/game/{game_pk}/boxscore")
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        logger.error("fetch_boxscore_batting game_pk=%s failed: %s", game_pk, exc)
+        return []
+
+    data: dict[str, Any] = response.json()
+    teams: dict[str, Any] = data.get("teams", {})
+
+    results: list[dict[str, Any]] = []
+    for side in ("home", "away"):
+        players: dict[str, Any] = teams.get(side, {}).get("players", {})
+        for player_data in players.values():
+            batting: dict[str, Any] = player_data.get("stats", {}).get("batting", {})
+            if not batting:
+                continue
+            at_bats: int = int(batting.get("atBats") or 0)
+            if at_bats == 0:
+                continue
+            person: dict[str, Any] = player_data.get("person", {})
+            player_id: str = str(person.get("id", ""))
+            if not player_id:
+                continue
+            results.append(
+                {
+                    "player_id": player_id,
+                    "at_bats": at_bats,
+                    "hits": int(batting.get("hits") or 0),
+                    "home_runs": int(batting.get("homeRuns") or 0),
+                    "rbi": int(batting.get("rbi") or 0),
+                }
+            )
+
+    return results
+
+
 async def fetch_player_splits(
     player_id: str, season: int
 ) -> dict[str, Any]:
