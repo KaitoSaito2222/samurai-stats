@@ -1,16 +1,9 @@
-.PHONY: up down logs reset migrate shell-db shell-backend
+.PHONY: up down logs reset migrate seed shell-db shell-backend
 
 # Start all services (first run: builds images and initialises DB)
 up:
 	docker compose --env-file .env.local up --build -d
-	@echo ""
-	@echo "  Services:"
-	@echo "    Frontend  → http://localhost:3000"
-	@echo "    Backend   → http://localhost:8000"
-	@echo "    Supabase  → http://localhost:8080  (auth + rest proxy)"
-	@echo "    DB        → postgresql://postgres:localpassword@localhost:5432/postgres"
-	@echo ""
-	@echo "  Run 'make logs' to tail all logs."
+	@./scripts/seed-local.sh
 
 # Stop all services (preserves pgdata volume)
 down:
@@ -20,10 +13,15 @@ down:
 logs:
 	docker compose logs -f
 
-# Tear down everything including the DB volume, then rebuild from scratch
+# Tear down everything including the DB volume, then rebuild and seed from scratch
 reset:
 	docker compose down -v
 	docker compose --env-file .env.local up --build -d
+	@./scripts/seed-local.sh
+
+# Seed local data without restarting services (backend must already be running)
+seed:
+	@./scripts/seed-local.sh
 
 # Re-run migrations manually (useful after adding a new migration file)
 migrate:
