@@ -41,3 +41,8 @@ CREATE INDEX IF NOT EXISTS idx_user_favorites_user
 -- ai_logs: Pro soft-limit count and cost monitoring
 CREATE INDEX IF NOT EXISTS idx_ai_logs_user_created
     ON ai_logs (user_id, created_at);
+
+-- Tell PostgREST to reload its schema cache after all migrations have run.
+-- Without this, PostgREST may start (triggered by the DB healthcheck) before
+-- the schema migrations complete and miss newly created tables.
+NOTIFY pgrst, 'reload schema';
