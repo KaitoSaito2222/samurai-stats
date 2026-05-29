@@ -132,6 +132,8 @@ services:
       NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
       # Server Components inside the container must reach the backend via Docker service name
       API_URL: http://backend:8000
+      # Use polling instead of inotify — prevents bind-mount race on Docker Desktop (Mac/Windows)
+      WATCHPACK_POLLING: "true"
     command: sh -c "npm install && npm run dev"
     depends_on:
       - backend
