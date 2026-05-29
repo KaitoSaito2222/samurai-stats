@@ -8,6 +8,7 @@ GET  /api/billing/portal    → create Stripe Customer Portal session
 
 from __future__ import annotations
 
+import logging
 import os
 
 import stripe
@@ -19,9 +20,14 @@ from database import get_supabase
 from dependencies.auth import get_current_user
 
 router = APIRouter(prefix="/api/billing", tags=["billing"])
+_logger = logging.getLogger(__name__)
 
 stripe.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
 _WEBHOOK_SECRET: str = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+if not _WEBHOOK_SECRET:
+    _logger.warning(
+        "STRIPE_WEBHOOK_SECRET is not set — webhook endpoint will reject all events"
+    )
 _SUCCESS_URL: str = os.environ.get(
     "STRIPE_SUCCESS_URL", "http://localhost:3000/ja/billing?success=true"
 )

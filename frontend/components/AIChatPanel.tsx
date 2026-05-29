@@ -55,6 +55,7 @@ export default function AIChatPanel({ playerId, userPlan, locale }: AIChatPanelP
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let accumulated = "";
+      let done_signal = false;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -64,7 +65,7 @@ export default function AIChatPanel({ playerId, userPlan, locale }: AIChatPanelP
         for (const line of lines) {
           if (!line.startsWith("data: ")) continue;
           const data = line.slice(6);
-          if (data === "[DONE]") break;
+          if (data === "[DONE]") { done_signal = true; break; }
           try {
             const parsed = JSON.parse(data);
             if (parsed.text) {
@@ -73,6 +74,7 @@ export default function AIChatPanel({ playerId, userPlan, locale }: AIChatPanelP
             }
           } catch { /* skip malformed */ }
         }
+        if (done_signal) break;
       }
 
       setMessages((prev) => [...prev, { role: "assistant", content: accumulated }]);

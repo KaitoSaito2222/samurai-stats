@@ -12,6 +12,7 @@ Unauthenticated users: treated as free with 1 call/day per IP.
 
 import datetime
 import json
+import logging
 import time
 from collections.abc import AsyncGenerator
 from typing import Any
@@ -33,6 +34,7 @@ from services.gemini import generate_player_analysis, generate_player_summary
 
 limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/ai", tags=["ai"])
+_logger = logging.getLogger(__name__)
 
 JST = pytz.timezone("Asia/Tokyo")
 
@@ -93,6 +95,24 @@ def _increment_usage(
         "user_id", user_id
     ).eq("usage_date", date_str).execute()
     return new_count
+
+
+def _try_increment_atomic(
+    supabase: Client,
+    user_id: str,
+    date: datetime.date,
+    limit: int,
+) -> int:
+    """Atomically check and increment ai_usage.ai_call_count.
+
+    Returns the new count (1–limit) on success, or -1 if limit already reached.
+    Prevents TOCTOU races between concurrent requests.
+    """
+    result = supabase.rpc(
+        "try_increment_ai_usage",
+        {"p_user_id": user_id, "p_date": date.isoformat(), "p_limit": limit},
+    ).execute()
+    return int(result.data)
 
 
 def _log_ai_call(
@@ -212,10 +232,8 @@ async def get_player_summary(
     if user is None:
         # Unauthenticated: 1 call/day per IP using a synthetic user_id.
         ip_key: str = f"anon:{get_remote_address(request)}"
-        usage_row = _get_or_create_usage_row(supabase, ip_key, today)
-        calls_used_before: int = usage_row["ai_call_count"]
-
-        if calls_used_before >= ANON_DAILY_LIMIT:
+        new_count: int = _try_increment_atomic(supabase, ip_key, today, ANON_DAILY_LIMIT)
+        if new_count == -1:
             raise HTTPException(
                 status_code=403,
                 detail={
@@ -228,9 +246,7 @@ async def get_player_summary(
 
         start_ms: int = int(time.time() * 1000)
         summary: str = await generate_player_summary(player_dict, stats_dict, body.lang)
-        latency_ms: int = int(time.time() * 1000) - start_ms
-
-        new_count: int = _increment_usage(supabase, ip_key, today)
+        latency_ms: int = int(time.time() * 1000) - start_ms  # noqa: F841
 
         return SummaryResponse(
             summary=summary,
@@ -269,10 +285,8 @@ async def get_player_summary(
     # ------------------------------------------------------------------
     # Free user: hard limit of 3/day.
     # ------------------------------------------------------------------
-    usage_row = _get_or_create_usage_row(supabase, user_id, today)
-    calls_used_before = usage_row["ai_call_count"]
-
-    if calls_used_before >= FREE_DAILY_LIMIT:
+    new_count = _try_increment_atomic(supabase, user_id, today, FREE_DAILY_LIMIT)
+    if new_count == -1:
         raise HTTPException(
             status_code=403,
             detail={
@@ -288,7 +302,6 @@ async def get_player_summary(
     summary = await generate_player_summary(player_dict, stats_dict, body.lang)
     latency_ms = int(time.time() * 1000) - start_ms
 
-    new_count = _increment_usage(supabase, user_id, today)
     _log_ai_call(supabase, user_id, "summary", "gemini-2.0-flash", latency_ms)
 
     return SummaryResponse(
@@ -378,10 +391,8 @@ async def get_player_analysis(
     if user is None:
         # Unauthenticated: 1 call/day per IP.
         ip_key: str = f"anon:{get_remote_address(request)}"
-        usage_row = _get_or_create_usage_row(supabase, ip_key, today)
-        calls_used_before: int = usage_row["ai_call_count"]
-
-        if calls_used_before >= ANON_DAILY_LIMIT:
+        new_count: int = _try_increment_atomic(supabase, ip_key, today, ANON_DAILY_LIMIT)
+        if new_count == -1:
             raise HTTPException(
                 status_code=403,
                 detail={
@@ -390,11 +401,7 @@ async def get_player_analysis(
                 },
             )
 
-        start_ms: int = int(time.time() * 1000)
         analysis: str = await generate_player_analysis(player_dict, trends, body.lang)
-        latency_ms: int = int(time.time() * 1000) - start_ms  # noqa: F841 — reserved for future logging
-
-        new_count: int = _increment_usage(supabase, ip_key, today)
 
         return AnalysisResponse(
             analysis=analysis,
@@ -428,10 +435,8 @@ async def get_player_analysis(
         )
 
     # Free user: hard limit of 3/day (shared with summary).
-    usage_row = _get_or_create_usage_row(supabase, user_id, today)
-    calls_used_before = usage_row["ai_call_count"]
-
-    if calls_used_before >= FREE_DAILY_LIMIT:
+    new_count = _try_increment_atomic(supabase, user_id, today, FREE_DAILY_LIMIT)
+    if new_count == -1:
         raise HTTPException(
             status_code=403,
             detail={
@@ -447,7 +452,6 @@ async def get_player_analysis(
     analysis = await generate_player_analysis(player_dict, trends, body.lang)
     latency_ms = int(time.time() * 1000) - start_ms
 
-    new_count = _increment_usage(supabase, user_id, today)
     _log_ai_call(supabase, user_id, "analysis", "gemini-2.0-flash", latency_ms)
 
     return AnalysisResponse(
@@ -549,9 +553,8 @@ async def post_ai_chat(
         {"role": m.role, "content": m.content} for m in body.history
     ]
 
-    # Log the chat call before streaming (latency tracked as 0 — streaming).
     user_id: str = str(user.id)
-    _log_ai_call(supabase, user_id, "chat", "claude-sonnet-4-6", 0)
+    chat_start_ms: int = int(time.time() * 1000)
 
     async def sse_generator() -> AsyncGenerator[str, None]:
         from services.claude import stream_player_chat
@@ -565,7 +568,10 @@ async def post_ai_chat(
                 message=body.message,
             ):
                 yield f"data: {json.dumps({'text': text})}\n\n"
+            latency_ms = int(time.time() * 1000) - chat_start_ms
+            _log_ai_call(supabase, user_id, "chat", "claude-sonnet-4-6", latency_ms)
         except Exception:
+            _logger.exception("SSE stream error for user %s", user_id)
             yield f"data: {json.dumps({'error': 'AI chat temporarily unavailable.'})}\n\n"
         yield "data: [DONE]\n\n"
 

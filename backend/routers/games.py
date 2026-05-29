@@ -138,7 +138,6 @@ async def get_games_by_date(
         try:
             game_date = datetime.date.fromisoformat(date)
         except ValueError:
-            from fastapi import HTTPException
             raise HTTPException(
                 status_code=400,
                 detail={"code": "INVALID_REQUEST", "message": "date must be YYYY-MM-DD."},

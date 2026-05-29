@@ -201,24 +201,9 @@ def test_analysis_pro_only(free_client: TestClient) -> None:
     A freshly created Free usage row returns ai_call_count=3 → 403 LIMIT_EXCEEDED.
     This test confirms the correct gating behavior.
     """
-    # Override supabase for this test to return an exhausted usage row.
+    # Override supabase for this test: rpc returns -1 to signal limit already hit.
     supabase_mock = _make_supabase_mock("free")
-    usage_row = {
-        "user_id": str(FAKE_FREE_USER.id),
-        "usage_date": "2026-05-28",
-        "ai_call_count": 3,
-    }
-    # Override the usage row lookup to return the exhausted row.
-    (
-        supabase_mock.table.return_value
-        .select.return_value
-        .eq.return_value
-        .eq.return_value
-        .single.return_value
-        .execute.return_value
-        .data
-    )
-    supabase_mock.table.return_value.select.return_value.eq.return_value.eq.return_value.single.return_value.execute.return_value.data = usage_row
+    supabase_mock.rpc.return_value.execute.return_value.data = -1
 
     from database import get_supabase
     from dependencies.auth import get_current_user, get_optional_user
