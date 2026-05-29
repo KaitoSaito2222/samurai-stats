@@ -61,7 +61,7 @@ export default async function PlayerDetailPage({ params: { locale, id } }: Playe
               alt={displayName}
               width={96}
               height={96}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-top"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-3xl">⚾</div>

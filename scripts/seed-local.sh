@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 # Seed local dev data after `make up`.
 # Waits for the backend to be healthy, reloads the PostgREST schema cache,
-# then runs the three sync endpoints that populate the DB with real MLB data.
+# then runs sync endpoints that populate the DB with real MLB data.
+# Syncs the last SCHEDULE_DAYS days of game schedules so the local DB has
+# recent game data without requiring manual curl calls.
 
 set -euo pipefail
 
 BASE="http://localhost:8000"
 KEY="${INTERNAL_API_KEY:-local-internal-key}"
 MAX_WAIT=120
+SCHEDULE_DAYS=3  # how many past days of game schedules to seed
 
 # ---------------------------------------------------------------------------
 # Wait for backend
@@ -56,8 +59,18 @@ _sync() {
 }
 
 _sync "Syncing Japanese players" "sync/players"
-_sync "Syncing today's schedule" "sync/schedule"
 _sync "Syncing player stats"     "sync/stats"
+
+# Sync the last SCHEDULE_DAYS days of game schedules (JST dates).
+# Using TZ=Asia/Tokyo so "N days ago" resolves in JST, not UTC.
+echo "  ▸  Syncing last ${SCHEDULE_DAYS} days of schedules..."
+for i in $(seq $((SCHEDULE_DAYS - 1)) -1 0); do
+  date_str=$(TZ="Asia/Tokyo" date -d "${i} days ago" +%Y-%m-%d 2>/dev/null \
+    || TZ="Asia/Tokyo" date -v"-${i}d" +%Y-%m-%d)  # GNU date / BSD date fallback
+  printf "       %s  " "${date_str}"
+  out=$(curl -sf -X POST "${BASE}/internal/sync/schedule?date=${date_str}" \
+         -H "X-Internal-API-Key: ${KEY}" 2>&1) && echo "${out}" || echo "FAILED — ${out}"
+done
 
 echo ""
 echo "  ✅  Seed complete!"

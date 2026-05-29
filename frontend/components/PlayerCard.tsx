@@ -26,7 +26,7 @@ export default function PlayerCard({ player, locale }: PlayerCardProps) {
               alt={displayName}
               width={64}
               height={64}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+              className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-200"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-2xl">
