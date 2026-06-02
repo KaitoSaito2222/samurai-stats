@@ -46,10 +46,10 @@ export default function FavoriteButton({ playerId, isLoggedIn, locale }: Favorit
       onClick={toggle}
       disabled={loading}
       aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-      className={`p-2 rounded-full transition-colors ${
+      className={`p-2 rounded-lg transition-colors ${
         isFavorite
-          ? "text-brand bg-brand/10 hover:bg-brand/20"
-          : "text-slate-400 hover:text-brand hover:bg-brand/10"
+          ? "text-gold bg-white/10 hover:bg-white/20"
+          : "text-white/50 hover:text-gold hover:bg-white/10"
       }`}
     >
       <svg className="w-5 h-5" fill={isFavorite ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">

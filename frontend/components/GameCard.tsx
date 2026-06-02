@@ -11,11 +11,11 @@ interface GameCardProps {
 }
 
 const statusStyles: Record<string, string> = {
-  live:      "bg-green-50 text-green-700 border-green-200",
-  final:     "bg-slate-100 text-slate-600 border-slate-200",
-  scheduled: "bg-blue-50 text-blue-700 border-blue-200",
-  postponed: "bg-yellow-50 text-yellow-700 border-yellow-200",
-  cancelled: "bg-red-50 text-red-700 border-red-200",
+  live:      "text-gold-dark",
+  final:     "text-ink-muted",
+  scheduled: "text-navy",
+  postponed: "text-ink-muted",
+  cancelled: "text-error",
 };
 
 export default function GameCard({ game, locale }: GameCardProps) {
@@ -37,43 +37,43 @@ export default function GameCard({ game, locale }: GameCardProps) {
   return (
     <Link
       href={`/${locale}/games/${game.id}`}
-      className="block bg-surface-card border border-surface-border rounded-2xl p-4 space-y-3 transition-all duration-200 shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-brand/30"
+      className="group block bg-surface-card border border-surface-border rounded p-5 space-y-3 transition-all duration-200 hover:border-gold hover:shadow-float"
     >
-      {/* Status badge */}
+      {/* Status row */}
       <div className="flex justify-between items-center">
         <span
-          className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${
+          className={`flex items-center gap-1.5 font-sans text-xs font-semibold uppercase tracking-wide ${
             statusStyles[game.status] ?? statusStyles.scheduled
           }`}
         >
           {game.status === "live" && (
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-600 mr-1.5 animate-pulse" />
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
           )}
           {statusLabel[game.status] ?? game.status}
         </span>
         {game.status === "live" && game.inning && (
-          <span className="text-slate-600 text-xs">{game.inning}回</span>
+          <span className="font-sans text-xs text-ink-muted">{game.inning}回</span>
         )}
         {!isLiveOrFinal && (
-          <span className="text-slate-600 text-xs">{game.game_date}</span>
+          <span className="font-sans text-xs text-ink-muted tabular-nums">{game.game_date}</span>
         )}
       </div>
 
       {/* Teams and scores */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <span className="font-medium text-slate-900 truncate">{awayTeam}</span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="font-display font-bold text-navy truncate">{awayTeam}</span>
           {isLiveOrFinal && (
-            <span className="text-xl font-bold text-slate-900 tabular-nums">
+            <span className="font-sans text-2xl font-bold text-navy tabular-nums">
               {game.away_score ?? 0}
             </span>
           )}
         </div>
         <div className="border-t border-surface-border" />
-        <div className="flex items-center justify-between">
-          <span className="font-medium text-slate-900 truncate">{homeTeam}</span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="font-display font-bold text-navy truncate">{homeTeam}</span>
           {isLiveOrFinal && (
-            <span className="text-xl font-bold text-slate-900 tabular-nums">
+            <span className="font-sans text-2xl font-bold text-navy tabular-nums">
               {game.home_score ?? 0}
             </span>
           )}
@@ -81,19 +81,19 @@ export default function GameCard({ game, locale }: GameCardProps) {
       </div>
 
       {game.venue && (
-        <p className="text-xs text-slate-600 truncate">{game.venue}</p>
+        <p className="font-sans text-xs text-ink-muted truncate">{game.venue}</p>
       )}
 
       {/* Japanese players in this game */}
       {players.length > 0 && (
-        <div className="pt-2 border-t border-surface-border flex items-center gap-1.5 flex-wrap">
+        <div className="pt-3 border-t border-surface-border flex items-center gap-1.5 flex-wrap">
           {players.map((player) => {
             const name = locale === "ja" && player.name_ja ? player.name_ja : player.name_en;
             return (
               <div
                 key={player.id}
                 title={name}
-                className="w-7 h-7 rounded-full overflow-hidden bg-slate-100 flex-shrink-0 ring-1 ring-white shadow-sm"
+                className="w-7 h-7 rounded overflow-hidden bg-surface-muted flex-shrink-0 border border-surface-border"
               >
                 {player.photo_url ? (
                   <Image
@@ -101,7 +101,7 @@ export default function GameCard({ game, locale }: GameCardProps) {
                     alt={name}
                     width={28}
                     height={28}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-top"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs">⚾</div>
@@ -109,7 +109,7 @@ export default function GameCard({ game, locale }: GameCardProps) {
               </div>
             );
           })}
-          <span className="text-xs text-slate-500 truncate">
+          <span className="font-sans text-xs text-ink-muted truncate">
             {players.length === 1
               ? (locale === "ja" ? players[0].name_ja || players[0].name_en : players[0].name_en)
               : `${players.length}${locale === "ja" ? "人出場" : " players"}`}

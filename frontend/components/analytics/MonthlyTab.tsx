@@ -25,7 +25,7 @@ export default function MonthlyTab({ monthly }: MonthlyTabProps) {
 
   if (!monthly || monthly.length === 0) {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("summaryUnavailable")}
       </p>
     );
@@ -36,7 +36,7 @@ export default function MonthlyTab({ monthly }: MonthlyTabProps) {
 
   if (months.length === 0) {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("summaryUnavailable")}
       </p>
     );
@@ -121,7 +121,7 @@ export default function MonthlyTab({ monthly }: MonthlyTabProps) {
         </VictoryChart>
 
         {/* Legend */}
-        <div className="flex gap-4 justify-center mt-1 text-xs text-slate-500">
+        <div className="flex gap-4 justify-center mt-1 text-xs text-ink-muted">
           <span className="flex items-center gap-1">
             <span className="inline-block w-6 h-0.5 bg-brand" />
             {t("avg")}
@@ -139,7 +139,7 @@ export default function MonthlyTab({ monthly }: MonthlyTabProps) {
     );
   } catch {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("summaryUnavailable")}
       </p>
     );

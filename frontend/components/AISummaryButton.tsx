@@ -68,17 +68,17 @@ export default function AISummaryButton({
   if (summary) {
     return (
       <div className="space-y-4">
-        <div className="bg-surface-muted rounded-lg p-4 text-slate-700 leading-relaxed whitespace-pre-wrap border border-surface-border">
+        <div className="bg-surface-muted rounded p-4 font-serif text-ink leading-relaxed whitespace-pre-wrap border-l-4 border-gold">
           {summary}
         </div>
         {isFree && (
-          <p className="text-xs text-slate-600">
+          <p className="font-sans text-xs text-ink-muted">
             {t("remaining", { count: Math.max(0, freeLimit - currentUsage) })}
           </p>
         )}
         <button
           onClick={() => { setSummary(null); setError(false); }}
-          className="text-sm text-brand hover:underline"
+          className="font-sans text-sm uppercase tracking-wide text-gold-dark hover:text-navy transition-colors"
         >
           {t("regenerate")}
         </button>
@@ -90,11 +90,11 @@ export default function AISummaryButton({
   if (limitReached) {
     return (
       <div className="space-y-3">
-        <p className="text-amber-700 text-sm font-medium">{t("limitReached")}</p>
+        <p className="font-serif text-ink-muted text-sm">{t("limitReached")}</p>
         {isFree && (
           <Link
             href={`/${locale}/billing`}
-            className="inline-block px-4 py-2 bg-pro text-black text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity"
+            className="inline-block px-4 py-2 bg-gold hover:bg-gold-dark text-navy font-sans text-sm font-semibold uppercase tracking-wide rounded-lg transition-colors"
           >
             {tPlan("upgrade")}
           </Link>
@@ -113,19 +113,19 @@ export default function AISummaryButton({
               <div
                 key={i}
                 className={`w-2.5 h-2.5 rounded-full ${
-                  i < currentUsage ? "bg-slate-300" : "bg-brand"
+                  i < currentUsage ? "bg-surface-outline" : "bg-gold"
                 }`}
               />
             ))}
           </div>
-          <span className="text-xs text-slate-500">
+          <span className="font-sans text-xs text-ink-muted">
             {t("remaining", { count: Math.max(0, currentRemaining) })}
           </span>
         </div>
       )}
 
       {error && (
-        <p className="text-red-400 text-sm">
+        <p className="font-sans text-error text-sm">
           {t("error")}
         </p>
       )}
@@ -134,7 +134,7 @@ export default function AISummaryButton({
         <button
           onClick={handleGenerate}
           disabled={loading}
-          className="flex items-center gap-2 px-5 py-2.5 bg-brand hover:bg-brand-dark disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors"
+          className="flex items-center gap-2 px-5 py-2.5 bg-gold hover:bg-gold-dark disabled:opacity-60 disabled:cursor-not-allowed text-navy font-sans text-sm font-semibold uppercase tracking-wide rounded-lg transition-colors"
         >
           {loading ? (
             <>
@@ -155,10 +155,10 @@ export default function AISummaryButton({
         </button>
       ) : (
         <div className="space-y-2">
-          <p className="text-slate-600 text-sm">{t("limitReached")}</p>
+          <p className="font-serif text-ink-muted text-sm">{t("limitReached")}</p>
           <Link
             href={`/${locale}/billing`}
-            className="inline-block px-4 py-2 bg-pro text-black text-sm font-semibold rounded-lg hover:opacity-90 transition-opacity"
+            className="inline-block px-4 py-2 bg-gold hover:bg-gold-dark text-navy font-sans text-sm font-semibold uppercase tracking-wide rounded-lg transition-colors"
           >
             {tPlan("upgrade")}
           </Link>

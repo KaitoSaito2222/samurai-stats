@@ -119,18 +119,18 @@ interface SummaryRowProps {
 
 function SummaryRow({ label, stat }: SummaryRowProps) {
   return (
-    <tr className="border-t border-surface-border odd:bg-white even:bg-slate-50">
-      <td className="py-1.5 px-3 text-slate-600 text-xs">{label}</td>
-      <td className="py-1.5 px-3 text-center text-slate-500 text-xs tabular-nums">
+    <tr className="border-t border-surface-border odd:bg-white even:bg-surface-muted">
+      <td className="py-1.5 px-3 text-ink-muted text-xs">{label}</td>
+      <td className="py-1.5 px-3 text-center text-ink-muted text-xs tabular-nums">
         {stat ? stat.pa : "—"}
       </td>
-      <td className="py-1.5 px-3 text-center text-slate-800 text-xs tabular-nums font-medium">
+      <td className="py-1.5 px-3 text-center text-navy text-xs tabular-nums font-medium">
         {stat ? fmtAvg(stat.avg) : "—"}
       </td>
-      <td className="py-1.5 px-3 text-center text-slate-800 text-xs tabular-nums font-medium">
+      <td className="py-1.5 px-3 text-center text-navy text-xs tabular-nums font-medium">
         {stat ? fmtOps(stat.ops) : "—"}
       </td>
-      <td className="py-1.5 px-3 text-center text-slate-800 text-xs tabular-nums font-medium">
+      <td className="py-1.5 px-3 text-center text-navy text-xs tabular-nums font-medium">
         {stat ? fmtHr(stat.hr) : "—"}
       </td>
     </tr>
@@ -152,7 +152,7 @@ export default function SplitsTab({ splits, clutch }: SplitsTabProps) {
 
   if (isEmpty) {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("splitsNoData")}
       </p>
     );
@@ -176,7 +176,7 @@ export default function SplitsTab({ splits, clutch }: SplitsTabProps) {
             className={`px-4 py-1 rounded-full text-sm font-medium transition-colors ${
               metric === m
                 ? "bg-brand text-white"
-                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                : "bg-surface-muted text-ink-muted hover:bg-surface-muted"
             }`}
           >
             {metricLabels[m]}
@@ -188,7 +188,7 @@ export default function SplitsTab({ splits, clutch }: SplitsTabProps) {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         {/* vs LHP / vs RHP */}
         <div className="bg-surface-muted rounded-lg p-2">
-          <p className="text-xs text-slate-500 text-center mb-0 font-medium">
+          <p className="text-xs text-ink-muted text-center mb-0 font-medium">
             {t("vsLeft")} / {t("vsRight")}
           </p>
           <SituationChart
@@ -212,7 +212,7 @@ export default function SplitsTab({ splits, clutch }: SplitsTabProps) {
 
         {/* Home / Away */}
         <div className="bg-surface-muted rounded-lg p-2">
-          <p className="text-xs text-slate-500 text-center mb-0 font-medium">
+          <p className="text-xs text-ink-muted text-center mb-0 font-medium">
             {t("home")} / {t("away")}
           </p>
           <SituationChart
@@ -236,7 +236,7 @@ export default function SplitsTab({ splits, clutch }: SplitsTabProps) {
 
         {/* Day / Night */}
         <div className="bg-surface-muted rounded-lg p-2">
-          <p className="text-xs text-slate-500 text-center mb-0 font-medium">
+          <p className="text-xs text-ink-muted text-center mb-0 font-medium">
             {t("day")} / {t("night")}
           </p>
           <SituationChart
@@ -263,7 +263,7 @@ export default function SplitsTab({ splits, clutch }: SplitsTabProps) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[300px]">
           <thead>
-            <tr className="text-xs text-slate-500 uppercase tracking-wider bg-slate-100">
+            <tr className="text-xs text-ink-muted uppercase tracking-wider bg-surface-muted">
               <th className="py-1.5 px-3 text-left font-medium">{t("splitsHeader")}</th>
               <th className="py-1.5 px-3 text-center font-medium">{t("vsBatter")}</th>
               <th className="py-1.5 px-3 text-center font-medium">{t("avg")}</th>
@@ -285,13 +285,13 @@ export default function SplitsTab({ splits, clutch }: SplitsTabProps) {
       {/* Clutch / RISP section */}
       {clutch && (
         <div className="mt-4 border-t border-surface-border pt-4">
-          <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">
+          <p className="text-xs text-ink-muted uppercase tracking-wide mb-2">
             {t("clutchSituations")}
           </p>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[300px]">
               <thead>
-                <tr className="text-xs text-slate-500 uppercase tracking-wider bg-slate-100">
+                <tr className="text-xs text-ink-muted uppercase tracking-wider bg-surface-muted">
                   <th className="py-1.5 px-3 text-left font-medium">{t("splitsHeader")}</th>
                   <th className="py-1.5 px-3 text-center font-medium">{t("vsBatter")}</th>
                   <th className="py-1.5 px-3 text-center font-medium">{t("avg")}</th>

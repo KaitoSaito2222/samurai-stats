@@ -36,8 +36,11 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>
+    <div className="space-y-8 max-w-2xl mx-auto">
+      <div className="border-b border-surface-border pb-3">
+        <p className="font-sans text-xs font-semibold uppercase tracking-[0.15em] text-gold-dark mb-1">MLB</p>
+        <h1 className="font-display text-2xl sm:text-[28px] font-bold text-navy leading-tight">{t("title")}</h1>
+      </div>
 
       {/* Search input */}
       <div className="flex gap-2">
@@ -47,12 +50,12 @@ export default function SearchPage() {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={t("placeholder")}
-          className="flex-1 px-4 py-3 bg-surface-card border border-surface-border rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand shadow-sm"
+          className="flex-1 px-4 py-3 bg-surface-card border border-navy rounded-lg font-serif text-ink placeholder-ink-muted/60 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold transition-colors"
         />
         <button
           onClick={() => handleSearch(query)}
           disabled={loading || !query.trim()}
-          className="px-6 py-3 bg-brand hover:bg-brand-dark text-white font-medium rounded-xl disabled:opacity-50 transition-colors shadow-sm"
+          className="px-6 py-3 bg-navy hover:bg-navy-dark text-white font-sans text-sm font-semibold uppercase tracking-wide rounded-lg disabled:opacity-50 transition-colors"
         >
           {loading ? "..." : t("searchButton")}
         </button>
@@ -62,7 +65,7 @@ export default function SearchPage() {
       {loading && (
         <div className="space-y-2">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 bg-slate-200 animate-pulse rounded-xl" />
+            <div key={i} className="h-16 bg-surface-muted animate-pulse rounded" />
           ))}
         </div>
       )}
@@ -70,7 +73,7 @@ export default function SearchPage() {
       {!loading && searched && results.length === 0 && (
         <div className="text-center py-16">
           <p className="text-4xl mb-3">🔍</p>
-          <p className="text-slate-500">{t("noResults")}</p>
+          <p className="font-serif text-ink-muted">{t("noResults")}</p>
         </div>
       )}
 
@@ -83,9 +86,9 @@ export default function SearchPage() {
               <Link
                 key={player.id}
                 href={`/${locale}/players/${player.id}`}
-                className="flex items-center gap-4 p-4 bg-surface-card border border-surface-border rounded-xl hover:shadow-md transition-shadow group"
+                className="flex items-center gap-4 px-4 py-3 bg-surface-card border border-surface-border rounded hover:border-gold hover:shadow-float transition-all group"
               >
-                <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
+                <div className="w-10 h-10 rounded overflow-hidden bg-surface-muted flex-shrink-0 border border-surface-border">
                   {player.photo_url ? (
                     <Image src={player.photo_url} alt={displayName} width={40} height={40} className="w-full h-full object-cover object-top" />
                   ) : (
@@ -93,11 +96,11 @@ export default function SearchPage() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-slate-900 group-hover:text-brand transition-colors truncate">{displayName}</p>
-                  <p className="text-xs text-slate-500 truncate">{teamDisplay} · {player.position}</p>
+                  <p className="font-display font-bold text-navy group-hover:text-gold-dark transition-colors truncate">{displayName}</p>
+                  <p className="font-sans text-xs uppercase tracking-wide text-ink-muted truncate">{teamDisplay} · {player.position}</p>
                 </div>
                 {player.is_japanese && (
-                  <span className="px-2 py-0.5 bg-brand/10 text-brand text-xs rounded-full font-medium flex-shrink-0">🇯🇵</span>
+                  <span className="text-base flex-shrink-0">🇯🇵</span>
                 )}
               </Link>
             );

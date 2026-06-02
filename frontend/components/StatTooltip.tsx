@@ -98,7 +98,7 @@ export default function StatTooltip({ term, locale, children }: StatTooltipProps
   return (
     <span ref={ref} className="relative inline-flex items-center gap-1">
       <span
-        className="border-b border-dashed border-slate-400 cursor-help"
+        className="border-b border-dashed border-surface-outline cursor-help"
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         onClick={() => setOpen((v) => !v)}
@@ -106,7 +106,7 @@ export default function StatTooltip({ term, locale, children }: StatTooltipProps
         {children ?? label}
       </span>
       <span
-        className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-200 text-slate-500 text-[10px] font-bold cursor-help select-none leading-none"
+        className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-surface-muted text-ink-muted text-[10px] font-bold cursor-help select-none leading-none"
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         onClick={() => setOpen((v) => !v)}
@@ -116,12 +116,12 @@ export default function StatTooltip({ term, locale, children }: StatTooltipProps
 
       {open && (
         <span className="absolute bottom-full left-0 mb-2 z-50 block w-64 pointer-events-none">
-          <span className="block bg-slate-800 text-white text-xs rounded-xl p-3 shadow-xl">
-            <span className="block font-semibold text-white mb-1">{label}</span>
-            <span className="block text-slate-300 leading-relaxed">{desc}</span>
+          <span className="block bg-navy text-white text-xs rounded p-3 shadow-float">
+            <span className="block font-sans font-semibold uppercase tracking-wide text-gold mb-1">{label}</span>
+            <span className="block font-serif text-white/80 leading-relaxed">{desc}</span>
           </span>
           {/* Arrow */}
-          <span className="block w-0 h-0 ml-3 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-slate-800" />
+          <span className="block w-0 h-0 ml-3 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-navy" />
         </span>
       )}
     </span>

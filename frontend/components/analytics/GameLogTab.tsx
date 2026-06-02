@@ -44,15 +44,15 @@ export default function GameLogTab({ playerId }: GameLogTabProps) {
   if (loading) {
     return (
       <div className="space-y-3 animate-pulse">
-        <div className="h-48 bg-slate-100 rounded-lg" />
-        <div className="h-24 bg-slate-100 rounded-lg" />
+        <div className="h-48 bg-surface-muted rounded-lg" />
+        <div className="h-24 bg-surface-muted rounded-lg" />
       </div>
     );
   }
 
   if (error || entries.length === 0) {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("gameLogNoData")}
       </p>
     );
@@ -111,7 +111,7 @@ export default function GameLogTab({ playerId }: GameLogTabProps) {
           />
         </VictoryChart>
         {/* Legend */}
-        <div className="flex gap-4 justify-center mt-1 text-xs text-slate-500">
+        <div className="flex gap-4 justify-center mt-1 text-xs text-ink-muted">
           <span className="flex items-center gap-1">
             <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: COLOR_HR }} />
             {t("hr")}
@@ -127,7 +127,7 @@ export default function GameLogTab({ playerId }: GameLogTabProps) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[380px] text-xs">
           <thead>
-            <tr className="text-xs text-slate-500 uppercase tracking-wider bg-slate-100">
+            <tr className="text-xs text-ink-muted uppercase tracking-wider bg-surface-muted">
               <th className="py-1.5 px-2 text-left font-medium">{t("splitsHeader")}</th>
               <th className="py-1.5 px-2 text-left font-medium">{t("opponent")}</th>
               <th className="py-1.5 px-2 text-center font-medium">AB</th>
@@ -141,27 +141,27 @@ export default function GameLogTab({ playerId }: GameLogTabProps) {
             {recent10.map((entry) => (
               <tr
                 key={`${entry.date}-${entry.game_pk}`}
-                className="border-t border-surface-border odd:bg-white even:bg-slate-50"
+                className="border-t border-surface-border odd:bg-white even:bg-surface-muted"
               >
-                <td className="py-1.5 px-2 text-slate-600 tabular-nums">{entry.date}</td>
-                <td className="py-1.5 px-2 text-slate-700">{entry.opponent}</td>
-                <td className="py-1.5 px-2 text-center text-slate-800 tabular-nums">
+                <td className="py-1.5 px-2 text-ink-muted tabular-nums">{entry.date}</td>
+                <td className="py-1.5 px-2 text-ink">{entry.opponent}</td>
+                <td className="py-1.5 px-2 text-center text-navy tabular-nums">
                   {entry.at_bats ?? "—"}
                 </td>
-                <td className="py-1.5 px-2 text-center text-slate-800 tabular-nums font-medium">
+                <td className="py-1.5 px-2 text-center text-navy tabular-nums font-medium">
                   {entry.hits ?? "—"}
                 </td>
                 <td className="py-1.5 px-2 text-center tabular-nums font-medium">
                   {(entry.home_runs ?? 0) > 0 ? (
-                    <span className="text-brand font-bold">{entry.home_runs}</span>
+                    <span className="text-gold-dark font-bold">{entry.home_runs}</span>
                   ) : (
-                    <span className="text-slate-800">{entry.home_runs ?? "—"}</span>
+                    <span className="text-navy">{entry.home_runs ?? "—"}</span>
                   )}
                 </td>
-                <td className="py-1.5 px-2 text-center text-slate-800 tabular-nums">
+                <td className="py-1.5 px-2 text-center text-navy tabular-nums">
                   {entry.rbi ?? "—"}
                 </td>
-                <td className="py-1.5 px-2 text-center text-slate-800 tabular-nums">
+                <td className="py-1.5 px-2 text-center text-navy tabular-nums">
                   {fmtAvg(entry.avg)}
                 </td>
               </tr>

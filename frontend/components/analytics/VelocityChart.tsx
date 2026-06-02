@@ -72,7 +72,7 @@ export default function VelocityChart({ data, locale }: VelocityChartProps) {
   try {
     return (
       <div className="w-full">
-        <p className="text-xs text-slate-500 uppercase tracking-wide text-center mb-1">
+        <p className="text-xs text-ink-muted uppercase tracking-wide text-center mb-1">
           {t("velocityTrend")}
         </p>
 
@@ -129,7 +129,7 @@ export default function VelocityChart({ data, locale }: VelocityChartProps) {
         </VictoryChart>
 
         {/* Legend */}
-        <div className="flex gap-4 justify-center flex-wrap mt-1 text-xs text-slate-500">
+        <div className="flex gap-4 justify-center flex-wrap mt-1 text-xs text-ink-muted">
           {pitchTypes.map((pt, idx) => (
             <span key={pt} className="flex items-center gap-1">
               <span

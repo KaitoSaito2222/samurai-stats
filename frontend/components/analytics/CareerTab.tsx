@@ -40,11 +40,11 @@ function formatInt(val: number | null | undefined): string {
 function CareerSkeleton() {
   return (
     <div className="space-y-4 animate-pulse">
-      <div className="h-5 bg-slate-200 rounded w-1/4 mb-2" />
-      <div className="h-56 bg-slate-100 rounded" />
+      <div className="h-5 bg-surface-muted rounded w-1/4 mb-2" />
+      <div className="h-56 bg-surface-muted rounded" />
       <div className="space-y-2 mt-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-4 bg-slate-100 rounded" />
+          <div key={i} className="h-4 bg-surface-muted rounded" />
         ))}
       </div>
     </div>
@@ -56,9 +56,9 @@ function BattingTable({ seasons }: { seasons: CareerSeasonStat[] }) {
   const t = useTranslations("player");
   return (
     <div className="overflow-x-auto mt-4">
-      <table className="min-w-full text-xs text-slate-700">
+      <table className="min-w-full text-xs text-ink">
         <thead>
-          <tr className="border-b border-surface-border text-slate-500">
+          <tr className="border-b border-surface-border text-ink-muted">
             <th className="py-1 pr-3 text-left font-medium">Year</th>
             <th className="py-1 pr-3 text-right font-medium">G</th>
             <th className="py-1 pr-3 text-right font-medium">{t("avg")}</th>
@@ -102,9 +102,9 @@ function PitchingTable({ seasons }: { seasons: CareerSeasonStat[] }) {
   const t = useTranslations("player");
   return (
     <div className="overflow-x-auto mt-4">
-      <table className="min-w-full text-xs text-slate-700">
+      <table className="min-w-full text-xs text-ink">
         <thead>
-          <tr className="border-b border-surface-border text-slate-500">
+          <tr className="border-b border-surface-border text-ink-muted">
             <th className="py-1 pr-3 text-left font-medium">Year</th>
             <th className="py-1 pr-3 text-right font-medium">G</th>
             <th className="py-1 pr-3 text-right font-medium">{t("era")}</th>
@@ -209,7 +209,7 @@ function BattingChart({ seasons }: { seasons: CareerSeasonStat[] }) {
       </VictoryChart>
 
       {/* Legend */}
-      <div className="flex gap-4 justify-center mt-1 text-xs text-slate-500">
+      <div className="flex gap-4 justify-center mt-1 text-xs text-ink-muted">
         {avgData.length > 0 && (
           <span className="flex items-center gap-1">
             <span className="inline-block w-6 h-0.5 bg-brand" />
@@ -289,7 +289,7 @@ function PitchingChart({ seasons }: { seasons: CareerSeasonStat[] }) {
       </VictoryChart>
 
       {/* Legend */}
-      <div className="flex gap-4 justify-center mt-1 text-xs text-slate-500">
+      <div className="flex gap-4 justify-center mt-1 text-xs text-ink-muted">
         {eraData.length > 0 && (
           <span className="flex items-center gap-1">
             <span
@@ -347,7 +347,7 @@ export default function CareerTab({ playerId }: CareerTabProps) {
 
   if (error || !seasons) {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("careerNoData")}
       </p>
     );
@@ -358,7 +358,7 @@ export default function CareerTab({ playerId }: CareerTabProps) {
 
   if (battingSeasons.length === 0 && pitchingSeasons.length === 0) {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("careerNoData")}
       </p>
     );
@@ -370,7 +370,7 @@ export default function CareerTab({ playerId }: CareerTabProps) {
         {/* Batting section */}
         {battingSeasons.length > 0 && (
           <section>
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">
+            <h3 className="text-sm font-semibold text-ink mb-2">
               {t("batting")}
             </h3>
             <BattingChart seasons={battingSeasons} />
@@ -381,7 +381,7 @@ export default function CareerTab({ playerId }: CareerTabProps) {
         {/* Pitching section */}
         {pitchingSeasons.length > 0 && (
           <section>
-            <h3 className="text-sm font-semibold text-slate-700 mb-2">
+            <h3 className="text-sm font-semibold text-ink mb-2">
               {t("pitching")}
             </h3>
             <PitchingChart seasons={pitchingSeasons} />
@@ -392,7 +392,7 @@ export default function CareerTab({ playerId }: CareerTabProps) {
     );
   } catch {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("careerNoData")}
       </p>
     );

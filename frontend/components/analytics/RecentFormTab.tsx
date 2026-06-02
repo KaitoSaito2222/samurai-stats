@@ -11,10 +11,10 @@ interface RecentFormTabProps {
 
 // Color-code AVG: hot (>= .280), cold (<= .200), neutral otherwise
 function avgColorClass(avg: number | null): string {
-  if (avg === null) return "text-slate-400";
+  if (avg === null) return "text-ink-muted/70";
   if (avg >= 0.28) return "text-green-600";
   if (avg <= 0.2) return "text-red-600";
-  return "text-slate-900";
+  return "text-navy";
 }
 
 function formatAvg(avg: number | null): string {
@@ -40,14 +40,14 @@ function RecentFormSkeleton() {
       {[1, 2, 3].map((i) => (
         <div
           key={i}
-          className="bg-surface-card border border-surface-border rounded-xl p-4 animate-pulse"
+          className="bg-surface-card border border-surface-border rounded p-4 animate-pulse"
         >
-          <div className="h-4 bg-slate-200 rounded w-2/3 mb-3" />
-          <div className="h-9 bg-slate-200 rounded w-1/2 mb-3" />
+          <div className="h-4 bg-surface-muted rounded w-2/3 mb-3" />
+          <div className="h-9 bg-surface-muted rounded w-1/2 mb-3" />
           <div className="space-y-2">
-            <div className="h-3 bg-slate-100 rounded w-full" />
-            <div className="h-3 bg-slate-100 rounded w-5/6" />
-            <div className="h-3 bg-slate-100 rounded w-4/6" />
+            <div className="h-3 bg-surface-muted rounded w-full" />
+            <div className="h-3 bg-surface-muted rounded w-5/6" />
+            <div className="h-3 bg-surface-muted rounded w-4/6" />
           </div>
         </div>
       ))}
@@ -93,7 +93,7 @@ export default function RecentFormTab({ playerId }: RecentFormTabProps) {
 
   if (error || !windows) {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("recentNoData")}
       </p>
     );
@@ -105,7 +105,7 @@ export default function RecentFormTab({ playerId }: RecentFormTabProps) {
   );
   if (!hasAnyData) {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("recentNoData")}
       </p>
     );
@@ -115,18 +115,18 @@ export default function RecentFormTab({ playerId }: RecentFormTabProps) {
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       {windows.map((w) => {
         const hasPa = w.plate_appearances !== null && w.plate_appearances > 0;
-        const colorClass = hasPa ? avgColorClass(w.avg) : "text-slate-400";
+        const colorClass = hasPa ? avgColorClass(w.avg) : "text-ink-muted/70";
         const isHot = w.avg !== null && w.avg >= 0.28;
         const isCold = w.avg !== null && w.avg <= 0.2;
 
         return (
           <div
             key={w.days}
-            className="bg-surface-card border border-surface-border rounded-xl p-4 flex flex-col gap-2"
+            className="bg-surface-card border border-surface-border rounded p-4 flex flex-col gap-2"
           >
             {/* Card header */}
             <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-slate-700">
+              <span className="text-sm font-semibold text-ink">
                 {windowLabel(w.days, t)}
               </span>
               {hasPa && isHot && (
@@ -147,9 +147,9 @@ export default function RecentFormTab({ playerId }: RecentFormTabProps) {
             </div>
 
             {/* Secondary stats */}
-            <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-slate-600 mt-1">
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-ink-muted mt-1">
               <div className="flex justify-between">
-                <dt className="text-slate-400">{t("ops")}</dt>
+                <dt className="text-ink-muted/70">{t("ops")}</dt>
                 <dd className="font-medium tabular-nums">
                   {hasPa && w.ops !== null
                     ? w.ops.toFixed(3).replace(/^0/, "")
@@ -157,19 +157,19 @@ export default function RecentFormTab({ playerId }: RecentFormTabProps) {
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-400">{t("hr")}</dt>
+                <dt className="text-ink-muted/70">{t("hr")}</dt>
                 <dd className="font-medium tabular-nums">
                   {hasPa ? formatStat(w.home_runs) : "---"}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-400">{t("rbi")}</dt>
+                <dt className="text-ink-muted/70">{t("rbi")}</dt>
                 <dd className="font-medium tabular-nums">
                   {hasPa ? formatStat(w.rbi) : "---"}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-slate-400">{t("vsBatter")}</dt>
+                <dt className="text-ink-muted/70">{t("vsBatter")}</dt>
                 <dd className="font-medium tabular-nums">
                   {formatStat(w.plate_appearances)}
                 </dd>

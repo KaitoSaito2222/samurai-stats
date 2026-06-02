@@ -21,7 +21,7 @@ export default async function GameDetailPage({ params: { locale, id } }: GameDet
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center space-y-4">
         <span className="text-6xl">⚾</span>
-        <p className="text-xl text-slate-500">{tErrors("notFound")}</p>
+        <p className="font-display text-2xl text-navy">{tErrors("notFound")}</p>
       </div>
     );
   }
@@ -38,66 +38,68 @@ export default async function GameDetailPage({ params: { locale, id } }: GameDet
   }[game.status] ?? game.status;
 
   const statusColor = {
-    live: "bg-red-100 text-brand border border-red-200",
-    final: "bg-slate-100 text-slate-600 border border-slate-200",
-    scheduled: "bg-blue-50 text-blue-700 border border-blue-200",
-    postponed: "bg-amber-50 text-amber-700 border border-amber-200",
-    cancelled: "bg-slate-100 text-slate-500 border border-slate-200",
-  }[game.status] ?? "bg-slate-100 text-slate-600";
+    live: "text-gold-dark",
+    final: "text-ink-muted",
+    scheduled: "text-navy",
+    postponed: "text-ink-muted",
+    cancelled: "text-error",
+  }[game.status] ?? "text-ink-muted";
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       {/* Scoreboard card */}
-      <div className="bg-surface-card border border-surface-border rounded-2xl p-8 shadow-sm">
-        <div className="flex items-center justify-center mb-6">
-          <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColor}`}>
-            {game.status === "live" && <span className="inline-block w-2 h-2 bg-brand rounded-full mr-2 animate-pulse" />}
+      <div className="bg-surface-card border border-surface-border rounded overflow-hidden">
+        <div className="bg-navy text-white px-8 py-3 flex items-center justify-center">
+          <span className="flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-wide text-gold">
+            {game.status === "live" && <span className="inline-block w-2 h-2 bg-gold rounded-full animate-pulse" />}
             {statusLabel}
             {game.status === "live" && game.inning && ` · ${game.inning}回`}
           </span>
         </div>
 
-        <div className="grid grid-cols-3 items-center gap-4">
-          {/* Away team */}
-          <div className="text-center">
-            <p className="text-lg font-bold text-slate-900">{awayTeam}</p>
-            <p className="text-xs text-slate-500 mt-1">{t("away")}</p>
+        <div className="p-8">
+          <div className="grid grid-cols-3 items-center gap-4">
+            {/* Away team */}
+            <div className="text-center">
+              <p className="font-display text-xl font-bold text-navy">{awayTeam}</p>
+              <p className="font-sans text-xs uppercase tracking-wide text-ink-muted mt-1">{t("away")}</p>
+            </div>
+
+            {/* Score */}
+            <div className="text-center">
+              {game.home_score != null && game.away_score != null ? (
+                <p className="font-display text-5xl font-bold text-navy tabular-nums">
+                  {game.away_score}<span className="text-surface-outline mx-1">–</span>{game.home_score}
+                </p>
+              ) : (
+                <p className={`font-sans text-xl uppercase tracking-wide ${statusColor}`}>vs</p>
+              )}
+            </div>
+
+            {/* Home team */}
+            <div className="text-center">
+              <p className="font-display text-xl font-bold text-navy">{homeTeam}</p>
+              <p className="font-sans text-xs uppercase tracking-wide text-ink-muted mt-1">{t("home")}</p>
+            </div>
           </div>
 
-          {/* Score */}
-          <div className="text-center">
-            {game.home_score != null && game.away_score != null ? (
-              <p className="text-4xl font-bold text-slate-900 tabular-nums">
-                {game.away_score} — {game.home_score}
-              </p>
-            ) : (
-              <p className="text-2xl text-slate-400">vs</p>
-            )}
-          </div>
-
-          {/* Home team */}
-          <div className="text-center">
-            <p className="text-lg font-bold text-slate-900">{homeTeam}</p>
-            <p className="text-xs text-slate-500 mt-1">{t("home")}</p>
-          </div>
+          {game.venue && (
+            <p className="text-center font-serif text-sm text-ink-muted mt-6">📍 {game.venue}</p>
+          )}
+          <p className="text-center font-sans text-sm text-ink-muted/70 tabular-nums mt-1">{game.game_date}</p>
         </div>
-
-        {game.venue && (
-          <p className="text-center text-sm text-slate-500 mt-6">📍 {game.venue}</p>
-        )}
-        <p className="text-center text-sm text-slate-400 mt-1">{game.game_date}</p>
       </div>
 
       {/* Japanese players in this game */}
       {game.japanese_players && game.japanese_players.length > 0 && (
-        <div className="bg-surface-card border border-surface-border rounded-xl p-6 shadow-sm">
-          <h2 className="font-bold text-slate-900 mb-3">{t("japanesePlayers")}</h2>
-          <div className="space-y-2">
+        <div className="bg-surface-card border border-surface-border rounded p-6">
+          <h2 className="font-sans text-sm font-semibold uppercase tracking-wide text-navy border-b-2 border-gold pb-1 inline-block mb-3">{t("japanesePlayers")}</h2>
+          <div className="space-y-1">
             {game.japanese_players.map((p) => (
               <a key={p.player_id} href={`/${locale}/players/${p.player_id}`}
-                className="flex items-center gap-3 py-2 hover:text-brand transition-colors">
-                <span className="text-brand">🇯🇵</span>
-                <span className="font-medium text-slate-900">
+                className="flex items-center gap-3 py-2 group">
+                <span>🇯🇵</span>
+                <span className="font-display font-bold text-navy group-hover:text-gold-dark transition-colors">
                   {locale === "ja" && p.name_ja ? p.name_ja : p.name_en}
                 </span>
               </a>

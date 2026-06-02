@@ -8,13 +8,24 @@
     "login": "Login",
     "logout": "Logout"
   },
+  "footer": {
+    "copyright": "© 2026 Samurai Stats. All rights reserved. Data via official sources.",
+    "about": "About",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "contact": "Contact"
+  },
   "home": {
-    "title": "Samurai Stats",
-    "subtitle": "Deep analysis of Japanese MLB players",
+    "title": "Master the Path of the Diamond",
+    "subtitle": "Elite intelligence on Japanese MLB players — tradition meets modern analytics.",
+    "kicker": "Precision Analytics",
+    "exploreCta": "Explore Players",
+    "rankingsCta": "Rankings",
     "featuredPlayers": "Featured Players",
     "todayGames": "Today's Games",
     "fetchFailed": "Failed to fetch player data",
-    "browseByDate": "Browse by date"
+    "browseByDate": "Browse by date",
+    "viewAll": "View all"
   },
   "players": {
     "title": "Japanese Players",

@@ -40,9 +40,9 @@ interface StatRowProps {
 function StatRow({ label, currentVal, lastVal }: StatRowProps) {
   return (
     <tr className="border-b border-surface-border last:border-0">
-      <td className="py-2 pr-4 text-sm text-slate-500 font-medium">{label}</td>
-      <td className="py-2 px-3 text-sm text-center font-semibold text-brand">{currentVal}</td>
-      <td className="py-2 pl-3 text-sm text-center text-slate-500">{lastVal}</td>
+      <td className="py-2 pr-4 text-sm text-ink-muted font-medium">{label}</td>
+      <td className="py-2 px-3 text-sm text-center font-semibold text-gold-dark">{currentVal}</td>
+      <td className="py-2 pl-3 text-sm text-center text-ink-muted">{lastVal}</td>
     </tr>
   );
 }
@@ -80,16 +80,16 @@ export default function PeriodTab({ playerId, locale }: PeriodTabProps) {
   if (loading) {
     return (
       <div className="animate-pulse space-y-3 py-4">
-        <div className="h-4 bg-slate-200 rounded w-1/3 mx-auto" />
-        <div className="h-48 bg-slate-200 rounded" />
-        <div className="h-24 bg-slate-200 rounded" />
+        <div className="h-4 bg-surface-muted rounded w-1/3 mx-auto" />
+        <div className="h-48 bg-surface-muted rounded" />
+        <div className="h-24 bg-surface-muted rounded" />
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("summaryUnavailable")}
       </p>
     );
@@ -100,7 +100,7 @@ export default function PeriodTab({ playerId, locale }: PeriodTabProps) {
   // No data for either period
   if (!hasData(current) && !hasData(last_year)) {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("noPeriodData")}
       </p>
     );
@@ -124,7 +124,7 @@ export default function PeriodTab({ playerId, locale }: PeriodTabProps) {
   return (
     <div className="w-full space-y-4">
       {/* Period label header */}
-      <p className="text-center text-sm font-medium text-slate-600">{periodLabel}</p>
+      <p className="text-center text-sm font-medium text-ink-muted">{periodLabel}</p>
 
       {/* Grouped bar chart: AVG and OPS */}
       <div className="w-full">
@@ -165,7 +165,7 @@ export default function PeriodTab({ playerId, locale }: PeriodTabProps) {
         </VictoryChart>
 
         {/* Legend */}
-        <div className="flex gap-6 justify-center text-xs text-slate-500 mt-1">
+        <div className="flex gap-6 justify-center text-xs text-ink-muted mt-1">
           <span className="flex items-center gap-1.5">
             <span className="inline-block w-3 h-3 rounded-sm bg-brand" />
             {currentYearLabel}
@@ -182,11 +182,11 @@ export default function PeriodTab({ playerId, locale }: PeriodTabProps) {
         <table className="w-full text-left">
           <thead>
             <tr className="border-b-2 border-surface-border">
-              <th className="py-2 pr-4 text-xs text-slate-400 font-normal" />
-              <th className="py-2 px-3 text-xs text-center text-brand font-semibold">
+              <th className="py-2 pr-4 text-xs text-ink-muted/70 font-normal" />
+              <th className="py-2 px-3 text-xs text-center text-gold-dark font-semibold">
                 {currentYearLabel}
               </th>
-              <th className="py-2 pl-3 text-xs text-center text-slate-400 font-normal">
+              <th className="py-2 pl-3 text-xs text-center text-ink-muted/70 font-normal">
                 {lastYearLabel}
               </th>
             </tr>

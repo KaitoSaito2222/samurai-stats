@@ -23,17 +23,17 @@ export default function GlobalError({ error, reset }: ErrorProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4 space-y-6">
       <div className="text-6xl">⚾</div>
-      <h2 className="text-2xl font-bold text-slate-900">{t("serverError")}</h2>
-      <div className="flex gap-3">
+      <h2 className="font-display text-2xl font-bold text-navy">{t("serverError")}</h2>
+      <div className="flex gap-3 font-sans text-sm uppercase tracking-wide">
         <button
           onClick={() => reset()}
-          className="px-6 py-2 bg-brand hover:bg-brand-dark text-white font-semibold rounded-lg transition-colors"
+          className="px-6 py-2 bg-navy hover:bg-navy-dark text-white font-semibold rounded-lg transition-colors"
         >
           {t("retry")}
         </button>
         <button
           onClick={() => router.back()}
-          className="px-6 py-2 bg-surface-card hover:bg-surface-muted text-slate-700 font-semibold rounded-lg transition-colors border border-surface-border shadow-sm"
+          className="px-6 py-2 bg-surface-card hover:border-gold text-navy font-semibold rounded-lg transition-colors border border-surface-border"
         >
           Back
         </button>

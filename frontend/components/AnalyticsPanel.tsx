@@ -43,7 +43,7 @@ export default function AnalyticsPanel({
   const content = (
     <div>
       {/* Tab bar */}
-      <div className="flex flex-wrap bg-slate-50 rounded-t-lg border-b border-surface-border mb-4" role="tablist">
+      <div className="flex flex-wrap border-b border-surface-border mb-5" role="tablist">
         {tabs.map((tab) => (
           <button
             key={tab.key}
@@ -51,10 +51,10 @@ export default function AnalyticsPanel({
             aria-selected={activeTab === tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={[
-              "px-4 py-2 text-sm font-medium transition-colors focus:outline-none",
+              "px-4 py-2 font-sans text-sm uppercase tracking-wide transition-colors focus:outline-none -mb-px",
               activeTab === tab.key
-                ? "bg-white text-brand border-b-2 border-brand shadow-sm"
-                : "text-slate-500 hover:text-slate-700",
+                ? "text-navy font-bold border-b-2 border-gold"
+                : "text-ink-muted hover:text-gold-dark",
             ].join(" ")}
           >
             {tab.label}
@@ -99,14 +99,14 @@ export default function AnalyticsPanel({
         </div>
 
         {/* Lock overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-white/90 rounded-lg">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-surface-card/90 rounded">
           <span className="text-4xl" role="img" aria-label="lock">🔒</span>
-          <p className="text-navy font-semibold text-center px-4">
+          <p className="font-display text-navy font-bold text-lg text-center px-4">
             {t("analyticsProOnly")}
           </p>
           <a
             href={`/${locale}/billing`}
-            className="px-5 py-2 bg-brand hover:bg-brand-dark text-white rounded-lg text-sm font-medium transition-colors"
+            className="px-5 py-2 bg-gold hover:bg-gold-dark text-navy rounded-lg font-sans text-sm font-semibold uppercase tracking-wide transition-colors"
           >
             {tPlan("upgrade")}
           </a>

@@ -34,29 +34,80 @@ See root `CLAUDE.md` for project overview, tech stack, and shared guidelines.
 
 ---
 
-## Design Tokens
+## Design System — "Bushido Data Light"
 
-Configure in `tailwind.config.ts`. All components must use these tokens — no raw hex values in JSX.
+A premium **editorial / modern-newspaper** aesthetic that bridges traditional
+Japanese craft with elite sports journalism. The emotional target is *"Informed
+Authority"* — feeling like a subscriber to a private intelligence service.
+Prioritize legibility, structural grids, and expansive whitespace over
+decorative flair.
+
+> Configure in `tailwind.config.ts`. All components must use these tokens — no raw hex values in JSX.
+
+### Colors
+
+Anchored by **Deep Navy** (authority/structure) with a **Gold** accent used
+*sparingly* for high-value actions, active states, and "kintsugi-style"
+dividers. Navy is the lead; gold is the accent. **MLB red is retired** — red is
+reserved for error states only.
 
 ```ts
 colors: {
-  brand: {
-    DEFAULT: "#C8102E",  // MLB red — primary actions, CTAs
-    dark:    "#9E0B24",
-  },
-  pro: "#F5A623",        // gold — Pro badges, upgrade prompts
+  navy:  { DEFAULT: "#031427", dark: "#0B1C30" },  // primary text, headers, table heads, primary CTA
+  gold:  { DEFAULT: "#D4A843", dark: "#B5912F" },  // accent: active states, dividers, secondary CTA
+  ink:   { DEFAULT: "#191C1D", muted: "#44474C" }, // body text / muted body text
   surface: {
-    DEFAULT: "#0F172A",  // dark background (app bg)
-    card:    "#1E293B",  // card background
-    border:  "#334155",  // dividers
+    DEFAULT: "#F8F9FA",  // page background (light grey)
+    card:    "#FFFFFF",  // card / container background
+    border:  "#E5E7EB",  // hairline dividers (1px)
+    muted:   "#F3F4F5",  // zebra rows, data-heavy containers
+    outline: "#C4C6CD",  // stronger outline when more separation is needed
   },
-},
-fontFamily: {
-  sans: ["Noto Sans JP", "Inter", "sans-serif"],  // Japanese-first
-},
+  // Back-compat aliases (legacy components): brand → navy, pro → gold.
+  brand: { DEFAULT: "#031427", dark: "#0B1C30" },
+  pro:   "#D4A843",
+}
 ```
 
-> Color rationale: dark theme suits nighttime game-watching; MLB red for brand recognition.
+### Typography
+
+A **dual-serif editorial identity** plus a utility sans for data:
+
+```ts
+fontFamily: {
+  display: ["Playfair Display", "serif"],   // headlines — high-contrast, print-like
+  serif:   ["Noto Serif JP", "serif"],       // body copy + Japanese (default body font)
+  sans:    ["Inter", "sans-serif"],          // labels, data tables, micro-copy
+}
+```
+
+- **Playfair Display** (`font-display`): all headlines (player names, section titles, big stat numbers).
+- **Noto Serif JP** (`font-serif`): narrative/body copy and Japanese text — the **default `<body>` font**.
+- **Inter** (`font-sans`): labels, numeric data tables, captions. Labels are **UPPERCASE with `tracking-wide`** (`0.05em`) to separate data from narrative.
+
+### Shapes & Elevation
+
+- **Disciplined corners**: `rounded` (0.125rem) for cards/containers, `rounded-lg` (0.25rem) for buttons/inputs/chips. **Avoid pill shapes** (`rounded-full`) — they read as "playful app" and break the serious editorial tone. Player photos may use a subtle `rounded` square, not a circle.
+- **Avoid heavy shadows.** Signal depth with **1px hairline borders** (`border-surface-border`) and tonal layers (white → `surface-muted`). Floating elements may use one soft diffused navy shadow: `shadow-[0_4px_20px_rgba(3,20,39,0.10)]`.
+- Use **gold or navy fine-line dividers** (0.5–1px) to structure content like a high-end newspaper.
+
+### Components
+
+- **Primary button**: `bg-navy text-white rounded-lg` — no shadow.
+- **Secondary button**: `bg-gold text-navy rounded-lg` — high-importance "call to insight".
+- **Ghost button**: transparent with `border border-navy text-navy`.
+- **Data tables**: navy header row (`bg-navy text-white`, Inter uppercase label), zebra rows (`bg-surface-card` / `bg-surface-muted`), 1px bottom borders; highlight totals/marquee rows with `bg-gold/10` + gold bottom border, bold.
+- **AI analysis cards**: white surface with a **4px gold left border-accent**; narrative in Noto Serif. Place a gold uppercase kicker label above the headline.
+- **Kicker pattern**: small gold UPPERCASE Inter label, optionally followed by a `h-px w-12 bg-gold` dash, above Playfair headlines.
+- **Section heading**: Inter uppercase label with a `border-b-2 border-gold` underline, OR a Playfair headline — not a colored accent bar.
+- **Input fields**: white with 1px navy border; focus → 2px border + subtle gold ring.
+
+### Layout
+
+Centered max-width **1280px**, 12-column feel with generous 24px (`gap-6`)
+gutters. Use asymmetric layouts on player/detail pages (e.g. 8-col main + 4-col
+sidebar). Major thematic sections separated by large vertical space
+(`space-y-12`+).
 
 ---
 

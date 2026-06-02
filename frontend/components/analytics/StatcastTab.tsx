@@ -41,10 +41,10 @@ interface MetricCardProps {
 function MetricCard({ label, term, value, locale }: MetricCardProps) {
   return (
     <div className="bg-surface-card rounded-lg border border-surface-border p-3 flex flex-col gap-1 min-w-[100px] shadow-sm">
-      <span className="text-xs text-slate-500 uppercase tracking-wide">
+      <span className="text-xs text-ink-muted uppercase tracking-wide">
         <StatTooltip term={term} locale={locale}>{label}</StatTooltip>
       </span>
-      <span className="text-lg font-bold text-slate-900 tabular-nums">{value}</span>
+      <span className="text-lg font-bold text-navy tabular-nums">{value}</span>
     </div>
   );
 }
@@ -57,16 +57,16 @@ interface PitchRowProps {
 function PitchRow({ pitch, locale }: PitchRowProps) {
   const name = locale === "ja" ? pitch.pitch_name_ja : pitch.pitch_name_en;
   return (
-    <tr className="border-t border-surface-border odd:bg-white even:bg-slate-50">
-      <td className="py-2 px-3 text-slate-600 text-sm">{name}</td>
-      <td className="py-2 px-3 text-center text-slate-600 text-sm tabular-nums">{pitch.pa}</td>
-      <td className="py-2 px-3 text-center text-slate-900 text-sm tabular-nums font-medium">
+    <tr className="border-t border-surface-border odd:bg-white even:bg-surface-muted">
+      <td className="py-2 px-3 text-ink-muted text-sm">{name}</td>
+      <td className="py-2 px-3 text-center text-ink-muted text-sm tabular-nums">{pitch.pa}</td>
+      <td className="py-2 px-3 text-center text-navy text-sm tabular-nums font-medium">
         {fmtAvg(pitch.avg)}
       </td>
-      <td className="py-2 px-3 text-center text-slate-900 text-sm tabular-nums font-medium">
+      <td className="py-2 px-3 text-center text-navy text-sm tabular-nums font-medium">
         {fmtPct(pitch.whiff_rate)}
       </td>
-      <td className="py-2 px-3 text-center text-slate-900 text-sm tabular-nums font-medium">
+      <td className="py-2 px-3 text-center text-navy text-sm tabular-nums font-medium">
         {pitch.hr ?? "—"}
       </td>
     </tr>
@@ -78,7 +78,7 @@ export default function StatcastTab({ statcast, locale }: StatcastTabProps) {
 
   if (!statcast) {
     return (
-      <p className="text-slate-500 text-sm py-4 text-center">
+      <p className="text-ink-muted text-sm py-4 text-center">
         {t("noStatcastData")}
       </p>
     );
@@ -135,7 +135,7 @@ export default function StatcastTab({ statcast, locale }: StatcastTabProps) {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[340px]">
             <thead>
-              <tr className="text-xs text-slate-500 uppercase tracking-wider bg-slate-100">
+              <tr className="text-xs text-ink-muted uppercase tracking-wider bg-surface-muted">
                 <th className="py-2 px-3 text-left font-medium">{t("pitchType")}</th>
                 <th className="py-2 px-3 text-center font-medium">{t("vsBatter")}</th>
                 <th className="py-2 px-3 text-center font-medium">{t("avg")}</th>
@@ -155,9 +155,9 @@ export default function StatcastTab({ statcast, locale }: StatcastTabProps) {
       {/* Zone heatmap */}
       {statcast.zone_stats.length > 0 && (
         <div className="flex flex-col items-center gap-2">
-          <p className="text-xs text-slate-600 uppercase tracking-wide">Strike Zone</p>
+          <p className="text-xs text-ink-muted uppercase tracking-wide">Strike Zone</p>
           <ZoneHeatmap zoneStats={statcast.zone_stats} />
-          <div className="flex gap-2 flex-wrap justify-center text-xs text-slate-600 mt-1">
+          <div className="flex gap-2 flex-wrap justify-center text-xs text-ink-muted mt-1">
             <span className="flex items-center gap-1">
               <span className="inline-block w-3 h-3 rounded-sm bg-red-700" />&gt;.320
             </span>
@@ -174,7 +174,7 @@ export default function StatcastTab({ statcast, locale }: StatcastTabProps) {
               <span className="inline-block w-3 h-3 rounded-sm bg-blue-900" />&lt;.200
             </span>
             <span className="flex items-center gap-1">
-              <span className="inline-block w-3 h-3 rounded-sm bg-slate-200" />—
+              <span className="inline-block w-3 h-3 rounded-sm bg-surface-muted" />—
             </span>
           </div>
         </div>

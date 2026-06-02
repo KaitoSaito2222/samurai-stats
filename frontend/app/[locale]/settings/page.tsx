@@ -36,45 +36,47 @@ export default async function SettingsPage({ params: { locale } }: SettingsPageP
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>
+      <div className="border-b border-surface-border pb-3">
+        <h1 className="font-display text-2xl sm:text-[28px] font-bold text-navy leading-tight">{t("title")}</h1>
+      </div>
 
       {/* Plan section */}
-      <div className="bg-surface-card border border-surface-border rounded-xl p-6 shadow-sm space-y-4">
+      <div className="bg-surface-card border border-surface-border rounded p-6 space-y-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-lg font-bold text-slate-900">{tPlan("free")}</h2>
-          <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-slate-200 text-slate-600">
+          <h2 className="font-sans text-sm font-semibold uppercase tracking-wide text-navy">{tPlan("free")}</h2>
+          <span className="px-2 py-0.5 text-xs font-semibold uppercase tracking-wide rounded-lg bg-surface-muted text-ink-muted">
             {tBilling("freeBadge")}
           </span>
         </div>
-        <p className="text-sm text-slate-500">{t("planDescription")}</p>
+        <p className="font-serif text-sm text-ink-muted">{t("planDescription")}</p>
         <Link
           href={`/${locale}/billing`}
-          className="inline-block px-5 py-2.5 bg-brand hover:bg-brand-dark text-white font-medium rounded-xl transition-colors shadow-sm text-sm"
+          className="inline-block px-5 py-2.5 bg-navy hover:bg-navy-dark text-white font-sans text-sm font-semibold uppercase tracking-wide rounded-lg transition-colors"
         >
           {tPlan("upgrade")}
         </Link>
       </div>
 
       {/* Language section */}
-      <div className="bg-surface-card border border-surface-border rounded-xl p-6 shadow-sm space-y-4">
-        <h2 className="text-lg font-bold text-slate-900">{t("language")}</h2>
+      <div className="bg-surface-card border border-surface-border rounded p-6 space-y-4">
+        <h2 className="font-sans text-sm font-semibold uppercase tracking-wide text-navy">{t("language")}</h2>
         <div className="flex gap-3">
           <Link
             href="/ja/settings"
-            className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-lg border font-sans text-sm font-medium transition-colors ${
               locale === "ja"
-                ? "bg-brand text-white border-brand"
-                : "bg-surface-card border-surface-border text-slate-700 hover:border-brand hover:text-brand"
+                ? "bg-navy text-white border-navy"
+                : "bg-surface-card border-surface-border text-navy hover:border-gold"
             }`}
           >
             日本語
           </Link>
           <Link
             href="/en/settings"
-            className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-lg border font-sans text-sm font-medium transition-colors ${
               locale === "en"
-                ? "bg-brand text-white border-brand"
-                : "bg-surface-card border-surface-border text-slate-700 hover:border-brand hover:text-brand"
+                ? "bg-navy text-white border-navy"
+                : "bg-surface-card border-surface-border text-navy hover:border-gold"
             }`}
           >
             English
@@ -83,12 +85,12 @@ export default async function SettingsPage({ params: { locale } }: SettingsPageP
       </div>
 
       {/* Subscription management */}
-      <div className="bg-surface-card border border-surface-border rounded-xl p-6 shadow-sm space-y-4">
-        <h2 className="text-lg font-bold text-slate-900">{t("subscription")}</h2>
-        <p className="text-sm text-slate-500">{t("subscriptionDescription")}</p>
+      <div className="bg-surface-card border border-surface-border rounded p-6 space-y-4">
+        <h2 className="font-sans text-sm font-semibold uppercase tracking-wide text-navy">{t("subscription")}</h2>
+        <p className="font-serif text-sm text-ink-muted">{t("subscriptionDescription")}</p>
         <Link
           href={`/${locale}/billing`}
-          className="inline-block px-5 py-2.5 border border-surface-border text-slate-700 hover:border-brand hover:text-brand font-medium rounded-xl transition-colors text-sm"
+          className="inline-block px-5 py-2.5 border border-surface-border text-navy hover:border-gold font-sans text-sm font-medium uppercase tracking-wide rounded-lg transition-colors"
         >
           {tBilling("manageSubscription")}
         </Link>

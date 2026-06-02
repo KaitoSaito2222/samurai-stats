@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getJapanesePlayersServer, getTodayGamesServer } from "@/lib/api-server";
 import PlayerCard from "@/components/PlayerCard";
 import GameCard from "@/components/GameCard";
+import SectionHeading from "@/components/SectionHeading";
 import type { Player, Game } from "@/lib/api";
 
 interface HomePageProps {
@@ -33,50 +34,69 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
   const { players, games } = await fetchHomeData();
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-14">
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy via-navy-dark to-[#0a1a33] px-6 py-12 sm:px-10 sm:py-16 text-center shadow-sm">
-        {/* Decorative glow */}
-        <div className="pointer-events-none absolute -top-16 -right-10 w-64 h-64 rounded-full bg-brand/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-20 -left-10 w-64 h-64 rounded-full bg-navy/40 blur-3xl" />
-        <div className="relative">
-          <p className="inline-flex items-center gap-1.5 text-brand font-semibold text-xs sm:text-sm uppercase tracking-[0.2em] mb-3">
-            <span>⚾</span> MLB Japanese Players
-          </p>
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-4 text-balance tracking-tight">
+      <section className="relative overflow-hidden rounded bg-navy text-white">
+        {/* Decorative gold framing */}
+        <div className="pointer-events-none absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-gold via-gold/40 to-transparent" />
+        <div className="pointer-events-none absolute -bottom-24 -right-16 w-80 h-80 rounded-full bg-gold/10 blur-3xl" />
+        <div className="relative px-6 py-16 sm:px-12 sm:py-20 max-w-3xl">
+          <div className="flex items-center gap-3 mb-5">
+            <span className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+              {t("kicker")}
+            </span>
+            <span className="h-px w-12 bg-gold" />
+          </div>
+          <h1 className="font-display text-4xl sm:text-5xl font-bold leading-[1.1] mb-5 text-balance">
             {t("title")}
           </h1>
-          <p className="text-base sm:text-lg text-slate-300 max-w-xl mx-auto">{t("subtitle")}</p>
+          <p className="font-serif text-lg text-white/70 mb-9 max-w-xl leading-relaxed">
+            {t("subtitle")}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href={`/${locale}/players`}
+              className="px-6 py-3 bg-gold text-navy font-sans text-sm font-semibold uppercase tracking-wide rounded-lg hover:bg-gold-dark transition-colors"
+            >
+              {t("exploreCta")}
+            </Link>
+            <Link
+              href={`/${locale}/rankings`}
+              className="px-6 py-3 border border-white/30 text-white font-sans text-sm font-semibold uppercase tracking-wide rounded-lg hover:border-gold hover:text-gold transition-colors"
+            >
+              {t("rankingsCta")}
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Today's Games */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="flex items-center gap-2.5 text-xl font-bold text-slate-900">
-            <span className="w-1 h-5 rounded-full bg-brand" />
-            {t("todayGames")}
-          </h2>
-          <Link
-            href={`/${locale}/games`}
-            className="text-sm text-brand hover:underline font-medium"
-          >
-            {t("browseByDate")} →
-          </Link>
-        </div>
-        {games.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 bg-surface-card rounded-xl border border-surface-border text-center">
-            <span className="text-4xl mb-3">⚾</span>
-            <p className="text-slate-500">{tGames("noGamesToday")}</p>
+        <SectionHeading
+          kicker={tGames("live")}
+          title={t("todayGames")}
+          action={
             <Link
               href={`/${locale}/games`}
-              className="mt-3 text-sm text-brand hover:underline"
+              className="font-sans text-sm uppercase tracking-wide text-gold-dark hover:text-navy transition-colors"
+            >
+              {t("browseByDate")} →
+            </Link>
+          }
+        />
+        {games.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-14 bg-surface-card rounded border border-surface-border text-center">
+            <span className="text-4xl mb-3">⚾</span>
+            <p className="font-serif text-ink-muted">{tGames("noGamesToday")}</p>
+            <Link
+              href={`/${locale}/games`}
+              className="mt-3 font-sans text-sm uppercase tracking-wide text-gold-dark hover:text-navy"
             >
               {t("browseByDate")} →
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {games.map((game) => (
               <GameCard key={game.id} game={game} locale={locale} />
             ))}
@@ -86,17 +106,25 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
 
       {/* Featured Players */}
       <section>
-        <h2 className="flex items-center gap-2.5 text-xl font-bold text-slate-900 mb-4">
-          <span className="w-1 h-5 rounded-full bg-brand" />
-          {t("featuredPlayers")}
-        </h2>
+        <SectionHeading
+          kicker={t("kicker")}
+          title={t("featuredPlayers")}
+          action={
+            <Link
+              href={`/${locale}/players`}
+              className="font-sans text-sm uppercase tracking-wide text-gold-dark hover:text-navy transition-colors"
+            >
+              {t("viewAll")} →
+            </Link>
+          }
+        />
         {players.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 bg-surface-card rounded-xl border border-surface-border text-center">
+          <div className="flex flex-col items-center justify-center py-14 bg-surface-card rounded border border-surface-border text-center">
             <span className="text-4xl mb-3">🏟️</span>
-            <p className="text-slate-500">{t("fetchFailed")}</p>
+            <p className="font-serif text-ink-muted">{t("fetchFailed")}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {players.map((player) => (
               <PlayerCard key={player.id} player={player} locale={locale} />
             ))}

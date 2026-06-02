@@ -16,16 +16,16 @@ const authAppearance = {
   variables: {
     default: {
       colors: {
-        brand: "#E01A38",
-        brandAccent: "#B5122C",
+        brand: "#031427",
+        brandAccent: "#0B1C30",
         inputBackground: "#FFFFFF",
-        inputText: "#0F172A",
-        inputBorder: "#DDE3ED",
-        inputBorderFocus: "#E01A38",
-        inputBorderHover: "#DDE3ED",
-        messageText: "#475569",
-        anchorTextColor: "#E01A38",
-        dividerBackground: "#DDE3ED",
+        inputText: "#191C1D",
+        inputBorder: "#C4C6CD",
+        inputBorderFocus: "#D4A843",
+        inputBorderHover: "#C4C6CD",
+        messageText: "#44474C",
+        anchorTextColor: "#B5912F",
+        dividerBackground: "#E5E7EB",
       },
     },
   },
@@ -51,9 +51,10 @@ export default function LoginPage({ params: { locale } }: LoginPageProps) {
     <div className="flex items-center justify-center min-h-[70vh] px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-slate-900">{tNav("login")}</h1>
+          <p className="font-display text-2xl font-bold text-navy">Samurai Stats</p>
+          <p className="font-serif text-sm italic text-ink-muted mt-1">The Intelligence of Japanese Baseball</p>
         </div>
-        <div className="bg-surface-card rounded-xl border border-surface-border p-6">
+        <div className="bg-surface-card rounded border border-surface-border shadow-float p-6">
           <Auth
             supabaseClient={supabase}
             appearance={authAppearance}
@@ -78,8 +79,8 @@ export default function LoginPage({ params: { locale } }: LoginPageProps) {
             redirectTo={`${typeof window !== "undefined" ? window.location.origin : ""}/${locale}`}
           />
         </div>
-        <p className="text-center text-slate-600 text-sm mt-4">
-          <a href={`/${locale}/signup`} className="text-brand hover:underline">
+        <p className="text-center font-serif text-ink-muted text-sm mt-4">
+          <a href={`/${locale}/signup`} className="text-gold-dark hover:text-navy font-sans uppercase tracking-wide text-xs">
             {tAuth("createAccount")}
           </a>
         </p>

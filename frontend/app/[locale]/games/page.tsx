@@ -52,17 +52,17 @@ export default async function GamesPage({
   const isToday = dateStr === today;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Date navigation */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-surface-border pb-4">
         <Link
           href={`/${locale}/games?date=${prevDate}`}
-          className="flex items-center gap-1 px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-slate-700 hover:bg-surface-muted transition-colors text-sm font-medium"
+          className="flex items-center gap-1 px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-navy hover:border-gold transition-colors font-sans text-sm uppercase tracking-wide"
         >
           ← {t("prevDay")}
         </Link>
 
-        <h1 className="text-lg font-bold text-slate-900 text-center px-2">
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-navy text-center px-2">
           {formatDisplayDate(dateStr, locale)}
         </h1>
 
@@ -71,7 +71,7 @@ export default async function GamesPage({
         ) : (
           <Link
             href={`/${locale}/games?date=${nextDate}`}
-            className="flex items-center gap-1 px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-slate-700 hover:bg-surface-muted transition-colors text-sm font-medium"
+            className="flex items-center gap-1 px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-navy hover:border-gold transition-colors font-sans text-sm uppercase tracking-wide"
           >
             {t("nextDay")} →
           </Link>
@@ -83,7 +83,7 @@ export default async function GamesPage({
         <div className="text-center">
           <Link
             href={`/${locale}/games`}
-            className="text-sm text-brand hover:underline"
+            className="font-sans text-sm uppercase tracking-wide text-gold-dark hover:text-navy transition-colors"
           >
             {t("backToToday")}
           </Link>
@@ -92,13 +92,13 @@ export default async function GamesPage({
 
       {/* Games */}
       {games.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 bg-surface-card rounded-xl border border-surface-border text-center">
+        <div className="flex flex-col items-center justify-center py-16 bg-surface-card rounded border border-surface-border text-center">
           <span className="text-4xl mb-3">⚾</span>
-          <p className="text-slate-500">{t("noGamesOnDate")}</p>
-          <p className="text-slate-400 text-sm mt-1">{t("noGamesHint")}</p>
+          <p className="font-serif text-ink-muted">{t("noGamesOnDate")}</p>
+          <p className="font-sans text-ink-muted/70 text-sm mt-1">{t("noGamesHint")}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {games.map((game) => (
             <GameCard key={game.id} game={game} locale={locale} />
           ))}

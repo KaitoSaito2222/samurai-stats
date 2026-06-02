@@ -8,13 +8,24 @@
     "login": "ログイン",
     "logout": "ログアウト"
   },
+  "footer": {
+    "copyright": "© 2026 Samurai Stats. 全ての権利を留保します。データは公式ソースより取得。",
+    "about": "概要",
+    "terms": "利用規約",
+    "privacy": "プライバシー",
+    "contact": "お問い合わせ"
+  },
   "home": {
-    "title": "サムライスタッツ",
-    "subtitle": "日本人MLB選手の成績を徹底分析",
+    "title": "侍たちの軌跡を、データで追う",
+    "subtitle": "日本人MLB選手の成績を、伝統と知性で徹底分析。",
+    "kicker": "精密アナリティクス",
+    "exploreCta": "選手を見る",
+    "rankingsCta": "ランキング",
     "featuredPlayers": "注目選手",
     "todayGames": "今日の試合",
     "fetchFailed": "選手データを取得できませんでした",
-    "browseByDate": "日付で探す"
+    "browseByDate": "日付で探す",
+    "viewAll": "すべて見る"
   },
   "players": {
     "title": "日本人選手一覧",

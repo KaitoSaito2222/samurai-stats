@@ -88,17 +88,17 @@ export default function AIChatPanel({ playerId, userPlan, locale }: AIChatPanelP
 
   if (userPlan !== "pro") {
     return (
-      <div className="relative rounded-xl overflow-hidden">
+      <div className="relative rounded overflow-hidden">
         <div className="blur-sm pointer-events-none">
-          <div className="h-48 bg-surface-muted rounded-xl border border-surface-border flex items-center justify-center">
-            <p className="text-slate-500">{t("placeholder")}</p>
+          <div className="h-48 bg-surface-muted rounded border border-surface-border flex items-center justify-center">
+            <p className="font-serif text-ink-muted">{t("placeholder")}</p>
           </div>
         </div>
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/80 backdrop-blur-sm rounded-xl">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-surface-card/85 backdrop-blur-sm rounded">
           <span className="text-2xl">🔒</span>
-          <p className="font-bold text-slate-900">{t("proOnly")}</p>
+          <p className="font-display font-bold text-navy text-lg">{t("proOnly")}</p>
           <a href={`/${locale}/billing`}
-            className="px-4 py-2 bg-pro text-white font-bold rounded-lg hover:opacity-90 transition-opacity text-sm">
+            className="px-4 py-2 bg-gold hover:bg-gold-dark text-navy font-sans text-sm font-semibold uppercase tracking-wide rounded-lg transition-colors">
             {t("upgrade")}
           </a>
         </div>
@@ -109,16 +109,16 @@ export default function AIChatPanel({ playerId, userPlan, locale }: AIChatPanelP
   return (
     <div className="flex flex-col gap-3">
       {/* Message history */}
-      <div className="min-h-[200px] max-h-[400px] overflow-y-auto bg-surface-muted rounded-xl p-4 space-y-3 border border-surface-border">
+      <div className="min-h-[200px] max-h-[400px] overflow-y-auto bg-surface-muted rounded p-4 space-y-3 border border-surface-border">
         {messages.length === 0 && !streaming && (
-          <p className="text-slate-400 text-sm text-center pt-8">{t("placeholder")}</p>
+          <p className="font-serif text-ink-muted text-sm text-center pt-8">{t("placeholder")}</p>
         )}
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`max-w-[85%] px-4 py-2 rounded-2xl text-sm ${
+            <div className={`max-w-[85%] px-4 py-2 rounded-lg text-sm font-serif ${
               msg.role === "user"
                 ? "bg-navy text-white rounded-br-none"
-                : "bg-white border border-surface-border text-slate-900 rounded-bl-none shadow-sm"
+                : "bg-surface-card border border-surface-border text-ink rounded-bl-none"
             }`}>
               {msg.content}
             </div>
@@ -126,15 +126,15 @@ export default function AIChatPanel({ playerId, userPlan, locale }: AIChatPanelP
         ))}
         {streaming && streamingText && (
           <div className="flex justify-start">
-            <div className="max-w-[85%] px-4 py-2 rounded-2xl text-sm bg-white border border-surface-border text-slate-900 rounded-bl-none shadow-sm">
+            <div className="max-w-[85%] px-4 py-2 rounded-lg text-sm font-serif bg-surface-card border border-surface-border text-ink rounded-bl-none">
               {streamingText}
-              <span className="inline-block w-1.5 h-4 bg-slate-400 ml-0.5 animate-pulse align-middle" />
+              <span className="inline-block w-1.5 h-4 bg-gold ml-0.5 animate-pulse align-middle" />
             </div>
           </div>
         )}
         {streaming && !streamingText && (
           <div className="flex justify-start">
-            <div className="px-4 py-2 rounded-2xl text-sm bg-white border border-surface-border text-slate-500 shadow-sm">
+            <div className="px-4 py-2 rounded-lg text-sm bg-surface-card border border-surface-border text-ink-muted">
               <span className="animate-pulse">...</span>
             </div>
           </div>
@@ -151,12 +151,12 @@ export default function AIChatPanel({ playerId, userPlan, locale }: AIChatPanelP
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           placeholder={t("inputPlaceholder")}
           disabled={streaming}
-          className="flex-1 px-4 py-3 bg-surface-card border border-surface-border rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand shadow-sm disabled:opacity-50"
+          className="flex-1 px-4 py-3 bg-surface-card border border-navy rounded-lg font-serif text-ink placeholder-ink-muted/60 focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold disabled:opacity-50 transition-colors"
         />
         <button
           onClick={sendMessage}
           disabled={streaming || !input.trim()}
-          className="px-5 py-3 bg-navy hover:bg-navy-dark text-white font-medium rounded-xl disabled:opacity-50 transition-colors shadow-sm"
+          className="px-5 py-3 bg-navy hover:bg-navy-dark text-white font-sans text-sm font-semibold uppercase tracking-wide rounded-lg disabled:opacity-50 transition-colors"
         >
           {streaming ? "..." : t("send")}
         </button>
