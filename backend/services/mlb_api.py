@@ -8,9 +8,12 @@ No authentication is required.
 
 import datetime
 import logging
+import time
 from typing import Any
 
 import httpx
+
+from services.japanese_data import is_analyzable, player_name_ja, team_name_ja
 
 logger = logging.getLogger(__name__)
 
@@ -345,6 +348,132 @@ async def fetch_boxscore_batting(game_pk: str) -> list[dict[str, Any]]:
             )
 
     return results
+
+
+_boxscore_cache: dict[str, tuple[float, dict[str, Any]]] = {}
+_BOXSCORE_CACHE_TTL = 60.0  # seconds
+
+
+def _parse_boxscore(data: dict[str, Any]) -> dict[str, Any]:
+    """Parse MLB API /game/{gamePk}/boxscore response into normalized shape.
+
+    Returns a dict with 'home' and 'away' keys. Each side has:
+      team_en, team_ja, batters (batting-order list), pitchers (appearance-order list).
+    """
+    teams: dict[str, Any] = data.get("teams", {})
+
+    def _as_int(value: Any) -> int:
+        try:
+            return int(value or 0)
+        except (TypeError, ValueError):
+            return 0
+
+    def _as_float(value: Any) -> float | None:
+        if value is None or value == "":
+            return None
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    result: dict[str, Any] = {}
+
+    for side in ("home", "away"):
+        team_data: dict[str, Any] = teams.get(side, {})
+        team_info: dict[str, Any] = team_data.get("team", {})
+        team_en: str = team_info.get("name", "")
+        players: dict[str, Any] = team_data.get("players", {})
+        batting_order_ids: list[Any] = team_data.get("battingOrder", [])
+        pitcher_ids: list[Any] = team_data.get("pitchers", [])
+
+        batters: list[dict[str, Any]] = []
+        for raw_id in batting_order_ids:
+            pid = str(raw_id)
+            pd: dict[str, Any] = players.get(f"ID{pid}", {})
+            if not pd:
+                continue
+            person: dict[str, Any] = pd.get("person", {})
+            batting: dict[str, Any] = pd.get("stats", {}).get("batting", {})
+            season_batting: dict[str, Any] = pd.get("seasonStats", {}).get("batting", {})
+            order_raw: str = pd.get("battingOrder", "")
+            order: int | None = (_as_int(order_raw) // 100) if order_raw else None
+
+            batters.append({
+                "player_id": pid,
+                "name_en": person.get("fullName", ""),
+                "name_ja": player_name_ja(pid, person.get("fullName", "")),
+                "is_analyzable": is_analyzable(pid),
+                "position": pd.get("position", {}).get("abbreviation", ""),
+                "batting_order": order,
+                "at_bats": _as_int(batting.get("atBats")),
+                "runs": _as_int(batting.get("runs")),
+                "hits": _as_int(batting.get("hits")),
+                "doubles": _as_int(batting.get("doubles")),
+                "home_runs": _as_int(batting.get("homeRuns")),
+                "rbi": _as_int(batting.get("rbi")),
+                "walks": _as_int(batting.get("baseOnBalls")),
+                "strikeouts": _as_int(batting.get("strikeOuts")),
+                "avg": _as_float(season_batting.get("avg")),
+            })
+
+        pitchers: list[dict[str, Any]] = []
+        for raw_id in pitcher_ids:
+            pid = str(raw_id)
+            pd = players.get(f"ID{pid}", {})
+            if not pd:
+                continue
+            person = pd.get("person", {})
+            pitching: dict[str, Any] = pd.get("stats", {}).get("pitching", {})
+            season_pitching: dict[str, Any] = pd.get("seasonStats", {}).get("pitching", {})
+
+            pitchers.append({
+                "player_id": pid,
+                "name_en": person.get("fullName", ""),
+                "name_ja": player_name_ja(pid, person.get("fullName", "")),
+                "is_analyzable": is_analyzable(pid),
+                "innings_pitched": pitching.get("inningsPitched", "0.0"),
+                "hits": _as_int(pitching.get("hits")),
+                "runs": _as_int(pitching.get("runs")),
+                "earned_runs": _as_int(pitching.get("earnedRuns")),
+                "walks": _as_int(pitching.get("baseOnBalls")),
+                "strikeouts": _as_int(pitching.get("strikeOuts")),
+                "home_runs": _as_int(pitching.get("homeRuns")),
+                "era": _as_float(season_pitching.get("era")),
+            })
+
+        result[side] = {
+            "team_en": team_en,
+            "team_ja": team_name_ja(team_en),
+            "batters": batters,
+            "pitchers": pitchers,
+        }
+
+    return result
+
+
+async def fetch_boxscore(game_pk: str) -> dict[str, Any]:
+    """Fetch batting order and per-player stats for both teams.
+
+    Calls GET /game/{gamePk}/boxscore. Results are cached in memory for
+    60 seconds to reduce load during live games and repeated page refreshes.
+
+    Returns a dict with 'home' and 'away' keys (see _parse_boxscore).
+    Returns an empty dict on HTTP failure or when lineup is not yet posted.
+    """
+    cached = _boxscore_cache.get(game_pk)
+    if cached and time.monotonic() - cached[0] < _BOXSCORE_CACHE_TTL:
+        return cached[1]
+
+    try:
+        response = await _client.get(f"/game/{game_pk}/boxscore")
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        logger.error("fetch_boxscore game_pk=%s failed: %s", game_pk, exc)
+        return {}
+
+    result = _parse_boxscore(response.json())
+    _boxscore_cache[game_pk] = (time.monotonic(), result)
+    return result
 
 
 async def fetch_player_splits(

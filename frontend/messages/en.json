@@ -110,7 +110,27 @@
     "japanesePlayers": "Japanese Players in this Game",
     "prevDay": "Prev Day",
     "nextDay": "Next Day",
-    "backToToday": "Back to today"
+    "backToToday": "Back to today",
+    "boxscore": {
+      "batting": "Batting",
+      "pitching": "Pitching",
+      "lineupNotAvailable": "Lineup not yet available",
+      "order": "#",
+      "player": "Player",
+      "pos": "POS",
+      "ab": "AB",
+      "r": "R",
+      "h": "H",
+      "double": "2B",
+      "hr": "HR",
+      "rbi": "RBI",
+      "bb": "BB",
+      "k": "K",
+      "avg": "AVG",
+      "ip": "IP",
+      "er": "ER",
+      "era": "ERA"
+    }
   },
   "ai": {
     "generateSummary": "Generate AI Summary",

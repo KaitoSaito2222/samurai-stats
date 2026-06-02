@@ -122,6 +122,16 @@ def team_name_from_id(team_id: int) -> tuple[str, str]:
     return name_en, name_ja
 
 
+def is_analyzable(player_id: str) -> bool:
+    """Return True if this player is eligible for AI analysis.
+
+    Currently scoped to Japanese players via the static PLAYER_NAMES_JA mapping.
+    When the players.analyzable DB column is populated, callers with DB access
+    should prefer that column over this function.
+    """
+    return player_id in PLAYER_NAMES_JA
+
+
 def mlb_photo_url(player_id: str) -> str:
     """Return the MLB Stats API official headshot CDN URL for a player."""
     return (

@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
-import { getGameServer } from "@/lib/api-server";
+import { getGameServer, getGameBoxscoreServer } from "@/lib/api-server";
+import BoxScore from "@/components/games/BoxScore";
 
 interface GameDetailPageProps {
   params: { locale: string; id: string };
@@ -9,13 +10,13 @@ export default async function GameDetailPage({ params: { locale, id } }: GameDet
   const t = await getTranslations("games");
   const tErrors = await getTranslations("errors");
 
-  let game = null;
-  try {
-    const res = await getGameServer(id);
-    game = res.data;
-  } catch {
-    /* not found or API error */
-  }
+  const [gameRes, boxscoreRes] = await Promise.allSettled([
+    getGameServer(id),
+    getGameBoxscoreServer(id),
+  ]);
+
+  const game = gameRes.status === "fulfilled" ? gameRes.value.data : null;
+  const boxscore = boxscoreRes.status === "fulfilled" ? boxscoreRes.value.data : null;
 
   if (!game) {
     return (
@@ -90,22 +91,14 @@ export default async function GameDetailPage({ params: { locale, id } }: GameDet
         </div>
       </div>
 
-      {/* Japanese players in this game */}
-      {game.japanese_players && game.japanese_players.length > 0 && (
-        <div className="bg-surface-card border border-surface-border rounded p-6">
-          <h2 className="font-sans text-sm font-semibold uppercase tracking-wide text-navy border-b-2 border-gold pb-1 inline-block mb-3">{t("japanesePlayers")}</h2>
-          <div className="space-y-1">
-            {game.japanese_players.map((p) => (
-              <a key={p.player_id} href={`/${locale}/players/${p.player_id}`}
-                className="flex items-center gap-3 py-2 group">
-                <span>🇯🇵</span>
-                <span className="font-display font-bold text-navy group-hover:text-gold-dark transition-colors">
-                  {locale === "ja" && p.name_ja ? p.name_ja : p.name_en}
-                </span>
-              </a>
-            ))}
-          </div>
-        </div>
+      {/* Box Score */}
+      {boxscore && (
+        <BoxScore
+          boxscore={boxscore}
+          homeTeam={homeTeam}
+          awayTeam={awayTeam}
+          locale={locale}
+        />
       )}
     </div>
   );
