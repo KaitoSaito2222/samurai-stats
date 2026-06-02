@@ -88,9 +88,9 @@ export default function SearchPage() {
                 href={`/${locale}/players/${player.id}`}
                 className="flex items-center gap-4 px-4 py-3 bg-surface-card border border-surface-border rounded hover:border-gold hover:shadow-float transition-all group"
               >
-                <div className="w-10 h-10 rounded overflow-hidden bg-surface-muted flex-shrink-0 border border-surface-border">
-                  {player.photo_url ? (
-                    <Image src={player.photo_url} alt={displayName} width={40} height={40} className="w-full h-full object-cover object-top" />
+                  <div className="w-8 h-11 rounded overflow-hidden bg-surface-muted flex-shrink-0 border border-surface-border">
+                    {player.photo_url ? (
+                    <Image src={player.photo_url} alt={displayName} width={32} height={44} className="w-full h-full object-cover object-center" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-lg">⚾</div>
                   )}

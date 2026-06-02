@@ -96,7 +96,7 @@ export default async function PlayerDetailPage({ params: { locale, id } }: Playe
                 alt={displayName}
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
-                className="object-cover object-top"
+                className="object-cover object-center"
                 priority
               />
             ) : (

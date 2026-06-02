@@ -101,7 +101,7 @@ export default function GameCard({ game, locale }: GameCardProps) {
                     alt={name}
                     width={28}
                     height={28}
-                    className="w-full h-full object-cover object-top"
+                    className="w-full h-full object-cover object-center"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs">⚾</div>
