@@ -15,11 +15,11 @@ export default function PlayerCard({ player, locale }: PlayerCardProps) {
   return (
     <Link
       href={`/${locale}/players/${player.id}`}
-      className="block bg-surface-card hover:bg-surface-muted border border-surface-border rounded-xl p-4 transition-all shadow-sm hover:shadow-md group"
+      className="block bg-surface-card border border-surface-border rounded-2xl p-4 transition-all duration-200 shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-brand/30 group"
     >
       <div className="flex items-center gap-4">
         {/* Player photo */}
-        <div className="w-16 h-16 rounded-full overflow-hidden bg-slate-100 flex-shrink-0">
+        <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 ring-2 ring-surface-border group-hover:ring-brand/40 transition-all">
           {player.photo_url ? (
             <Image
               src={player.photo_url}

@@ -37,7 +37,7 @@ export default function GameCard({ game, locale }: GameCardProps) {
   return (
     <Link
       href={`/${locale}/games/${game.id}`}
-      className="block bg-surface-card border border-surface-border rounded-xl p-4 space-y-3 hover:bg-surface-muted transition-all shadow-sm hover:shadow-md"
+      className="block bg-surface-card border border-surface-border rounded-2xl p-4 space-y-3 transition-all duration-200 shadow-sm hover:shadow-lg hover:-translate-y-0.5 hover:border-brand/30"
     >
       {/* Status badge */}
       <div className="flex justify-between items-center">

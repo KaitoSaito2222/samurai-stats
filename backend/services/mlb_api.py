@@ -313,6 +313,13 @@ async def fetch_boxscore_batting(game_pk: str) -> list[dict[str, Any]]:
     data: dict[str, Any] = response.json()
     teams: dict[str, Any] = data.get("teams", {})
 
+    def _as_int(value: Any) -> int:
+        """Coerce an untrusted boxscore value to int, defaulting to 0."""
+        try:
+            return int(value or 0)
+        except (TypeError, ValueError):
+            return 0
+
     results: list[dict[str, Any]] = []
     for side in ("home", "away"):
         players: dict[str, Any] = teams.get(side, {}).get("players", {})
@@ -320,20 +327,20 @@ async def fetch_boxscore_batting(game_pk: str) -> list[dict[str, Any]]:
             batting: dict[str, Any] = player_data.get("stats", {}).get("batting", {})
             if not batting:
                 continue
-            at_bats: int = int(batting.get("atBats") or 0)
+            at_bats: int = _as_int(batting.get("atBats"))
             if at_bats == 0:
                 continue
             person: dict[str, Any] = player_data.get("person", {})
-            player_id: str = str(person.get("id", ""))
-            if not player_id:
+            person_id: Any = person.get("id")
+            if not person_id:
                 continue
             results.append(
                 {
-                    "player_id": player_id,
+                    "player_id": str(person_id),
                     "at_bats": at_bats,
-                    "hits": int(batting.get("hits") or 0),
-                    "home_runs": int(batting.get("homeRuns") or 0),
-                    "rbi": int(batting.get("rbi") or 0),
+                    "hits": _as_int(batting.get("hits")),
+                    "home_runs": _as_int(batting.get("homeRuns")),
+                    "rbi": _as_int(batting.get("rbi")),
                 }
             )
 

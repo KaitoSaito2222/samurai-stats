@@ -164,6 +164,66 @@ async def test_fetch_boxscore_batting_skips_no_batting_stats() -> None:
 
 
 @pytest.mark.asyncio
+async def test_fetch_boxscore_batting_skips_null_person_id() -> None:
+    """A player whose person.id is null is skipped (no 'None' player_id written)."""
+    from services.mlb_api import fetch_boxscore_batting
+
+    home_players = {
+        "IDnull": {
+            "person": {"id": None},
+            "stats": {"batting": {"atBats": 4, "hits": 2, "homeRuns": 0, "rbi": 1}},
+        },
+        "ID660271": {
+            "person": {"id": 660271},
+            "stats": {"batting": {"atBats": 3, "hits": 1, "homeRuns": 0, "rbi": 0}},
+        },
+    }
+    mock_resp = MagicMock()
+    mock_resp.json.return_value = _make_boxscore_response(
+        home_players=home_players, away_players={}
+    )
+    mock_resp.raise_for_status.return_value = None
+
+    with patch("services.mlb_api._client") as mock_client:
+        mock_client.get = AsyncMock(return_value=mock_resp)
+        result = await fetch_boxscore_batting("717948")
+
+    assert len(result) == 1
+    assert result[0]["player_id"] == "660271"
+    assert all(r["player_id"] != "None" for r in result)
+
+
+@pytest.mark.asyncio
+async def test_fetch_boxscore_batting_handles_non_numeric_values() -> None:
+    """Malformed (non-numeric) stat values coerce to 0 instead of crashing."""
+    from services.mlb_api import fetch_boxscore_batting
+
+    home_players = {
+        "ID660271": {
+            "person": {"id": 660271},
+            "stats": {
+                "batting": {"atBats": 4, "hits": "N/A", "homeRuns": None, "rbi": "x"}
+            },
+        },
+    }
+    mock_resp = MagicMock()
+    mock_resp.json.return_value = _make_boxscore_response(
+        home_players=home_players, away_players={}
+    )
+    mock_resp.raise_for_status.return_value = None
+
+    with patch("services.mlb_api._client") as mock_client:
+        mock_client.get = AsyncMock(return_value=mock_resp)
+        result = await fetch_boxscore_batting("717948")
+
+    assert len(result) == 1
+    assert result[0]["at_bats"] == 4
+    assert result[0]["hits"] == 0
+    assert result[0]["home_runs"] == 0
+    assert result[0]["rbi"] == 0
+
+
+@pytest.mark.asyncio
 async def test_fetch_boxscore_batting_returns_empty_on_http_error() -> None:
     """Returns [] when the HTTP call fails."""
     import httpx

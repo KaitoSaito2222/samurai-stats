@@ -35,17 +35,28 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
   return (
     <div className="space-y-10">
       {/* Hero */}
-      <section className="rounded-2xl bg-gradient-to-br from-navy/10 to-brand/5 border border-navy/20 p-8 text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-3">
-          {t("title")}
-        </h1>
-        <p className="text-lg text-slate-600">{t("subtitle")}</p>
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy via-navy-dark to-[#0a1a33] px-6 py-12 sm:px-10 sm:py-16 text-center shadow-sm">
+        {/* Decorative glow */}
+        <div className="pointer-events-none absolute -top-16 -right-10 w-64 h-64 rounded-full bg-brand/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-20 -left-10 w-64 h-64 rounded-full bg-navy/40 blur-3xl" />
+        <div className="relative">
+          <p className="inline-flex items-center gap-1.5 text-brand font-semibold text-xs sm:text-sm uppercase tracking-[0.2em] mb-3">
+            <span>⚾</span> MLB Japanese Players
+          </p>
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-4 text-balance tracking-tight">
+            {t("title")}
+          </h1>
+          <p className="text-base sm:text-lg text-slate-300 max-w-xl mx-auto">{t("subtitle")}</p>
+        </div>
       </section>
 
       {/* Today's Games */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-slate-900">{t("todayGames")}</h2>
+          <h2 className="flex items-center gap-2.5 text-xl font-bold text-slate-900">
+            <span className="w-1 h-5 rounded-full bg-brand" />
+            {t("todayGames")}
+          </h2>
           <Link
             href={`/${locale}/games`}
             className="text-sm text-brand hover:underline font-medium"
@@ -75,7 +86,10 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
 
       {/* Featured Players */}
       <section>
-        <h2 className="text-xl font-bold text-slate-900 mb-4">{t("featuredPlayers")}</h2>
+        <h2 className="flex items-center gap-2.5 text-xl font-bold text-slate-900 mb-4">
+          <span className="w-1 h-5 rounded-full bg-brand" />
+          {t("featuredPlayers")}
+        </h2>
         {players.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 bg-surface-card rounded-xl border border-surface-border text-center">
             <span className="text-4xl mb-3">🏟️</span>
