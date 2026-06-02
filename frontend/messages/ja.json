@@ -9,11 +9,7 @@
     "logout": "ログアウト"
   },
   "footer": {
-    "copyright": "© 2026 Samurai Stats. 全ての権利を留保します。データは公式ソースより取得。",
-    "about": "概要",
-    "terms": "利用規約",
-    "privacy": "プライバシー",
-    "contact": "お問い合わせ"
+    "copyright": "© 2026 Samurai Stats. 全ての権利を留保します。データは公式ソースより取得。"
   },
   "home": {
     "title": "侍たちの軌跡を、データで追う",

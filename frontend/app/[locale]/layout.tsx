@@ -55,7 +55,7 @@ export default async function RootLayout({ children, params: { locale } }: RootL
           <main className="flex-1 w-full max-w-content mx-auto px-4 sm:px-6 lg:px-16 py-8 sm:py-10">
             {children}
           </main>
-          <Footer locale={locale} />
+          <Footer />
         </NextIntlClientProvider>
       </body>
     </html>
