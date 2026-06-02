@@ -25,17 +25,66 @@ GET /people/{id}/stats?stats=yearByYear&group=hitting
 GET /people/{id}/gameLog
 ```
 
-## Period & Trend Stats (Phase 2)
+## Splits & Monthly Stats (implemented)
 
-Used for detailed analysis and graph data:
+Used by `GET /api/players/{id}/analytics`. Results cached in-memory for 1 hour.
+
 ```
-# Stats for a specific date range (period comparison)
-GET /people/{id}/stats?stats=byDateRange&group=hitting
-    &startDate={YYYY-MM-DD}&endDate={YYYY-MM-DD}&season={year}
+# Situational splits (vs LHP/RHP, Home/Away, Day/Night)
+GET /people/{id}/stats?stats=splits&group=hitting&season={year}&sitCodes=vl,vr,h,a,d,n
+→ sitCodes: vl=vs_left, vr=vs_right, h=home, a=away, d=day, n=night
+→ Each split returns: plateAppearances, avg (string ".342"), ops, homeRuns
 
 # Monthly breakdown (trend graphs)
 GET /people/{id}/stats?stats=byMonth&group=hitting&season={year}
 GET /people/{id}/stats?stats=byMonth&group=pitching&season={year}
+→ Returns splits array with month (string "4") and stat dict
+```
+
+> avg and ops come back as strings (".342") — convert with `float(val) if val else None`.
+> Implemented in `services/mlb_api.py`: `fetch_player_splits()`, `fetch_player_monthly()`.
+
+## Baseball Savant (Statcast) — implemented
+
+Statcast data is fetched from Baseball Savant, **not** the MLB Stats API.
+
+```
+Base URL: https://baseballsavant.mlb.com
+Endpoint: GET /statcast_search/csv?player_id={id}&type=batter&year={season}&player_type=batter
+Auth: None required
+Timeout: 30s
+User-Agent: Mozilla/5.0 (compatible; SamuraiStats/1.0)
+```
+
+Key CSV columns used:
+
+| Column | Description |
+|---|---|
+| `launch_speed` | Exit velocity (mph) |
+| `launch_angle` | Launch angle (degrees) |
+| `launch_speed_angle` | `6` = barrel classification |
+| `estimated_ba_using_speedangle` | xBA |
+| `estimated_slg_using_speedangle` | xSLG |
+| `pitch_type` | Pitch type code (FF, SL, CH...) |
+| `zone` | 1-14; use 1-9 for in-zone heatmap |
+| `events` | PA-ending outcome (single, home_run, strikeout...) |
+| `description` | Pitch outcome (swinging_strike, foul...) |
+
+**Aggregation**: `services/baseball_savant.py::_aggregate()` processes all rows and returns:
+- `exit_velocity_avg`, `launch_angle_avg`, `barrel_rate`, `hard_hit_rate`, `xba`, `xslg`
+- `pitch_splits`: grouped by pitch_type (PA ≥ 5), with avg/whiff_rate/hr/k
+- `zone_stats`: zones 1-9, PA and avg per zone
+
+Results stored in `player_analytics.data` JSONB. Sync via `POST /internal/sync/statcast`.
+
+**Rate limiting**: sync fetches players **sequentially** with 1-second delay to avoid rate-limiting.
+
+## Period & Trend Stats (pending)
+
+```
+# Stats for a specific date range (period comparison)
+GET /people/{id}/stats?stats=byDateRange&group=hitting
+    &startDate={YYYY-MM-DD}&endDate={YYYY-MM-DD}&season={year}
 
 # Per-game log (game_logs table population)
 GET /people/{id}/stats?stats=gameLog&group=hitting&season={year}

@@ -7,7 +7,7 @@ on:
     branches: [develop]
 
 jobs:
-  backend:
+  backend-lint-test:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -23,21 +23,21 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Lint (ruff)
-        run: ruff check .
-
       - name: Type check (mypy)
         run: mypy . --ignore-missing-imports
 
-      - name: Test (pytest)
-        run: pytest
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Test (pytest — unit only)
+        run: pytest tests/unit/ -v
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_TEST_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_TEST_SERVICE_ROLE_KEY }}
           INTERNAL_API_KEY: test-internal-key
           STRIPE_WEBHOOK_SECRET: whsec_test
 
-  frontend:
+  frontend-lint-typecheck:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -53,6 +53,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Lint (ESLint)
+        run: npm run lint
 
       - name: Type check (tsc)
         run: npx tsc --noEmit

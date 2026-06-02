@@ -85,10 +85,32 @@ POST /api/ai/chat
 GET  /api/players/japanese?page=1&limit=20
 GET  /api/players/{id}
 GET  /api/players/{id}/stats
+GET  /api/players/{id}/analytics?season={year}   # splits + monthly + Statcast (Pro only)
 GET  /api/players/{id}/game-logs?page=1&limit=20
 GET  /api/players/search?q={}&page=1&limit=20
 ```
 > In FastAPI, define `/japanese` and `/search` **before** `/{id}` to avoid route conflicts.
+
+`/analytics` response shape:
+```json
+{
+  "player_id": "660271", "season": 2026,
+  "splits": {
+    "vs_left":  {"pa": 145, "avg": 0.342, "ops": 1.123, "hr": 18},
+    "vs_right": {"pa": 312, "avg": 0.241, "ops": 0.876, "hr": 26},
+    "home": {...}, "away": {...}, "day": {...}, "night": {...}
+  },
+  "monthly": [{"month": 4, "avg": 0.234, "ops": 0.812, "hr": 4, "games": 24}, ...],
+  "statcast": {
+    "exit_velocity_avg": 93.2, "barrel_rate": 12.4, "hard_hit_rate": 48.3,
+    "launch_angle_avg": 14.2, "xba": 0.301, "xslg": 0.523,
+    "pitch_splits": [{"pitch_type": "FF", "pitch_name_ja": "フォーシーム", ...}],
+    "zone_stats": [{"zone": 1, "pa": 45, "avg": 0.180}, ...]
+  }
+}
+```
+- `splits` and `monthly` are fetched on-demand from MLB Stats API with 1-hour in-memory cache
+- `statcast` is read from `player_analytics` DB table (synced weekly via cron)
 
 ### Rankings
 ```
@@ -141,6 +163,7 @@ Updates run as **Railway cron jobs** calling internal FastAPI endpoints:
 | Stats update | `POST /internal/sync/stats` | Every hour |
 | Live game update | `POST /internal/sync/live` | Every 2 min during game hours |
 | Daily schedule | `POST /internal/sync/schedule` | Daily 6:00 JST |
+| Statcast analytics | `POST /internal/sync/statcast` | Weekly (sequential, ~1s/player) |
 
 - `/internal/*` endpoints secured with `INTERNAL_API_KEY` header (not public)
 - Live update skips if no `status='live'` games exist
