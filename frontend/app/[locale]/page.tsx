@@ -37,23 +37,39 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
     <div className="space-y-14">
       {/* Hero */}
       <section className="relative overflow-hidden rounded bg-navy text-white">
-        {/* Decorative gold framing */}
-        <div className="pointer-events-none absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-gold via-gold/40 to-transparent" />
-        <div className="pointer-events-none absolute -bottom-24 -right-16 w-80 h-80 rounded-full bg-gold/10 blur-3xl" />
-        <div className="relative px-6 py-16 sm:px-12 sm:py-20 max-w-3xl">
-          <div className="flex items-center gap-3 mb-5">
+        {/* Geometric grid overlay */}
+        <div className="hero-grid absolute inset-0 pointer-events-none" />
+
+        {/* "侍" (samurai) kanji watermark — decorative, screen-reader hidden */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none select-none absolute right-6 sm:right-16 top-1/2 -translate-y-1/2 font-serif font-bold leading-none text-gold/[0.07] hidden sm:block"
+          style={{ fontSize: "clamp(140px, 18vw, 240px)" }}
+        >
+          侍
+        </div>
+
+        {/* Gold top accent line */}
+        <div className="pointer-events-none absolute top-0 left-0 h-0.5 w-full bg-gradient-to-r from-gold via-gold/50 to-transparent" />
+
+        {/* Atmospheric glow bottom-right */}
+        <div className="pointer-events-none absolute -bottom-24 -right-16 w-96 h-96 rounded-full bg-gold/10 blur-3xl" />
+
+        {/* Content — staggered entrance animation */}
+        <div className="relative px-6 py-20 sm:px-12 sm:py-24 max-w-3xl">
+          <div className="flex items-center gap-3 mb-5 animate-enter delay-100">
             <span className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-gold">
               {t("kicker")}
             </span>
             <span className="h-px w-12 bg-gold" />
           </div>
-          <h1 className="font-display text-4xl sm:text-5xl font-bold leading-[1.1] mb-5 text-balance">
+          <h1 className="font-display text-4xl sm:text-5xl font-bold leading-[1.1] mb-5 text-balance animate-enter delay-200">
             {t("title")}
           </h1>
-          <p className="font-serif text-lg text-white/70 mb-9 max-w-xl leading-relaxed">
+          <p className="font-serif text-lg text-white/70 mb-9 max-w-xl leading-relaxed animate-enter delay-300">
             {t("subtitle")}
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3 animate-enter delay-400">
             <Link
               href={`/${locale}/players`}
               className="px-6 py-3 bg-gold text-navy font-sans text-sm font-semibold uppercase tracking-wide rounded-lg hover:bg-gold-dark transition-colors"

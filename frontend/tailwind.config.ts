@@ -36,7 +36,7 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-playfair)", "Playfair Display", "serif"],
         serif: ["var(--font-noto-serif-jp)", "Noto Serif JP", "serif"],
-        sans: ["var(--font-inter)", "Inter", "sans-serif"],
+        sans: ["var(--font-barlow)", "Barlow", "sans-serif"],
       },
       borderRadius: {
         DEFAULT: "0.125rem",

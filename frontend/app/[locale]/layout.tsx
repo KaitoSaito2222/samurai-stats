@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Serif_JP, Playfair_Display } from "next/font/google";
+import { Barlow, Noto_Serif_JP, Playfair_Display } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import Navbar from "@/components/Navbar";
@@ -7,9 +7,10 @@ import Footer from "@/components/Footer";
 import AiRemainingBanner from "@/components/AiRemainingBanner";
 import "./globals.css";
 
-const inter = Inter({
+const barlow = Barlow({
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-barlow",
   display: "swap",
 });
 
@@ -46,7 +47,7 @@ export default async function RootLayout({ children, params: { locale } }: RootL
   return (
     <html
       lang={locale}
-      className={`${inter.variable} ${notoSerifJP.variable} ${playfair.variable}`}
+      className={`${barlow.variable} ${notoSerifJP.variable} ${playfair.variable}`}
     >
       <body className="bg-surface text-ink font-serif min-h-screen flex flex-col antialiased">
         <NextIntlClientProvider messages={messages}>

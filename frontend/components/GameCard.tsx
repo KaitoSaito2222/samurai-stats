@@ -90,7 +90,7 @@ export default function GameCard({ game, locale }: GameCardProps) {
   return (
     <Link
       href={`/${locale}/games/${game.id}`}
-      className="group block bg-surface-card border border-surface-border rounded transition-all duration-200 hover:border-gold hover:shadow-float overflow-hidden"
+      className="player-card group block bg-surface-card border border-surface-border rounded transition-all duration-200 hover:border-gold hover:shadow-float overflow-hidden"
     >
       {/* Status bar */}
       <div className="px-4 py-2 bg-surface-muted border-b border-surface-border flex items-center justify-between">

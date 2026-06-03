@@ -78,15 +78,17 @@ A **dual-serif editorial identity** plus a utility sans for data:
 
 ```ts
 fontFamily: {
-  display: ["Playfair Display", "serif"],   // headlines — high-contrast, print-like
-  serif:   ["Noto Serif JP", "serif"],       // body copy + Japanese (default body font)
-  sans:    ["Inter", "sans-serif"],          // labels, data tables, micro-copy
+  display: ["Playfair Display", "serif"],  // headlines — high-contrast, print-like
+  serif:   ["Noto Serif JP", "serif"],      // body copy + Japanese (default body font)
+  sans:    ["Barlow", "sans-serif"],        // labels, data tables, micro-copy
 }
 ```
 
 - **Playfair Display** (`font-display`): all headlines (player names, section titles, big stat numbers).
 - **Noto Serif JP** (`font-serif`): narrative/body copy and Japanese text — the **default `<body>` font**.
-- **Inter** (`font-sans`): labels, numeric data tables, captions. Labels are **UPPERCASE with `tracking-wide`** (`0.05em`) to separate data from narrative.
+- **Barlow** (`font-sans`): labels, numeric data tables, captions. Labels are **UPPERCASE with `tracking-wide`** (`0.05em`) to separate data from narrative. Barlow's slightly condensed proportions suit sports data columns and UPPERCASE tracking labels; it avoids the generic "AI slop" signal of Inter.
+
+> **Never use Inter, Roboto, Arial, or system fonts** — these are the top signal of AI-generated design. Barlow was chosen deliberately over Inter, Space Grotesk (Claude's common fallback), and other overused AI-era fonts.
 
 ### Shapes & Elevation
 
@@ -99,10 +101,12 @@ fontFamily: {
 - **Primary button**: `bg-navy text-white rounded-lg` — no shadow.
 - **Secondary button**: `bg-gold text-navy rounded-lg` — high-importance "call to insight".
 - **Ghost button**: transparent with `border border-navy text-navy`.
-- **Data tables**: navy header row (`bg-navy text-white`, Inter uppercase label), zebra rows (`bg-surface-card` / `bg-surface-muted`), 1px bottom borders; highlight totals/marquee rows with `bg-gold/10` + gold bottom border, bold.
+- **Data tables**: navy header row (`bg-navy text-white`, Barlow uppercase label), zebra rows (`bg-surface-card` / `bg-surface-muted`), 1px bottom borders; highlight totals/marquee rows with `bg-gold/10` + gold bottom border, bold.
 - **AI analysis cards**: white surface with a **4px gold left border-accent**; narrative in Noto Serif. Place a gold uppercase kicker label above the headline.
-- **Kicker pattern**: small gold UPPERCASE Inter label, optionally followed by a `h-px w-12 bg-gold` dash, above Playfair headlines.
-- **Section heading**: Inter uppercase label with a `border-b-2 border-gold` underline, OR a Playfair headline — not a colored accent bar.
+- **Kicker pattern**: small gold UPPERCASE Barlow label, optionally followed by a `h-px w-12 bg-gold` dash, above Playfair headlines.
+- **Section heading**: Barlow uppercase label with a `border-b-2 border-gold/30` underline, OR a Playfair headline — not a colored accent bar.
+- **Player cards**: use `.player-card` CSS class for the animated gold left-accent on hover (scaleY reveal from bottom).
+- **Hero sections** (navy bg): add `.hero-grid` CSS class for subtle gold geometric grid overlay. Use `侍` kanji watermark (`font-serif`, `text-gold/[0.07]`, very large) as decorative right-side element. Stagger hero content with `.animate-enter .delay-*` classes.
 - **Input fields**: white with 1px navy border; focus → 2px border + subtle gold ring.
 
 ### Layout

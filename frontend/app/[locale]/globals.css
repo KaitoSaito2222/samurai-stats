@@ -29,7 +29,7 @@
 
   /* Gold UPPERCASE kicker label above headlines. */
   .kicker {
-    font-family: var(--font-inter), "Inter", sans-serif;
+    font-family: var(--font-barlow), "Barlow", sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     font-weight: 600;
@@ -37,4 +37,78 @@
     line-height: 1rem;
     color: #b5912f;
   }
+}
+
+/* ===== Entrance animations ===== */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-enter {
+  opacity: 0;
+  animation: fade-in-up 0.6s ease both;
+}
+
+.delay-100 { animation-delay: 0.10s; }
+.delay-200 { animation-delay: 0.20s; }
+.delay-300 { animation-delay: 0.30s; }
+.delay-400 { animation-delay: 0.40s; }
+.delay-500 { animation-delay: 0.50s; }
+.delay-600 { animation-delay: 0.60s; }
+
+/* ===== Hero grid pattern ===== */
+/* Subtle gold grid overlay for dark hero sections. */
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(212, 168, 67, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 168, 67, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ===== Player card left-accent slide-in ===== */
+/* Animated gold bar reveals from the bottom on hover, matching the AI card accent pattern. */
+.player-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.player-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background-color: #D4A843;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.3s ease;
+  z-index: 1;
+}
+
+.player-card:hover::before {
+  transform: scaleY(1);
+}
+
+/* ===== Navbar gold accent ===== */
+/* Thin gradient line bleeding off the left edge of the sticky nav. */
+.navbar-accent {
+  position: relative;
+}
+
+.navbar-accent::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 7rem;
+  background: linear-gradient(90deg, #D4A843, transparent);
 }

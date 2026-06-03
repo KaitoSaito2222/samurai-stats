@@ -55,7 +55,7 @@ export default function Navbar({ locale }: NavbarProps) {
   }
 
   return (
-    <nav className="bg-surface-card border-b border-surface-border sticky top-0 z-50">
+    <nav className="navbar-accent bg-surface-card border-b border-surface-border sticky top-0 z-50">
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-16">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}

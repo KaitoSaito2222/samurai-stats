@@ -15,7 +15,7 @@ export default function PlayerCard({ player, locale }: PlayerCardProps) {
   return (
     <Link
       href={`/${locale}/players/${player.id}`}
-      className="group block bg-surface-card border border-surface-border rounded p-4 transition-all duration-200 hover:border-gold hover:shadow-float"
+      className="player-card group block bg-surface-card border border-surface-border rounded p-4 transition-all duration-200 hover:border-gold hover:shadow-float"
     >
       <div className="flex items-center gap-4">
         {/* Player photo */}
