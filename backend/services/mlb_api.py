@@ -1078,9 +1078,22 @@ async def fetch_league_leaders(
                     record["era"] = None
                 pitching.append(record)
 
+    # The API may return multiple blocks for the same category (e.g. by league).
+    # Deduplicate by player_id, keeping the first (highest-ranked) occurrence,
+    # then enforce the requested limit.
+    def _dedup(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        seen: set[str] = set()
+        out: list[dict[str, Any]] = []
+        for entry in entries:
+            pid: str = entry["player_id"]
+            if pid not in seen:
+                seen.add(pid)
+                out.append(entry)
+        return out[:limit]
+
     result: dict[str, list[dict[str, Any]]] = {
-        "batting": batting,
-        "pitching": pitching,
+        "batting": _dedup(batting),
+        "pitching": _dedup(pitching),
     }
     _leaders_cache[cache_key] = (time.monotonic(), result)
     return result

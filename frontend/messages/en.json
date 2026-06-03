@@ -102,7 +102,7 @@
     "postponed": "Postponed",
     "cancelled": "Cancelled",
     "inningLabel": "Inn. {inning}",
-    "tzSuffix": "",
+    "tzSuffix": "ET",
     "playersInGame": "{count} Japanese players",
     "noGamesToday": "No games today",
     "noGamesOnDate": "No games on this date",

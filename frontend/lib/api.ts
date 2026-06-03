@@ -260,6 +260,7 @@ export interface MlbRankingPlayer {
   name_en: string;
   name_ja?: string | null;
   team_en: string;
+  team_ja?: string | null;
   team_id?: number | null;
   photo_url?: string | null;
   analyzable?: boolean;

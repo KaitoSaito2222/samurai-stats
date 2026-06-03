@@ -64,6 +64,7 @@ function MlbRankingRow({ player, rank, statLabel, statValue, locale }: {
   locale: string;
 }) {
   const displayName = locale === "ja" && player.name_ja ? player.name_ja : player.name_en;
+  const teamDisplay = locale === "ja" && player.team_ja ? player.team_ja : player.team_en;
   const logoUrl = resolveTeamLogo(player.team_id, player.team_en);
   // Only players with a detail page (analyzable in DB) are linkable.
   const linkable = player.analyzable === true;
@@ -92,7 +93,7 @@ function MlbRankingRow({ player, rank, statLabel, statValue, locale }: {
 
       <div className="flex-1 min-w-0">
         <p className={`font-display font-bold text-navy truncate ${linkable ? "group-hover:text-gold-dark transition-colors" : ""}`}>{displayName}</p>
-        <p className="font-sans text-xs uppercase tracking-wide text-ink-muted truncate">{player.team_en}</p>
+        <p className="font-sans text-xs uppercase tracking-wide text-ink-muted truncate">{teamDisplay}</p>
       </div>
       <div className="text-right flex-shrink-0">
         <p className="font-sans text-lg font-bold text-navy tabular-nums">{statValue}</p>

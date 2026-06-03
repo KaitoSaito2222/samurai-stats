@@ -6,6 +6,8 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/ja";
+  // Extract locale from the `next` path for a locale-aware error redirect.
+  const locale = next.split("/").find((seg) => seg === "ja" || seg === "en") ?? "ja";
 
   if (code) {
     const cookieStore = cookies();
@@ -32,5 +34,5 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/ja/login?error=auth_callback_failed`);
+  return NextResponse.redirect(`${origin}/${locale}/login?error=auth_callback_failed`);
 }

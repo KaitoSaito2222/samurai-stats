@@ -23,7 +23,8 @@ function formatGameTime(gameTimeUtc: string | null, locale: string): string | nu
   if (!gameTimeUtc) return null;
   try {
     const date = new Date(gameTimeUtc);
-    const timeZone = locale === "ja" ? "Asia/Tokyo" : Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // ja → JST、en → ET（MLBの基準タイム）
+    const timeZone = locale === "ja" ? "Asia/Tokyo" : "America/New_York";
     return date.toLocaleTimeString(locale === "ja" ? "ja-JP" : "en-US", {
       timeZone,
       hour: "numeric",

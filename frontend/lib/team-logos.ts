@@ -62,9 +62,8 @@ const TEAM_NAME_TO_ID: Record<string, number> = {
   "New York Mets": 121, "Mets": 121, "NYM": 121, "NY Mets": 121,
   // NY Yankees
   "New York Yankees": 147, "Yankees": 147, "NYY": 147, "NY Yankees": 147,
-  // Oakland / Sacramento
+  // Oakland Athletics (relocated; API still returns "Athletics" or "Oakland Athletics")
   "Oakland Athletics": 133, "Athletics": 133, "OAK": 133,
-  "Sacramento River Cats": 133,
   // Philadelphia
   "Philadelphia Phillies": 143, "Phillies": 143, "PHI": 143,
   // Pittsburgh
