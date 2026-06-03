@@ -12,10 +12,13 @@ import time
 from typing import Any
 
 import httpx
+import pytz
 
 from services.japanese_data import is_analyzable, player_name_ja, team_name_ja
 
 logger = logging.getLogger(__name__)
+
+_JST = pytz.timezone("Asia/Tokyo")
 
 MLB_API_BASE = "https://statsapi.mlb.com/api/v1"
 REQUEST_TIMEOUT = 10.0  # seconds
@@ -700,7 +703,7 @@ async def fetch_player_recent_form(
     Keys: "7d", "14d", "30d". Each value is a stat dict or {}.
     Uses fetch_player_period_stats internally for each window.
     """
-    today = datetime.date.today()
+    today = datetime.datetime.now(_JST).date()
     windows: dict[str, int] = {"7d": 7, "14d": 14, "30d": 30}
 
     import asyncio

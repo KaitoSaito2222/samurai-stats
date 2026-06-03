@@ -1,5 +1,7 @@
 import axios from "axios";
-import type { PaginatedPlayers, Game, Player, PlayerStats, PlayerAnalytics, Rankings, GameDetail, GameBoxscore, TodayStats } from "./api";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import type { PaginatedPlayers, Game, Player, PlayerStats, PlayerAnalytics, Rankings, GameDetail, GameBoxscore, TodayStats, UserPlan } from "./api";
 
 // Server-side only — uses the internal Docker service URL (not exposed to the browser).
 // Do NOT import this file in Client Components.
@@ -43,3 +45,32 @@ export const getYesterdayGamesServer = () =>
 
 export const getPlayerTodayStatsServer = (id: string | number) =>
   serverApi.get<TodayStats | null>(`/api/players/${id}/today-stats`);
+
+// Fetch the current user's plan server-side using the session cookie.
+// Returns null when no session is present (unauthenticated / free).
+export async function getUserPlanServer(): Promise<{ data: UserPlan | null }> {
+  const cookieStore = cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+      },
+    }
+  );
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) return { data: null };
+  try {
+    const res = await serverApi.get<UserPlan>("/api/user/plan", {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    });
+    return { data: res.data };
+  } catch {
+    return { data: null };
+  }
+}
