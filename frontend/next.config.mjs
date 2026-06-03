@@ -15,6 +15,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "securea.mlb.com",
       },
+      {
+        protocol: "https",
+        hostname: "www.mlbstatic.com",
+      },
     ],
   },
 };

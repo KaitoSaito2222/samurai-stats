@@ -26,6 +26,7 @@ class GameListItem(BaseModel):
     away_score: int | None
     inning: int | None
     game_date: datetime.date
+    game_time: datetime.datetime | None = None
     status: str
     venue: str | None
     japanese_players: list[GamePlayer] = []

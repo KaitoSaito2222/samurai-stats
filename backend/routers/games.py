@@ -51,6 +51,7 @@ def _row_to_game_list_item(
         away_score=row.get("away_score"),
         inning=row.get("inning"),
         game_date=row["game_date"],
+        game_time=row.get("game_time"),
         status=row.get("status", "scheduled"),
         venue=row.get("venue"),
         japanese_players=players or [],

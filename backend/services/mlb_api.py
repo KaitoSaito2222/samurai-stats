@@ -1002,3 +1002,67 @@ async def fetch_player_period_stats(
         "atBats": stat.get("atBats"),
         "plateAppearances": stat.get("plateAppearances"),
     }
+
+
+async def fetch_league_leaders(
+    season: int,
+    limit: int = 10,
+) -> dict[str, list[dict[str, Any]]]:
+    """Fetch MLB-wide batting and pitching leaders from MLB Stats API.
+
+    Returns dict with keys "batting" and "pitching", each a list of dicts:
+        player_id (str), name_en (str), team_en (str), team_id (int), ops/era (float)
+    """
+    try:
+        response = await _client.get(
+            "/stats/leaders",
+            params={
+                "leaderCategories": "onBasePlusSlugging,earnedRunAverage",
+                "season": season,
+                "leaderGameTypes": "R",
+                "sportId": 1,
+                "limit": limit,
+            },
+        )
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        logger.error("fetch_league_leaders season=%d failed: %s", season, exc)
+        return {"batting": [], "pitching": []}
+
+    data: dict[str, Any] = response.json()
+    league_leaders: list[dict[str, Any]] = data.get("leagueLeaders", [])
+
+    batting: list[dict[str, Any]] = []
+    pitching: list[dict[str, Any]] = []
+
+    for category_block in league_leaders:
+        category: str = category_block.get("leaderCategory", "")
+        leaders: list[dict[str, Any]] = category_block.get("leaders", [])
+
+        for entry in leaders:
+            person: dict[str, Any] = entry.get("person", {})
+            team: dict[str, Any] = entry.get("team", {})
+            value_str: str = str(entry.get("value", ""))
+
+            record: dict[str, Any] = {
+                "player_id": str(person.get("id", "")),
+                "name_en": person.get("fullName", ""),
+                "team_en": team.get("name", ""),
+                "team_id": team.get("id"),
+            }
+
+            if category == "onBasePlusSlugging":
+                try:
+                    record["ops"] = float(value_str)
+                except ValueError:
+                    record["ops"] = None
+                batting.append(record)
+
+            elif category == "earnedRunAverage":
+                try:
+                    record["era"] = float(value_str)
+                except ValueError:
+                    record["era"] = None
+                pitching.append(record)
+
+    return {"batting": batting, "pitching": pitching}

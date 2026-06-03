@@ -179,8 +179,12 @@
   },
   "rankings": {
     "title": "ランキング",
+    "mlbTitle": "MLB全体",
+    "japaneseTitle": "日本人選手",
     "battingTitle": "打撃ランキング（OPS順）",
     "pitchingTitle": "投球ランキング（防御率順）",
+    "battingLabel": "打撃（OPS順）",
+    "pitchingLabel": "投球（防御率順）",
     "noData": "データがありません",
     "loadFailed": "ランキングを読み込めませんでした",
     "season": "{year}シーズン"
