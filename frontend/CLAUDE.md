@@ -23,8 +23,11 @@ See root `CLAUDE.md` for project overview, tech stack, and shared guidelines.
 
 ## Auth Flow
 
-- Use **`@supabase/auth-ui-react`** for login and signup forms — do not build custom auth forms
-- After login, redirect to the page the user was trying to access (or `/` as fallback)
+- Login and signup use **custom forms** (Tailwind-styled) — do NOT use `@supabase/auth-ui-react`
+- **Providers**: Google OAuth + email/password only
+- **Email confirmation**: handled by Supabase Auth + Resend (configured in Supabase dashboard as email provider). Code calls `supabase.auth.signUp()` — no Resend SDK in frontend code.
+- **OAuth callback**: `app/auth/callback/route.ts` exchanges the OAuth code for a session, then redirects to `?next=` param (defaults to `/ja`)
+- After email/password login, `onAuthStateChange` fires `SIGNED_IN` and redirects to `redirectTo` query param or `/[locale]`
 - Session is managed by Supabase client; `lib/api.ts` attaches the JWT automatically
 - Protect routes via `middleware.ts`: unauthenticated access to non-public pages redirects to `/[locale]/login`
 

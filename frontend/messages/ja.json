@@ -164,7 +164,15 @@
     "createAccount": "新規登録はこちら",
     "loginHere": "ログインはこちら",
     "signupTitle": "新規登録",
-    "checkEmail": "確認メールを送信しました。メールをご確認ください。"
+    "continueWithGoogle": "Googleで続ける",
+    "or": "または",
+    "passwordHint": "6文字以上",
+    "checkEmailTitle": "メールをご確認ください",
+    "checkEmail": "確認メールを送信しました。メールをご確認ください。",
+    "invalidCredentials": "メールアドレスまたはパスワードが正しくありません。",
+    "emailTaken": "このメールアドレスは既に使用されています。",
+    "weakPassword": "パスワードは6文字以上にしてください。",
+    "generalError": "エラーが発生しました。再度お試しください。"
   },
   "billing": {
     "freeBadge": "無料",

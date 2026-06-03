@@ -164,7 +164,15 @@
     "createAccount": "Create an account",
     "loginHere": "Already have an account? Login",
     "signupTitle": "Sign Up",
-    "checkEmail": "Check your email to confirm your account."
+    "continueWithGoogle": "Continue with Google",
+    "or": "or",
+    "passwordHint": "Minimum 6 characters",
+    "checkEmailTitle": "Check your email",
+    "checkEmail": "We've sent a confirmation link to your email. Please check your inbox.",
+    "invalidCredentials": "Invalid email or password.",
+    "emailTaken": "This email is already registered.",
+    "weakPassword": "Password must be at least 6 characters.",
+    "generalError": "Something went wrong. Please try again."
   },
   "billing": {
     "freeBadge": "Free",
