@@ -81,6 +81,7 @@ async def sync_players(
                 "team": {"en": team_en, "ja": team_ja},
                 "position": p["position"],
                 "is_japanese": True,
+                "analyzable": True,
                 "active": p["active"],
                 "photo_url": mlb_photo_url(p["id"]),
             }
