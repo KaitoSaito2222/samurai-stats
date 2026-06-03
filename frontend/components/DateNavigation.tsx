@@ -8,6 +8,7 @@ interface DateNavigationProps {
   locale: string;
   dateStr: string;
   today: string;
+  maxDate: string;
   displayDate: string;
   prevDate: string;
   nextDate: string;
@@ -17,6 +18,7 @@ export default function DateNavigation({
   locale,
   dateStr,
   today,
+  maxDate,
   displayDate,
   prevDate,
   nextDate,
@@ -24,6 +26,8 @@ export default function DateNavigation({
   const t = useTranslations("games");
   const router = useRouter();
   const isToday = dateStr === today;
+  // Next-day navigation stops at the look-ahead window.
+  const atMax = dateStr >= maxDate;
 
   function handleDateChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value;
@@ -59,15 +63,15 @@ export default function DateNavigation({
           <input
             type="date"
             value={dateStr}
-            max={today}
+            max={maxDate}
             onChange={handleDateChange}
             className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
             aria-label={t("pickDate")}
           />
         </label>
 
-        {/* Next day — hidden when on today */}
-        {isToday ? (
+        {/* Next day — hidden at the end of the look-ahead window */}
+        {atMax ? (
           <div className="flex-shrink-0 w-10" />
         ) : (
           <Link

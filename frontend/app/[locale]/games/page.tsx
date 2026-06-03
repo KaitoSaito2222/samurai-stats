@@ -32,6 +32,10 @@ function formatDisplayDate(dateStr: string, locale: string): string {
   });
 }
 
+// Days into the future the schedule sync pre-populates (see sync/schedule
+// days_ahead). The calendar / next-day nav is capped at this window.
+const MAX_DAYS_AHEAD = 7;
+
 export default async function GamesPage({
   params: { locale },
   searchParams,
@@ -41,6 +45,7 @@ export default async function GamesPage({
   const today = todayJST();
   // Always default to today when no date param is given.
   const dateStr = searchParams.date ?? today;
+  const maxDate = addDays(today, MAX_DAYS_AHEAD);
 
   let games: Game[] = [];
   try {
@@ -59,6 +64,7 @@ export default async function GamesPage({
         locale={locale}
         dateStr={dateStr}
         today={today}
+        maxDate={maxDate}
         displayDate={formatDisplayDate(dateStr, locale)}
         prevDate={prevDate}
         nextDate={nextDate}

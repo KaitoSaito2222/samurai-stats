@@ -105,7 +105,7 @@ async def get_rankings(
     # Build a map by player_id for quick lookup.
     all_db_players_result = (
         supabase.table("players")
-        .select("id, names, photo_url")
+        .select("id, names, photo_url, analyzable")
         .in_("id", [r["player_id"] for r in mlb_leaders["batting"] + mlb_leaders["pitching"]])
         .execute()
     )
@@ -116,10 +116,12 @@ async def get_rankings(
     def _enrich_mlb(row: dict) -> dict:
         db = db_player_lookup.get(row["player_id"], {})
         names: dict = (db.get("names") or {}) if db else {}
+        # Only players with a detail page (analyzable) should be linkable.
         return {
             **row,
             "name_ja": names.get("ja"),
             "photo_url": db.get("photo_url") if db else None,
+            "analyzable": bool(db.get("analyzable")) if db else False,
         }
 
     mlb_batting = [_enrich_mlb(r) for r in mlb_leaders["batting"]]

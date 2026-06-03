@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getRankingsServer } from "@/lib/api-server";
 import SectionHeading from "@/components/SectionHeading";
-import { teamLogoByName } from "@/lib/team-logos";
+import { resolveTeamLogo } from "@/lib/team-logos";
 import type { RankingPlayer, MlbRankingPlayer } from "@/lib/api";
 
 interface RankingsPageProps {
@@ -64,10 +64,12 @@ function MlbRankingRow({ player, rank, statLabel, statValue, locale }: {
   locale: string;
 }) {
   const displayName = locale === "ja" && player.name_ja ? player.name_ja : player.name_en;
-  const logoUrl = teamLogoByName(player.team_en);
+  const logoUrl = resolveTeamLogo(player.team_id, player.team_en);
+  // Only players with a detail page (analyzable in DB) are linkable.
+  const linkable = player.analyzable === true;
 
-  return (
-    <div className="flex items-center gap-4 px-4 py-3 bg-surface-card border border-surface-border rounded">
+  const inner = (
+    <>
       <span className={`w-9 h-9 flex items-center justify-center rounded font-sans font-bold text-sm tabular-nums flex-shrink-0 ${
         rank === 1 ? "bg-gold text-navy" :
         rank <= 3 ? "bg-navy text-white" :
@@ -89,13 +91,28 @@ function MlbRankingRow({ player, rank, statLabel, statValue, locale }: {
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="font-display font-bold text-navy truncate">{displayName}</p>
+        <p className={`font-display font-bold text-navy truncate ${linkable ? "group-hover:text-gold-dark transition-colors" : ""}`}>{displayName}</p>
         <p className="font-sans text-xs uppercase tracking-wide text-ink-muted truncate">{player.team_en}</p>
       </div>
       <div className="text-right flex-shrink-0">
         <p className="font-sans text-lg font-bold text-navy tabular-nums">{statValue}</p>
         <p className="font-sans text-[11px] uppercase tracking-wide text-ink-muted">{statLabel}</p>
       </div>
+    </>
+  );
+
+  if (linkable) {
+    return (
+      <Link href={`/${locale}/players/${player.player_id}`}
+        className="group flex items-center gap-4 px-4 py-3 bg-surface-card border border-surface-border rounded hover:border-gold hover:shadow-float transition-all">
+        {inner}
+      </Link>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-4 px-4 py-3 bg-surface-card border border-surface-border rounded">
+      {inner}
     </div>
   );
 }

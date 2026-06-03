@@ -104,8 +104,8 @@ UNIQUE(player_id, season, stat_type)
 ## games
 ```sql
 id                VARCHAR PRIMARY KEY  -- MLB Stats API gamePk
-home_team         JSONB                -- {"en": "NY Yankees", "ja": "ヤンキース"}
-away_team         JSONB                -- {"en": "LA Dodgers", "ja": "ドジャース"}
+home_team         JSONB                -- {"en": "NY Yankees", "ja": "ヤンキース", "id": "147"}  -- id = MLB team ID for logo lookup
+away_team         JSONB                -- {"en": "LA Dodgers", "ja": "ドジャース", "id": "119"}
 home_score        INTEGER              -- NULL until game starts
 away_score        INTEGER              -- NULL until game starts
 inning            INTEGER              -- current/final inning (NULL if not started)

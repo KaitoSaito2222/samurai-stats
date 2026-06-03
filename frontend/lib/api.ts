@@ -103,8 +103,10 @@ export interface Game {
   id: string;
   home_team_ja: string;
   home_team_en: string;
+  home_team_id: string | null;
   away_team_ja: string;
   away_team_en: string;
+  away_team_id: string | null;
   home_score: number | null;
   away_score: number | null;
   inning: number | null;
@@ -260,6 +262,7 @@ export interface MlbRankingPlayer {
   team_en: string;
   team_id?: number | null;
   photo_url?: string | null;
+  analyzable?: boolean;
   ops?: number | null;
   era?: number | null;
 }

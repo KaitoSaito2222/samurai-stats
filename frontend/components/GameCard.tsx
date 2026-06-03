@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import type { Game } from "@/lib/api";
-import { teamLogoByName } from "@/lib/team-logos";
+import { resolveTeamLogo } from "@/lib/team-logos";
 
 interface GameCardProps {
   game: Game;
@@ -35,8 +35,16 @@ function formatGameTime(gameTimeUtc: string | null, locale: string): string | nu
   }
 }
 
-function TeamLogo({ teamNameEn, size = 32 }: { teamNameEn: string; size?: number }) {
-  const logoUrl = teamLogoByName(teamNameEn);
+function TeamLogo({
+  teamNameEn,
+  teamId,
+  size = 32,
+}: {
+  teamNameEn: string;
+  teamId?: string | null;
+  size?: number;
+}) {
+  const logoUrl = resolveTeamLogo(teamId, teamNameEn);
   if (!logoUrl) {
     return (
       <div
@@ -117,7 +125,7 @@ export default function GameCard({ game, locale }: GameCardProps) {
       <div className="px-4 py-3 space-y-3">
         {/* Away team row */}
         <div className="flex items-center gap-3">
-          <TeamLogo teamNameEn={game.away_team_en} size={32} />
+          <TeamLogo teamNameEn={game.away_team_en} teamId={game.away_team_id} size={32} />
           <span className="font-display font-bold text-navy flex-1 truncate">{awayTeam}</span>
           {(isLiveOrFinal && hasScore) && (
             <span className={`font-sans text-2xl font-bold tabular-nums ${
@@ -133,7 +141,7 @@ export default function GameCard({ game, locale }: GameCardProps) {
 
         {/* Home team row */}
         <div className="flex items-center gap-3">
-          <TeamLogo teamNameEn={game.home_team_en} size={32} />
+          <TeamLogo teamNameEn={game.home_team_en} teamId={game.home_team_id} size={32} />
           <span className="font-display font-bold text-navy flex-1 truncate">{homeTeam}</span>
           {(isLiveOrFinal && hasScore) && (
             <span className={`font-sans text-2xl font-bold tabular-nums ${

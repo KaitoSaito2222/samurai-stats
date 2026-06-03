@@ -3,8 +3,20 @@
 const MLB_TEAM_LOGO_BASE = "https://www.mlbstatic.com/team-logos";
 
 // Maps numeric team ID to logo URL.
-export function teamLogoUrl(teamId: number): string {
+export function teamLogoUrl(teamId: number | string): string {
   return `${MLB_TEAM_LOGO_BASE}/${teamId}.svg`;
+}
+
+// Resolve a logo URL, preferring a stable team ID and falling back to
+// English-name matching for rows synced before team IDs were stored.
+export function resolveTeamLogo(
+  teamId: number | string | null | undefined,
+  teamNameEn: string,
+): string | null {
+  if (teamId !== null && teamId !== undefined && teamId !== "") {
+    return teamLogoUrl(teamId);
+  }
+  return teamLogoByName(teamNameEn);
 }
 
 // Maps common team name variants (English) to MLB team IDs.
