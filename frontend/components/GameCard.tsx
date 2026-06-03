@@ -96,16 +96,16 @@ export default function GameCard({ game, locale }: GameCardProps) {
           {statusLabel[game.status] ?? game.status}
           {game.status === "live" && game.inning != null && (
             <span className="ml-1 font-normal">
-              {locale === "ja" ? `${game.inning}回` : `Inn. ${game.inning}`}
+              {t("inningLabel", { inning: game.inning })}
             </span>
           )}
         </span>
         {gameTime && game.status === "scheduled" && (
           <span className="font-sans text-xs text-ink-muted tabular-nums">
             {gameTime}
-            <span className="ml-1 text-ink-muted/60">
-              {locale === "ja" ? "JST" : ""}
-            </span>
+            {t("tzSuffix") && (
+              <span className="ml-1 text-ink-muted/60">{t("tzSuffix")}</span>
+            )}
           </span>
         )}
         {!gameTime && !isLiveOrFinal && (
@@ -185,9 +185,7 @@ export default function GameCard({ game, locale }: GameCardProps) {
             })}
             {players.length > 1 && (
               <span className="font-sans text-xs text-ink-muted">
-                {locale === "ja"
-                  ? `日本人${players.length}名出場`
-                  : `${players.length} Japanese players`}
+                {t("playersInGame", { count: players.length })}
               </span>
             )}
           </div>

@@ -136,6 +136,7 @@ async def sync_schedule(
             "home_team": {"en": g["homeTeam"], "ja": team_name_ja(g["homeTeam"])},
             "away_team": {"en": g["awayTeam"], "ja": team_name_ja(g["awayTeam"])},
             "game_date": date_str,
+            "game_time": g.get("gameDate") or None,
             "status": g["status"],
             "venue": g["venue"],
         }

@@ -1004,6 +1004,12 @@ async def fetch_player_period_stats(
     }
 
 
+# League leaders change slowly — cache for 1 hour to avoid hitting the MLB
+# API on every /rankings page load.
+_leaders_cache: dict[str, tuple[float, dict[str, list[dict[str, Any]]]]] = {}
+_LEADERS_CACHE_TTL = 3600.0  # seconds
+
+
 async def fetch_league_leaders(
     season: int,
     limit: int = 10,
@@ -1012,7 +1018,14 @@ async def fetch_league_leaders(
 
     Returns dict with keys "batting" and "pitching", each a list of dicts:
         player_id (str), name_en (str), team_en (str), team_id (int), ops/era (float)
+
+    Results are cached in memory for 1 hour, keyed by season + limit.
     """
+    cache_key: str = f"{season}:{limit}"
+    cached = _leaders_cache.get(cache_key)
+    if cached and time.monotonic() - cached[0] < _LEADERS_CACHE_TTL:
+        return cached[1]
+
     try:
         response = await _client.get(
             "/stats/leaders",
@@ -1065,4 +1078,9 @@ async def fetch_league_leaders(
                     record["era"] = None
                 pitching.append(record)
 
-    return {"batting": batting, "pitching": pitching}
+    result: dict[str, list[dict[str, Any]]] = {
+        "batting": batting,
+        "pitching": pitching,
+    }
+    _leaders_cache[cache_key] = (time.monotonic(), result)
+    return result

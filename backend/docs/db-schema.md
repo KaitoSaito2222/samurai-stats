@@ -109,7 +109,8 @@ away_team         JSONB                -- {"en": "LA Dodgers", "ja": "ドジャ�
 home_score        INTEGER              -- NULL until game starts
 away_score        INTEGER              -- NULL until game starts
 inning            INTEGER              -- current/final inning (NULL if not started)
-game_date         DATE
+game_date         DATE                 -- scheduled calendar date in JST (see Timezone Design)
+game_time         TIMESTAMPTZ          -- scheduled first-pitch time in UTC; populated from MLB API gameDate by sync/schedule
 status            VARCHAR NOT NULL DEFAULT 'scheduled'
                             CHECK (status IN ('scheduled', 'live', 'final', 'postponed', 'cancelled'))
 venue             VARCHAR
