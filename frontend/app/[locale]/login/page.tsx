@@ -32,7 +32,6 @@ const authAppearance = {
 };
 
 export default function LoginPage({ params: { locale } }: LoginPageProps) {
-  const tNav = useTranslations("nav");
   const tAuth = useTranslations("auth");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -58,6 +57,7 @@ export default function LoginPage({ params: { locale } }: LoginPageProps) {
           <Auth
             supabaseClient={supabase}
             appearance={authAppearance}
+            providers={["google"]}
             localization={{
               variables: {
                 sign_in: {

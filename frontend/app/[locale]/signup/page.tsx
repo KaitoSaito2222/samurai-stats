@@ -55,6 +55,7 @@ export default function SignupPage({ params: { locale } }: SignupPageProps) {
           <Auth
             supabaseClient={supabase}
             appearance={authAppearance}
+            providers={["google"]}
             localization={{
               variables: {
                 sign_in: {
