@@ -44,7 +44,7 @@ Before writing any component, answer:
 - Use CSS animations for HTML — `animation-delay` for staggered reveals is high-impact
 - **One well-orchestrated page load with staggered reveals > scattered micro-interactions**
 - Hover states should surprise: slide-in borders, color reveals, scale transforms
-- Use `.animate-enter` + `.delay-*` utility classes (defined in `globals.css`)
+- Use `.animate-enter` + `.anim-delay-*` utility classes (defined in `globals.css`); the `anim-` prefix avoids colliding with Tailwind's `transition-delay` `delay-*` utilities
 
 ### Spatial Composition
 - Unexpected layouts: asymmetry, overlap, diagonal flow, grid-breaking elements

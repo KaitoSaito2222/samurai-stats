@@ -56,12 +56,21 @@
   animation: fade-in-up 0.6s ease both;
 }
 
-.delay-100 { animation-delay: 0.10s; }
-.delay-200 { animation-delay: 0.20s; }
-.delay-300 { animation-delay: 0.30s; }
-.delay-400 { animation-delay: 0.40s; }
-.delay-500 { animation-delay: 0.50s; }
-.delay-600 { animation-delay: 0.60s; }
+/* Prefixed anim-delay-* to avoid colliding with Tailwind's transition-delay delay-* utilities. */
+.anim-delay-100 { animation-delay: 0.10s; }
+.anim-delay-200 { animation-delay: 0.20s; }
+.anim-delay-300 { animation-delay: 0.30s; }
+.anim-delay-400 { animation-delay: 0.40s; }
+.anim-delay-500 { animation-delay: 0.50s; }
+.anim-delay-600 { animation-delay: 0.60s; }
+
+/* Accessibility: suppress motion for users who opt out; restore visibility so elements are never hidden. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-enter {
+    opacity: 1;
+    animation: none;
+  }
+}
 
 /* ===== Hero grid pattern ===== */
 /* Subtle gold grid overlay for dark hero sections. */

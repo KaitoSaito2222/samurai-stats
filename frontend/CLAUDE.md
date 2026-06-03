@@ -106,7 +106,7 @@ fontFamily: {
 - **Kicker pattern**: small gold UPPERCASE Barlow label, optionally followed by a `h-px w-12 bg-gold` dash, above Playfair headlines.
 - **Section heading**: Barlow uppercase label with a `border-b-2 border-gold/30` underline, OR a Playfair headline — not a colored accent bar.
 - **Player cards**: use `.player-card` CSS class for the animated gold left-accent on hover (scaleY reveal from bottom).
-- **Hero sections** (navy bg): add `.hero-grid` CSS class for subtle gold geometric grid overlay. Use `侍` kanji watermark (`font-serif`, `text-gold/[0.07]`, very large) as decorative right-side element. Stagger hero content with `.animate-enter .delay-*` classes.
+- **Hero sections** (navy bg): add `.hero-grid` CSS class for subtle gold geometric grid overlay. Use `侍` kanji watermark (`font-serif`, `text-gold/[0.07]`, very large) as decorative right-side element. Stagger hero content with `.animate-enter .anim-delay-*` classes (prefixed to avoid collision with Tailwind's `transition-delay` `delay-*` utilities).
 - **Input fields**: white with 1px navy border; focus → 2px border + subtle gold ring.
 
 ### Layout

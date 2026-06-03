@@ -57,19 +57,19 @@ export default async function HomePage({ params: { locale } }: HomePageProps) {
 
         {/* Content — staggered entrance animation */}
         <div className="relative px-6 py-20 sm:px-12 sm:py-24 max-w-3xl">
-          <div className="flex items-center gap-3 mb-5 animate-enter delay-100">
+          <div className="flex items-center gap-3 mb-5 animate-enter anim-delay-100">
             <span className="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-gold">
               {t("kicker")}
             </span>
             <span className="h-px w-12 bg-gold" />
           </div>
-          <h1 className="font-display text-4xl sm:text-5xl font-bold leading-[1.1] mb-5 text-balance animate-enter delay-200">
+          <h1 className="font-display text-4xl sm:text-5xl font-bold leading-[1.1] mb-5 text-balance animate-enter anim-delay-200">
             {t("title")}
           </h1>
-          <p className="font-serif text-lg text-white/70 mb-9 max-w-xl leading-relaxed animate-enter delay-300">
+          <p className="font-serif text-lg text-white/70 mb-9 max-w-xl leading-relaxed animate-enter anim-delay-300">
             {t("subtitle")}
           </p>
-          <div className="flex flex-wrap gap-3 animate-enter delay-400">
+          <div className="flex flex-wrap gap-3 animate-enter anim-delay-400">
             <Link
               href={`/${locale}/players`}
               className="px-6 py-3 bg-gold text-navy font-sans text-sm font-semibold uppercase tracking-wide rounded-lg hover:bg-gold-dark transition-colors"
