@@ -1002,3 +1002,98 @@ async def fetch_player_period_stats(
         "atBats": stat.get("atBats"),
         "plateAppearances": stat.get("plateAppearances"),
     }
+
+
+# League leaders change slowly — cache for 1 hour to avoid hitting the MLB
+# API on every /rankings page load.
+_leaders_cache: dict[str, tuple[float, dict[str, list[dict[str, Any]]]]] = {}
+_LEADERS_CACHE_TTL = 3600.0  # seconds
+
+
+async def fetch_league_leaders(
+    season: int,
+    limit: int = 10,
+) -> dict[str, list[dict[str, Any]]]:
+    """Fetch MLB-wide batting and pitching leaders from MLB Stats API.
+
+    Returns dict with keys "batting" and "pitching", each a list of dicts:
+        player_id (str), name_en (str), team_en (str), team_id (int), ops/era (float)
+
+    Results are cached in memory for 1 hour, keyed by season + limit.
+    """
+    cache_key: str = f"{season}:{limit}"
+    cached = _leaders_cache.get(cache_key)
+    if cached and time.monotonic() - cached[0] < _LEADERS_CACHE_TTL:
+        return cached[1]
+
+    try:
+        response = await _client.get(
+            "/stats/leaders",
+            params={
+                "leaderCategories": "onBasePlusSlugging,earnedRunAverage",
+                "season": season,
+                "leaderGameTypes": "R",
+                "sportId": 1,
+                "limit": limit,
+            },
+        )
+        response.raise_for_status()
+    except httpx.HTTPError as exc:
+        logger.error("fetch_league_leaders season=%d failed: %s", season, exc)
+        return {"batting": [], "pitching": []}
+
+    data: dict[str, Any] = response.json()
+    league_leaders: list[dict[str, Any]] = data.get("leagueLeaders", [])
+
+    batting: list[dict[str, Any]] = []
+    pitching: list[dict[str, Any]] = []
+
+    for category_block in league_leaders:
+        category: str = category_block.get("leaderCategory", "")
+        leaders: list[dict[str, Any]] = category_block.get("leaders", [])
+
+        for entry in leaders:
+            person: dict[str, Any] = entry.get("person", {})
+            team: dict[str, Any] = entry.get("team", {})
+            value_str: str = str(entry.get("value", ""))
+
+            record: dict[str, Any] = {
+                "player_id": str(person.get("id", "")),
+                "name_en": person.get("fullName", ""),
+                "team_en": team.get("name", ""),
+                "team_id": team.get("id"),
+            }
+
+            if category == "onBasePlusSlugging":
+                try:
+                    record["ops"] = float(value_str)
+                except ValueError:
+                    record["ops"] = None
+                batting.append(record)
+
+            elif category == "earnedRunAverage":
+                try:
+                    record["era"] = float(value_str)
+                except ValueError:
+                    record["era"] = None
+                pitching.append(record)
+
+    # The API may return multiple blocks for the same category (e.g. by league).
+    # Deduplicate by player_id, keeping the first (highest-ranked) occurrence,
+    # then enforce the requested limit.
+    def _dedup(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        seen: set[str] = set()
+        out: list[dict[str, Any]] = []
+        for entry in entries:
+            pid: str = entry["player_id"]
+            if pid not in seen:
+                seen.add(pid)
+                out.append(entry)
+        return out[:limit]
+
+    result: dict[str, list[dict[str, Any]]] = {
+        "batting": _dedup(batting),
+        "pitching": _dedup(pitching),
+    }
+    _leaders_cache[cache_key] = (time.monotonic(), result)
+    return result

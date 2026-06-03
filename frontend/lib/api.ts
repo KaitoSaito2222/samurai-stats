@@ -103,12 +103,15 @@ export interface Game {
   id: string;
   home_team_ja: string;
   home_team_en: string;
+  home_team_id: string | null;
   away_team_ja: string;
   away_team_en: string;
+  away_team_id: string | null;
   home_score: number | null;
   away_score: number | null;
   inning: number | null;
   game_date: string;
+  game_time: string | null;
   status: "scheduled" | "live" | "final" | "postponed" | "cancelled";
   venue: string | null;
   japanese_players: GamePlayer[];
@@ -252,10 +255,25 @@ export interface RankingPlayer {
   whip?: number | null;
 }
 
+export interface MlbRankingPlayer {
+  player_id: string;
+  name_en: string;
+  name_ja?: string | null;
+  team_en: string;
+  team_ja?: string | null;
+  team_id?: number | null;
+  photo_url?: string | null;
+  analyzable?: boolean;
+  ops?: number | null;
+  era?: number | null;
+}
+
 export interface Rankings {
   season: number;
   batting: RankingPlayer[];
   pitching: RankingPlayer[];
+  mlb_batting: MlbRankingPlayer[];
+  mlb_pitching: MlbRankingPlayer[];
 }
 
 // Game detail types

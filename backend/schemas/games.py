@@ -20,12 +20,15 @@ class GameListItem(BaseModel):
     id: str
     home_team_ja: str
     home_team_en: str
+    home_team_id: str | None = None
     away_team_ja: str
     away_team_en: str
+    away_team_id: str | None = None
     home_score: int | None
     away_score: int | None
     inning: int | None
     game_date: datetime.date
+    game_time: datetime.datetime | None = None
     status: str
     venue: str | None
     japanese_players: list[GamePlayer] = []

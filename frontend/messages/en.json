@@ -101,6 +101,9 @@
     "scheduled": "Scheduled",
     "postponed": "Postponed",
     "cancelled": "Cancelled",
+    "inningLabel": "Inn. {inning}",
+    "tzSuffix": "ET",
+    "playersInGame": "{count} Japanese players",
     "noGamesToday": "No games today",
     "noGamesOnDate": "No games on this date",
     "noGamesHint": "This date may not have been synced yet",
@@ -111,6 +114,7 @@
     "prevDay": "Prev Day",
     "nextDay": "Next Day",
     "backToToday": "Back to today",
+    "pickDate": "Pick a date",
     "boxscore": {
       "batting": "Batting",
       "pitching": "Pitching",
@@ -160,7 +164,15 @@
     "createAccount": "Create an account",
     "loginHere": "Already have an account? Login",
     "signupTitle": "Sign Up",
-    "checkEmail": "Check your email to confirm your account."
+    "continueWithGoogle": "Continue with Google",
+    "or": "or",
+    "passwordHint": "Minimum 6 characters",
+    "checkEmailTitle": "Check your email",
+    "checkEmail": "We've sent a confirmation link to your email. Please check your inbox.",
+    "invalidCredentials": "Invalid email or password.",
+    "emailTaken": "This email is already registered.",
+    "weakPassword": "Password must be at least 6 characters.",
+    "generalError": "Something went wrong. Please try again."
   },
   "billing": {
     "freeBadge": "Free",
@@ -179,8 +191,12 @@
   },
   "rankings": {
     "title": "Rankings",
+    "mlbTitle": "MLB Leaders",
+    "japaneseTitle": "Japanese Players",
     "battingTitle": "Batting Rankings (by OPS)",
     "pitchingTitle": "Pitching Rankings (by ERA)",
+    "battingLabel": "Batting (by OPS)",
+    "pitchingLabel": "Pitching (by ERA)",
     "noData": "No data available",
     "loadFailed": "Failed to load rankings",
     "season": "{year} Season"

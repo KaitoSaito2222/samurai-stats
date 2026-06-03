@@ -106,44 +106,33 @@ async def sync_players(
 async def sync_schedule(
     request: Request,
     date: str | None = None,
+    days_ahead: int = 7,
     _: None = Depends(_verify_internal_key),
     supabase: Client = Depends(get_supabase),
 ) -> dict[str, Any]:
     """Sync schedule and populate game_players junction table.
 
-    Run daily at 6:00 JST. Pass ?date=YYYY-MM-DD to backfill a historical date.
+    Run daily at 6:00 JST. Syncs the base date plus the next `days_ahead`
+    days so upcoming scheduled games (and their start times) are browseable.
+
+    - ?date=YYYY-MM-DD : base date (defaults to today JST). Used for backfill.
+    - ?days_ahead=N    : also sync the next N days (default 7, capped at 14).
     """
     if date is not None:
         try:
-            game_date = datetime.date.fromisoformat(date)
+            base_date = datetime.date.fromisoformat(date)
         except ValueError:
             raise HTTPException(
                 status_code=400,
                 detail={"code": "INVALID_REQUEST", "message": "date must be YYYY-MM-DD."},
             )
     else:
-        game_date = datetime.datetime.now(JST).date()
-    date_str: str = game_date.isoformat()
+        base_date = datetime.datetime.now(JST).date()
 
-    schedule: list[dict[str, Any]] = await fetch_schedule(date_str)
-    if not schedule:
-        return {"games_synced": 0, "game_players_synced": 0}
+    # Clamp the look-ahead window to a sane range.
+    days_ahead = max(0, min(days_ahead, 14))
 
-    # Upsert games.
-    game_rows: list[dict[str, Any]] = [
-        {
-            "id": g["gamePk"],
-            "home_team": {"en": g["homeTeam"], "ja": team_name_ja(g["homeTeam"])},
-            "away_team": {"en": g["awayTeam"], "ja": team_name_ja(g["awayTeam"])},
-            "game_date": date_str,
-            "status": g["status"],
-            "venue": g["venue"],
-        }
-        for g in schedule
-    ]
-    supabase.table("games").upsert(game_rows, on_conflict="id").execute()
-
-    # Determine which Japanese players appear in today's games.
+    # Fetch the Japanese player roster once — it is reused for every date.
     jp_response = (
         supabase.table("players")
         .select("id")
@@ -154,21 +143,59 @@ async def sync_schedule(
         row["id"] for row in (jp_response.data or [])
     }
 
-    pairs: list[tuple[str, str]] = await detect_japanese_player_games(
-        schedule, japanese_player_ids
-    )
+    total_games = 0
+    total_game_players = 0
 
-    gp_rows: list[dict[str, Any]] = [
-        {"game_id": game_pk, "player_id": player_id}
-        for game_pk, player_id in pairs
-    ]
+    for offset in range(days_ahead + 1):
+        game_date = base_date + datetime.timedelta(days=offset)
+        date_str: str = game_date.isoformat()
 
-    if gp_rows:
-        supabase.table("game_players").upsert(
-            gp_rows, on_conflict="game_id,player_id"
-        ).execute()
+        schedule: list[dict[str, Any]] = await fetch_schedule(date_str)
+        if not schedule:
+            continue
 
-    return {"games_synced": len(game_rows), "game_players_synced": len(gp_rows)}
+        # Upsert games — team JSONB carries id for reliable logo lookup.
+        game_rows: list[dict[str, Any]] = [
+            {
+                "id": g["gamePk"],
+                "home_team": {
+                    "en": g["homeTeam"],
+                    "ja": team_name_ja(g["homeTeam"]),
+                    "id": g.get("homeTeamId") or None,
+                },
+                "away_team": {
+                    "en": g["awayTeam"],
+                    "ja": team_name_ja(g["awayTeam"]),
+                    "id": g.get("awayTeamId") or None,
+                },
+                "game_date": date_str,
+                "game_time": g.get("gameDate") or None,
+                "status": g["status"],
+                "venue": g["venue"],
+            }
+            for g in schedule
+        ]
+        supabase.table("games").upsert(game_rows, on_conflict="id").execute()
+        total_games += len(game_rows)
+
+        pairs: list[tuple[str, str]] = await detect_japanese_player_games(
+            schedule, japanese_player_ids
+        )
+        gp_rows: list[dict[str, Any]] = [
+            {"game_id": game_pk, "player_id": player_id}
+            for game_pk, player_id in pairs
+        ]
+        if gp_rows:
+            supabase.table("game_players").upsert(
+                gp_rows, on_conflict="game_id,player_id"
+            ).execute()
+            total_game_players += len(gp_rows)
+
+    return {
+        "games_synced": total_games,
+        "game_players_synced": total_game_players,
+        "days_synced": days_ahead + 1,
+    }
 
 
 # ---------------------------------------------------------------------------
