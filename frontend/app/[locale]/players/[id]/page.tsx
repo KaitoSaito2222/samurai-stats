@@ -87,22 +87,22 @@ export default async function PlayerDetailPage({ params: { locale, id } }: Playe
       {/* Player hero — editorial split layout */}
       <section className="relative overflow-hidden rounded bg-navy text-white border border-navy">
         <div className="pointer-events-none absolute top-0 left-0 h-1 w-full bg-gradient-to-r from-gold via-gold/40 to-transparent" />
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-row">
           {/* Photo */}
-          <div className="w-full md:w-2/5 lg:w-1/3 h-64 md:h-auto md:min-h-[340px] relative bg-navy-dark flex-shrink-0">
+          <div className="w-2/5 sm:w-1/3 md:w-2/5 lg:w-1/3 h-auto min-h-[180px] sm:min-h-[220px] md:min-h-[240px] relative bg-navy-dark flex-shrink-0">
             {player.photo_url ? (
               <Image
                 src={player.photo_url}
                 alt={displayName}
                 fill
-                sizes="(max-width: 768px) 100vw, 33vw"
-                className="object-cover object-center"
+                sizes="(max-width: 640px) 40vw, (max-width: 1024px) 33vw, 25vw"
+                className="object-cover object-top"
                 priority
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-7xl">⚾</div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-navy/80 md:from-transparent to-transparent md:to-navy/40" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-navy/40" />
           </div>
 
           {/* Info */}
