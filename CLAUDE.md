@@ -139,7 +139,13 @@ Phase 2+: Stripe billing, AI chat, detailed stats analysis, React Native migrati
 - **Monthly trend graphs**: ✅ batting avg / OPS / HR by month (Victory charts) — implemented
 - **Splits**: ✅ vs LHP/RHP, Home/Away, Day/Night — implemented
 - **Statcast analytics**: ✅ exit velocity, barrel rate, xBA, pitch splits, 9-zone heatmap — implemented
+- **Box score on game detail**: ✅ batting order + batting/pitching stats for all players, Japanese player highlight + link — implemented (Free + Pro)
 - **Period comparison**: current season vs same period last year (MLB API `byDateRange`) — pending
 - **AI performance evaluation**: Claude analyzes multi-year trends and highlights weak/strong periods — pending
 - **Game log storage**: persist per-game stats in `game_logs` table for fast graph rendering — pending
-- All analysis features are **Pro only**
+- Analysis features (splits, Statcast, graphs, AI) are **Pro only**; box score is **Free + Pro**
+
+### AI Analysis Scope
+- **Current**: Japanese players only (`players.analyzable = true`, synced from `is_japanese`)
+- **Future**: Non-Japanese players can be onboarded by setting `analyzable = true` in the DB
+- Code gates on `is_analyzable()` / `players.analyzable` — never directly on `is_japanese`

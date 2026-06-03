@@ -15,7 +15,14 @@ from slowapi.util import get_remote_address
 from supabase import Client
 
 from database import get_supabase
-from schemas.games import GameDetail, GameListItem, GamePlayer
+from schemas.games import (
+    GameBoxscore,
+    GameDetail,
+    GameListItem,
+    GamePlayer,
+    TeamBoxscore,
+)
+from services.mlb_api import fetch_boxscore
 
 limiter = Limiter(key_func=get_remote_address)
 router = APIRouter(prefix="/api/games", tags=["games"])
@@ -214,4 +221,40 @@ async def get_game(
         game_date=row["game_date"],
         status=row.get("status", "scheduled"),
         venue=row.get("venue"),
+    )
+
+
+# ---------------------------------------------------------------------------
+# GET /api/games/{id}/boxscore
+# ---------------------------------------------------------------------------
+
+
+@router.get("/{game_id}/boxscore", response_model=GameBoxscore)
+@limiter.limit("60/minute")
+async def get_game_boxscore(
+    request: Request,
+    game_id: str,
+) -> GameBoxscore:
+    """Return batting order and per-player stats for both teams.
+
+    Fetches on-demand from MLB Stats API with a 60-second in-memory cache.
+    On API failure (fetch_boxscore returns {}), responds with home/away = null.
+    Before the lineup is posted, home/away are present with empty
+    batters/pitchers lists. Available to all plans (Free and Pro).
+    """
+    data = await fetch_boxscore(game_id)
+    if not data:
+        return GameBoxscore()
+
+    def _build_team(side: dict) -> TeamBoxscore:
+        return TeamBoxscore(
+            team_en=side.get("team_en", ""),
+            team_ja=side.get("team_ja", ""),
+            batters=side.get("batters", []),
+            pitchers=side.get("pitchers", []),
+        )
+
+    return GameBoxscore(
+        home=_build_team(data["home"]) if data.get("home") else None,
+        away=_build_team(data["away"]) if data.get("away") else None,
     )

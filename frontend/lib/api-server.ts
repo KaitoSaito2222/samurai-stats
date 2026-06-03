@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { PaginatedPlayers, Game, Player, PlayerStats, PlayerAnalytics, Rankings, GameDetail, TodayStats } from "./api";
+import type { PaginatedPlayers, Game, Player, PlayerStats, PlayerAnalytics, Rankings, GameDetail, GameBoxscore, TodayStats } from "./api";
 
 // Server-side only — uses the internal Docker service URL (not exposed to the browser).
 // Do NOT import this file in Client Components.
@@ -31,6 +31,9 @@ export const getRankingsServer = (season?: number) =>
 
 export const getGameServer = (id: string) =>
   serverApi.get<GameDetail>(`/api/games/${id}`);
+
+export const getGameBoxscoreServer = (id: string) =>
+  serverApi.get<GameBoxscore>(`/api/games/${id}/boxscore`);
 
 export const getGamesByDateServer = (date: string) =>
   serverApi.get<Game[]>("/api/games", { params: { date } });

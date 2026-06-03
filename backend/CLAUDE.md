@@ -122,7 +122,12 @@ GET  /api/rankings                  # Separate router — avoids conflict with /
 GET  /api/games/today
 GET  /api/games/yesterday
 GET  /api/games/{id}
+GET  /api/games/{id}/boxscore    # batting order + per-player batting/pitching stats (Free + Pro)
 ```
+> `/boxscore` fetches on-demand from MLB Stats API with 60-second in-memory cache.
+> Returns `GameBoxscore` with `home`/`away` each containing `batters` and `pitchers`.
+> `is_analyzable` flag on each player controls link rendering on the frontend.
+> Available before lineup is posted — returns empty lists (not 404).
 
 ### AI
 ```

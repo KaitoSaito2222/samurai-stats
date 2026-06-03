@@ -63,6 +63,11 @@ names             JSONB NOT NULL       -- {"en": "Shohei Ohtani", "ja": "大谷�
 team              JSONB                -- {"en": "LA Dodgers", "ja": "ロサンゼルス・ドジャース"}
 position          VARCHAR
 is_japanese       BOOLEAN DEFAULT false
+analyzable        BOOLEAN NOT NULL DEFAULT false
+                  -- True if this player is eligible for AI analysis and has a player detail page.
+                  -- Decoupled from is_japanese so non-Japanese players can be onboarded independently.
+                  -- Sync rule: set analyzable = true for all is_japanese = true players initially.
+                  -- services/japanese_data.py::is_analyzable() mirrors this until DB is live.
 photo_url         VARCHAR
 active            BOOLEAN DEFAULT true
 created_at        TIMESTAMP DEFAULT NOW()
@@ -70,6 +75,9 @@ updated_at        TIMESTAMP DEFAULT NOW()
 ```
 > Adding a new language requires only a new key in the JSONB object — no schema migration needed.
 > Query example: `SELECT names->>'ja' FROM players WHERE id = '660271'`
+> `analyzable` is separate from `is_japanese`: a player can be Japanese but not yet analyzed (e.g.,
+> minor leaguer), or non-Japanese and analyzable (future expansion). Code always gates on `analyzable`,
+> never directly on `is_japanese`.
 
 ## player_stats
 ```sql

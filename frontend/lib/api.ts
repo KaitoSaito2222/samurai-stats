@@ -259,12 +259,51 @@ export interface Rankings {
 }
 
 // Game detail types
-export interface GameDetail extends Omit<Game, "japanese_players"> {
-  japanese_players?: {
-    player_id: string;
-    name_en: string;
-    name_ja: string;
-  }[];
+export type GameDetail = Game;
+
+export interface BoxscoreBatter {
+  player_id: string;
+  name_en: string;
+  name_ja: string;
+  is_analyzable: boolean;
+  position: string;
+  batting_order: number | null;
+  at_bats: number;
+  runs: number;
+  hits: number;
+  doubles: number;
+  home_runs: number;
+  rbi: number;
+  walks: number;
+  strikeouts: number;
+  avg: number | null;
+}
+
+export interface BoxscorePitcher {
+  player_id: string;
+  name_en: string;
+  name_ja: string;
+  is_analyzable: boolean;
+  innings_pitched: string;
+  hits: number;
+  runs: number;
+  earned_runs: number;
+  walks: number;
+  strikeouts: number;
+  home_runs: number;
+  era: number | null;
+}
+
+export interface TeamBoxscore {
+  team_en: string;
+  team_ja: string;
+  batters: BoxscoreBatter[];
+  pitchers: BoxscorePitcher[];
+}
+
+export interface GameBoxscore {
+  home: TeamBoxscore | null;
+  away: TeamBoxscore | null;
 }
 
 export interface TodayStats {

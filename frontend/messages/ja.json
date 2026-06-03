@@ -110,7 +110,27 @@
     "japanesePlayers": "出場日本人選手",
     "prevDay": "前日",
     "nextDay": "翌日",
-    "backToToday": "今日に戻る"
+    "backToToday": "今日に戻る",
+    "boxscore": {
+      "batting": "打撃成績",
+      "pitching": "投手成績",
+      "lineupNotAvailable": "ラインナップ未発表",
+      "order": "#",
+      "player": "選手",
+      "pos": "守備",
+      "ab": "打数",
+      "r": "得点",
+      "h": "安打",
+      "double": "二塁打",
+      "hr": "本塁打",
+      "rbi": "打点",
+      "bb": "四球",
+      "k": "三振",
+      "avg": "打率",
+      "ip": "投球回",
+      "er": "自責点",
+      "era": "防御率"
+    }
   },
   "ai": {
     "generateSummary": "AI要約を生成",
