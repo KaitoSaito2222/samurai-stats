@@ -156,7 +156,7 @@ export default function GameCard({ game, locale }: GameCardProps) {
 
       {/* Venue */}
       {game.venue && (
-        <div className="px-4 pb-2">
+        <div className="px-4 pb-2 border-t border-surface-border pt-2">
           <p className="font-sans text-xs text-ink-muted truncate">📍 {game.venue}</p>
         </div>
       )}
