@@ -18,7 +18,8 @@ export default function BoxScore({ boxscore, homeTeam, awayTeam, locale }: Props
   const [activeTab, setActiveTab] = useState<"away" | "home">("away");
 
   const team = activeTab === "home" ? boxscore.home : boxscore.away;
-  const hasData = team && (team.batters.length > 0 || team.pitchers.length > 0);
+  const hasData =
+    team !== null && (team.batters.length > 0 || team.pitchers.length > 0);
 
   const tabs = [
     { key: "away" as const, label: awayTeam },
@@ -44,26 +45,26 @@ export default function BoxScore({ boxscore, homeTeam, awayTeam, locale }: Props
       </div>
 
       <div className="p-4 space-y-6">
-        {!hasData ? (
+        {!hasData || team === null ? (
           <p className="text-center font-sans text-sm text-ink-muted py-6">
             {tb("lineupNotAvailable")}
           </p>
         ) : (
           <>
-            {team!.batters.length > 0 && (
+            {team.batters.length > 0 && (
               <div>
                 <h3 className="font-sans text-xs font-semibold uppercase tracking-wide text-navy border-b-2 border-gold pb-1 inline-block mb-3">
                   {tb("batting")}
                 </h3>
-                <BattingTable batters={team!.batters} locale={locale} />
+                <BattingTable batters={team.batters} locale={locale} />
               </div>
             )}
-            {team!.pitchers.length > 0 && (
+            {team.pitchers.length > 0 && (
               <div>
                 <h3 className="font-sans text-xs font-semibold uppercase tracking-wide text-navy border-b-2 border-gold pb-1 inline-block mb-3">
                   {tb("pitching")}
                 </h3>
-                <PitchingTable pitchers={team!.pitchers} locale={locale} />
+                <PitchingTable pitchers={team.pitchers} locale={locale} />
               </div>
             )}
           </>

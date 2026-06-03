@@ -457,8 +457,9 @@ async def fetch_boxscore(game_pk: str) -> dict[str, Any]:
     Calls GET /game/{gamePk}/boxscore. Results are cached in memory for
     60 seconds to reduce load during live games and repeated page refreshes.
 
-    Returns a dict with 'home' and 'away' keys (see _parse_boxscore).
-    Returns an empty dict on HTTP failure or when lineup is not yet posted.
+    Returns a dict with 'home' and 'away' keys (see _parse_boxscore); before
+    the lineup is posted, each side's batters/pitchers lists are simply empty.
+    Returns an empty dict only on HTTP failure.
     """
     cached = _boxscore_cache.get(game_pk)
     if cached and time.monotonic() - cached[0] < _BOXSCORE_CACHE_TTL:

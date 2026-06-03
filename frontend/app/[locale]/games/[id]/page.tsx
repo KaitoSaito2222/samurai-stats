@@ -10,13 +10,13 @@ export default async function GameDetailPage({ params: { locale, id } }: GameDet
   const t = await getTranslations("games");
   const tErrors = await getTranslations("errors");
 
-  const [gameRes, boxscoreRes] = await Promise.allSettled([
-    getGameServer(id),
-    getGameBoxscoreServer(id),
-  ]);
+  const gameRes = await getGameServer(id).catch(() => null);
+  const game = gameRes?.data ?? null;
 
-  const game = gameRes.status === "fulfilled" ? gameRes.value.data : null;
-  const boxscore = boxscoreRes.status === "fulfilled" ? boxscoreRes.value.data : null;
+  // Only fetch the box score once we know the game exists — avoids hitting the
+  // MLB Stats API (and spamming error logs) for invalid game IDs.
+  const boxscoreRes = game ? await getGameBoxscoreServer(id).catch(() => null) : null;
+  const boxscore = boxscoreRes?.data ?? null;
 
   if (!game) {
     return (

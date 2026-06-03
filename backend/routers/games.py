@@ -16,7 +16,6 @@ from supabase import Client
 
 from database import get_supabase
 from schemas.games import (
-    BoxscorePitcher,
     GameBoxscore,
     GameDetail,
     GameListItem,
@@ -239,8 +238,9 @@ async def get_game_boxscore(
     """Return batting order and per-player stats for both teams.
 
     Fetches on-demand from MLB Stats API with a 60-second in-memory cache.
-    Returns empty TeamBoxscore objects before lineup is posted or on API failure.
-    Available to all plans (Free and Pro).
+    On API failure (fetch_boxscore returns {}), responds with home/away = null.
+    Before the lineup is posted, home/away are present with empty
+    batters/pitchers lists. Available to all plans (Free and Pro).
     """
     data = await fetch_boxscore(game_id)
     if not data:

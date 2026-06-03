@@ -259,7 +259,7 @@ export interface Rankings {
 }
 
 // Game detail types
-export interface GameDetail extends Game {}
+export type GameDetail = Game;
 
 export interface BoxscoreBatter {
   player_id: string;
